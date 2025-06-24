@@ -68,7 +68,18 @@ body {
     margin-right: 8px;
 }
 
+/* Imagens */
+.img-thumbnail {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    padding: 0.25rem;
+    border-radius: 10px;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+}
+
 /* Cards e elementos específicos */
+
 .card-header {
     color: white;
 }
