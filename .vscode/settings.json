@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "Fastwork_last_version"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

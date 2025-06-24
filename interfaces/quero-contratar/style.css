@@ -1,0 +1,277 @@
+/* Variáveis de cores */
+:root {
+    --primary-color: #3a56a7;
+    --primary-dark: #2c4285;
+    --primary-light: #e2eafc;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --secondary-color: #6c757d;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+}
+
+/* Estilos gerais */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    line-height: 1.6;
+    padding-top: 20px; /* Para compensar o navbar fixo */
+}
+
+/* Navbar principal */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    height: 50px; /* Altura personalizada */
+    min-height: 50px; /* Garante que não fique menor que isso */
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+/* Cards de perfil */
+.perfil-card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.perfil-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.perfil-avaliacao {
+    color: var(--warning-color);
+    font-size: 1.1rem;
+}
+
+.perfil-valor {
+    font-weight: bold;
+    color: var(--success-color);
+    font-size: 1.1rem;
+}
+
+/* Filtros */
+.filtro-grupo {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 1rem;
+}
+
+.filtro-grupo:last-child {
+    border-bottom: none;
+}
+
+.filtro-titulo {
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.filtro-titulo:hover {
+    background-color: rgba(58, 86, 167, 0.1);
+}
+
+.filtro-opcoes {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding-left: 1rem;
+}
+
+.filtro-grupo:hover .filtro-opcoes {
+    max-height: 500px;
+}
+
+.filtro-opcao {
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+}
+
+.filtro-opcao label {
+    margin-left: 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.filtro-opcao label:hover {
+    color: var(--primary-color);
+}
+
+/* Card de filtros */
+.card {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.card-header {
+    font-weight: 600;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Botões */
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #157347;
+    border-color: #157347;
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+/* Paginação */
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.pagination .page-link {
+    color: var(--primary-color);
+}
+
+.pagination .page-link:hover {
+    color: var(--primary-dark);
+}
+
+/* Rodapé */
+footer {
+    background-color: var(--dark-color);
+}
+
+footer a {
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: white !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .navbar-collapse {
+        padding-top: 10px;
+    }
+    
+    .nav-link {
+        padding: 8px 0;
+    }
+    
+    .filtro-opcoes {
+        padding-left: 0;
+    }
+    
+    .perfil-card {
+        margin-bottom: 20px;
+    }
+}
+
+/* Ajustes para o conteúdo principal */
+.container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.content-section {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+/* Estilos adicionais para os filtros */
+        .filtro-grupo {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 1rem;
+        }
+        
+        .filtro-grupo:last-child {
+            border-bottom: none;
+        }
+        
+        .filtro-titulo {
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .filtro-titulo:hover {
+            background-color: rgba(58, 86, 167, 0.1);
+        }
+        
+        .filtro-opcoes {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding-left: 1rem;
+        }
+        
+        .filtro-grupo:hover .filtro-opcoes {
+            max-height: 500px;
+        }
+        
+        .filtro-opcao {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .filtro-opcao label {
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .perfil-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .perfil-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .perfil-avaliacao {
+            color: #ffc107;
+        }
+        
+        .perfil-valor {
+            font-weight: bold;
+            color: #198754;
+        }
