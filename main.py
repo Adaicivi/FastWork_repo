@@ -2,13 +2,10 @@ from starlette.middleware.sessions import SessionMiddleware
 from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-import os
-import shutil
 from pathlib import Path
 import uuid
 from typing import List
-import aiofiles
+from aiofiles import *
 from PIL import Image
 import io
 
@@ -21,6 +18,15 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 async def login(request: Request, email: str, senha: str):
     usuario = fazer_login(request, email, senha)
     return {"message": "Login realizado com sucesso", "usuario": usuario.email}
+
+@app.post("/logout")
+async def logout(request: Request):
+    return fazer_logout(request)
+
+@app.get("/perfil")
+async def perfil(request: Request):
+    usuario = obter_usuario_logado(request)
+    return {"usuario": usuario.email}
 
 @app.post("/logout")
 async def logout(request: Request):

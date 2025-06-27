@@ -1,6 +1,7 @@
 from data.database import obter_conexao
 from models.usuario import Usuario
 from models.profissao import Profissao
+from models.endereco import Endereco
 
 def criar_tabela_usuario():
     with obter_conexao() as conexao:
