@@ -1,4 +1,6 @@
 from data.database import obter_conexao
+from db.models.endereco import Endereco
+from db.sql.usuario_sql import ATUALIZAR_STATUS_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_AVALIACAO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_AVALIACAO_USUARIO, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL_E_SENHA, OBTER_USUARIO_POR_ID
 from models.usuario import Usuario
 from models.profissao import Profissao
 
@@ -12,7 +14,7 @@ def inserir_usuario(usuario: Usuario) -> int:
         cursor = conexao.cursor()
         cursor.execute(
             INSERIR_USUARIO,
-            (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.endereco, usuario.profissao_id, usuario.status)
+             (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.status, usuario.id)
         )
         return cursor.lastrowid
     
@@ -21,7 +23,7 @@ def atualizar_usuario(usuario: Usuario) -> int:
         cursor = conexao.cursor()
         cursor.execute(
             ATUALIZAR_USUARIO,
-            (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.endereco, usuario.profissao_id, usuario.status, usuario.id)
+            (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.status, usuario.id)
         )
         return cursor.rowcount > 0
     
@@ -61,7 +63,7 @@ def buscar_usuarios_ordenados_por_avaliacao() -> list:
 def obter_usuario_por_email(email: str) -> Usuario:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
-        cursor.execute(OBTER_USUARIO_POR_EMAIL, (email,))
+        cursor.execute(OBTER_USUARIO_POR_EMAIL_E_SENHA, (email,))
         resultado = cursor.fetchone()
         if resultado:
             return Usuario(
@@ -73,6 +75,7 @@ def obter_usuario_por_email(email: str) -> Usuario:
                 exp=resultado["exp"],
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
+                link_contato=resultado["link_contato"],
                 endereco=Endereco(
                     id=resultado["id"],
                     cidade=resultado["cidade"],
@@ -85,7 +88,7 @@ def obter_usuario_por_email(email: str) -> Usuario:
                 status=resultado["status"],
                 avaliacao=resultado["avaliacao"]
             )
-    return None
+        return None
 
 def obter_usuario_por_id(usuario_id: int) -> Usuario:
     with obter_conexao() as conexao:
@@ -102,6 +105,7 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                 exp=resultado["exp"],
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
+                link_contato=resultado["link_contato"],
                 endereco=Endereco(
                     id=resultado["id"],
                     cidade=resultado["cidade"],
@@ -114,10 +118,10 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                 status=resultado["status"],
                 avaliacao=resultado["avaliacao"]
             )
-    return None
+        return None
     
 def deletar_usuario(usuario_id: int) -> int:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
-        cursor.execute(DELETAR_USUARIO, (usuario_id,))
+        cursor.execute(DELETAR_USUARIO_POR_ID_SENHA, (usuario_id,))
         return cursor.rowcount > 0

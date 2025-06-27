@@ -12,6 +12,7 @@ class Usuario:
     exp : str
     cpf : str
     telefone : str
+    link_contato : str
     endereco : Endereco
     profissao : Profissao
     status : str
