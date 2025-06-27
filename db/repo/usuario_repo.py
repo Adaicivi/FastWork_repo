@@ -3,6 +3,7 @@ from db.models.endereco import Endereco
 from db.sql.usuario_sql import ATUALIZAR_STATUS_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_AVALIACAO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_AVALIACAO_USUARIO, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL_E_SENHA, OBTER_USUARIO_POR_ID
 from models.usuario import Usuario
 from models.profissao import Profissao
+from models.endereco import Endereco
 
 def criar_tabela_usuario():
     with obter_conexao() as conexao:

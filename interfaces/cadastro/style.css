@@ -79,7 +79,6 @@ body {
 }
 
 /* Cards e elementos específicos */
-
 .card-header {
     color: white;
 }
@@ -120,11 +119,11 @@ body {
     .navbar-collapse {
         padding-top: 10px;
     }
-    
+
     .navbar-nav {
         margin-top: 10px;
     }
-    
+
     .nav-link {
         padding: 8px 0;
     }
@@ -149,4 +148,52 @@ body {
 
 .card:hover {
     transform: translateY(-2px);
+}
+
+/* Estilos específicos para o upload */
+.upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 40px 20px;
+    margin: 20px 0;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    text-align: center;
+}
+
+.upload-area:hover {
+    border-color: #007bff;
+}
+
+.upload-icon {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.upload-text {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-info {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    display: none;
+}
+
+.file-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.file-size {
+    color: #666;
+    font-size: 14px;
 }
