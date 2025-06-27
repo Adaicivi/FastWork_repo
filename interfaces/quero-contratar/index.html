@@ -96,37 +96,24 @@
                                     <h4 class="mb-0">Profissionais Disponíveis</h4>
                                     <div class="d-flex">
                                         <span class="badge bg-primary me-2">12 resultados</span>
-                                        <!--<div class="dropdown">
-                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="ordenarDropdown" data-bs-toggle="dropdown">
-                                                <i class="bi bi-sort-down"></i> Ordenar
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><h6 class="dropdown-header">Ordenar por</h6></li>
-                                                <li><a class="dropdown-item" href="#">Menor valor</a></li>
-                                                <li><a class="dropdown-item" href="#">Maior valor</a></li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li><a class="dropdown-item" href="#">Melhor avaliação</a></li>
-                                                <li><a class="dropdown-item" href="#">Mais recentes</a></li>
-                                            </ul>
-                                        </div>-->
                                     </div>
                                 </div>
                                 
-                                <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="row row-cols-1 row-cols-md-3 g-4">
                                     <!-- Perfil 1 (mantido igual) -->
+                                    {% for i in range(0, 10) %}
                                     <div class="col">
                                         <div class="perfil-card h-100">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center mb-3">
-                                                    <img src="https://via.placeholder.com/60" class="rounded-circle me-3" alt="Juliana Alves">
+                                                    <img src="https://randomuser.me/api/portraits/women/42.jpg" class="rounded-circle me-3" alt="Juliana Alves">
                                                     <div>
                                                         <h5 class="card-title mb-0">Juliana Alves</h5>
                                                         <small class="text-muted">São Paulo - SP</small>
                                                         <span class="badge bg-primary mt-1">Limpeza</span>
                                                     </div>
                                                 </div>
-                                                <p class="card-text mb-2"><strong>Experiência:</strong> 3 anos em limpeza comercial</p>
-                                                <p class="card-text mb-2"><strong>Habilidades:</strong> Limpeza profunda, organização</p>
+                                                <!--<p class="card-text mb-2"><strong>Experiência:</strong> 3 anos em limpeza comercial</p>-->
                                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                                     <div>
                                                         <p class="perfil-avaliacao mb-0">⭐⭐⭐⭐☆ (4.2)</p>
@@ -142,6 +129,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    {% endfor %}
                                 </div>
                                 <!-- Paginação (mantida igual) -->
                                 <nav class="mt-4">
@@ -168,27 +156,78 @@
         <!-- Modal de Exibição de perfil do freela-->
     <div class="modal fade" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content rounded-4">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="perfilModalLabel"><i class="bi bi-person-circle me-2"></i>Perfil do Profissional</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content rounded-4 shadow-lg">
+                <div class="modal-header bg-primary text-white rounded-top-4">
+                    <h5 class="modal-title d-flex align-items-center" id="perfilModalLabel">
+                        <i class="bi bi-person-circle me-2 fs-4"></i>Perfil Completo do Profissional
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="row">
-                        <div class="col-md-4 text-center mb-3">
-                            <img src="https://via.placeholder.com/150" class="rounded-circle img-thumbnail mb-2" alt="Foto do trabalhador">
-                            <h5 class="mb-0">Juliana Alves</h5>
-                            <small class="text-muted">Limpeza Profissional</small>
+                        <!-- Coluna da Foto -->
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <div class="position-relative mb-3">
+                                <img src="https://randomuser.me/api/portraits/women/42.jpg" class="rounded-circle img-thumbnail border-3 border-primary" style="width: 180px; height: 180px; object-fit: cover;" alt="Foto do profissional">
+                            </div>
+                            <h4 class="mb-1">Juliana Alves</h4>
+                            <span class=" fs-4 fw-normal mb-1">Limpeza Profissional</span>
+                            <div class="rating mb-3">
+                                <span class="text-warning fs-5">★★★★☆</span>
+                                <small class="text-muted">(4.2 - 15 avaliações)</small>
+                            </div>
                         </div>
+                        
+                        <!-- Coluna das Informações -->
                         <div class="col-md-8">
-                            <p><strong>Telefone:</strong> (11) 98765-4321</p>
-                            <p><strong>E-mail:</strong> juliana.alves@email.com</p>
-                            <!--<p><strong>Instagram:</strong> <a href="https://instagram.com/juliana.trabalhos" target="_blank">@juliana.trabalhos</a></p>
-                            <p><strong>Facebook:</strong> <a href="https://facebook.com/juliana.alves" target="_blank">juliana.alves</a></p>-->
-                            <p><strong>Área de atuação:</strong> Limpeza</p>
-                            <p><strong>Descrição:</strong> descrição da função</p>
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Informações Pessoais</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <p class="mb-1"><strong><i class="bi bi-telephone me-2"></i>Telefone:</strong></p>
+                                            <p class="text-muted">(11) 98765-4321</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <p class="mb-1"><strong><i class="bi bi-envelope me-2"></i>E-mail:</strong></p>
+                                            <p class="text-muted">juliana.alves@email.com</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <p class="mb-1"><strong><i class="bi bi-geo-alt me-2"></i>Localização:</strong></p>
+                                            <p class="text-muted">São Paulo - SP</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <p class="mb-1"><strong><i class="bi bi-briefcase me-2"></i>Área de atuação:</strong></p>
+                                            <p class="text-muted">Limpeza Residencial e Comercial</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <p class="mb-1"><strong><i class="bi bi-geo-alt me-2"></i>Instagram:</strong></p>
+                                            <p class="text-muted">*****</p>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <p class="mb-1"><strong><i class="bi bi-briefcase me-2"></i>Facebook:</strong></p>
+                                            <p class="text-muted">*****</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-file-text me-2"></i>Sobre o Profissional</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-0">Profissional com mais de 3 anos de experiência em serviços de limpeza residencial e comercial. Especializada em organização de ambientes, limpeza pós-obra e cuidados com materiais delicados. Comprometida com a qualidade do serviço e satisfação do cliente.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
+                <div class="modal-footer border-top-0 bg-light rounded-bottom-4">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary">Avaliar Profissional</button>
                 </div>
             </div>
         </div>
