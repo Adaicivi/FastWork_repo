@@ -359,6 +359,72 @@
                 icone.classList.add('bi-chevron-down');
             }
         }
+
+        // Função para mostrar informações do arquivo
+        function showFileInfo(input) {
+            const file = input.files[0];
+            if (file) {
+                // Verificar se é imagem
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, selecione apenas arquivos de imagem.');
+                    input.value = '';
+                    return;
+                }
+
+                // Verificar tamanho (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Arquivo muito grande. Máximo: 5MB');
+                    input.value = '';
+                    return;
+                }
+
+                // Mostrar informações do arquivo
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                document.getElementById('fileInfo').style.display = 'block';
+                
+                // Habilitar botão de envio
+                document.getElementById('submitBtn').disabled = false;
+            }
+        }
+
+        // Função para lidar com o upload
+        function handleUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                // Criar preview da imagem
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const profileImageContainer = document.querySelector('.img-thumbnail');
+                    profileImageContainer.innerHTML = '';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Foto de perfil';
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '50%';
+                    
+                    profileImageContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+
+                // Aqui você adicionaria sua lógica de upload para o servidor
+                alert('Upload simulado! Integre com seu backend.');
+                
+                // Fechar modal após sucesso
+                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadfoto'));
+                modal.hide();
+                
+                // Resetar o formulário
+                document.getElementById('uploadForm').reset();
+                document.getElementById('fileInfo').style.display = 'none';
+                document.getElementById('submitBtn').disabled = true;
+            }
+        }
     </script>
 </body>
 </html>
