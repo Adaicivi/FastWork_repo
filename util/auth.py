@@ -2,8 +2,8 @@ from typing import Optional
 from fastapi import HTTPException, Request, Response
 import hashlib
 
-from models.usuario import Usuario
-from repo import usuario_repo
+from db.models.usuario import Usuario
+from db.repo import usuario_repo
 
 SECRET_KEY = "729b9f5e3861e5173bb01c12e373a0da69bd3a35bfae7478bdf023811fbafff2"
 
