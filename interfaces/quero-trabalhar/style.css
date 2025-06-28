@@ -210,23 +210,22 @@ footer a:hover {
     color: white !important;
 }
 
-/* Responsividade */
+/* Ajustes de responsividade */
 @media (max-width: 768px) {
-    .navbar-collapse {
-        padding-top: 0.625rem;
+    #candidatos-content .d-flex.flex-wrap {
+        flex-direction: column;
+        align-items: flex-start;
     }
     
-    .nav-link {
-        padding: 0.5rem 0;
+    #candidatos-content .d-flex.gap-2 {
+        margin-top: 0.5rem;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
     }
     
-    .card-body {
-        padding: 1rem;
-    }
-    
-    .nav-tabs .nav-link {
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
+    #candidatos-content .btn-sm {
+        white-space: nowrap;
     }
 }
 

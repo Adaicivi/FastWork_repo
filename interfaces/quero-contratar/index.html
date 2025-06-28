@@ -233,44 +233,101 @@
         </div>
     </div>
 
-    <!-- Modal de Usuário -->
+        <!-- Modal de Usuário -->
     <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="usuarioModalLabel"><i class="bi bi-person-badge me-2"></i>Meu Perfil</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label class="form-label">Nome completo</label>
-                            <input type="text" class="form-control" value="João Silva">
+                    <div class="row">
+                        <!-- Coluna da Foto -->
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 180px; height: 180px; margin: 0 auto;">
+                                <i class="bi bi-person fs-1 text-secondary"></i>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadfoto">
+                                <i class="bi bi-camera me-1"></i> Alterar Foto
+                            </button>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">E-mail</label>
-                            <input type="email" class="form-control" value="joao.silva@email.com">
+                        
+                        <!-- Coluna dos Formulários -->
+                        <div class="col-md-8">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nome completo</label>
+                                        <input type="text" class="form-control" value="João Silva">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">CPF</label>
+                                        <input type="text" class="form-control" value="123.456.789-00" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">E-mail</label>
+                                        <input type="email" class="form-control" value="joao.silva@email.com">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Telefone</label>
+                                        <input type="tel" class="form-control" value="(11) 98765-4321">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Data de nascimento</label>
+                                        <input type="date" class="form-control" value="1990-01-01">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Senha</label>
+                                        <input type="password" class="form-control" value="12345678">
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save me-1"></i> Salvar alterações
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Data de nascimento</label>
-                            <input type="date" class="form-control" value="1990-01-01">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Upload de Foto -->
+    <div class="modal fade" id="uploadfoto" tabindex="-1" aria-labelledby="uploadfotoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow-lg">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadfotoModalLabel">📷 Upload de Imagem</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">
+                                Clique para selecionar uma imagem
+                            </div>
+                            <input type="file" id="fileInput" name="image" class="file-input" accept="image/*" onchange="showFileInfo(this)">
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Telefone</label>
-                            <input type="tel" class="form-control" value="(11) 98765-4321">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Senha</label>
-                            <input type="password" class="form-control" value="12345678">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">CPF</label>
-                            <input type="text" class="form-control" value="123.456.789-00" readonly>
-                        </div>
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                        
+                        <div class="file-info" id="fileInfo">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
                         </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="submitBtn" disabled onclick="handleUpload()">
+                        Enviar Imagem
+                    </button>
                 </div>
             </div>
         </div>
