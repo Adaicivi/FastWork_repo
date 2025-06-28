@@ -13,9 +13,17 @@ import io
 from util.auth import SECRET_KEY, fazer_login, fazer_logout, obter_usuario_logado
 from db.repo.imagem_repo import inserir_imagem
 
+
+
+# Configuração de diretórios
+UPLOAD_DIR = Path("uploads")
+templates = Jinja2Templates(directory="templates")
+
+
 # Criar instância do FastAPI
 app = FastAPI(title="Upload de Imagem API", version="1.0.0")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @app.post("/login")
 async def login(request: Request, email: str, senha: str):
@@ -30,16 +38,6 @@ async def logout(request: Request):
 async def perfil(request: Request):
     usuario = obter_usuario_logado(request)
     return {"usuario": usuario.email}
-
-
-# Configuração de diretórios
-UPLOAD_DIR = Path("uploads")
-templates = Jinja2Templates(directory="templates")
-
-# Configuração do app
-app = FastAPI(title="FastWork - Upload de Imagens")
-app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # Configurações de upload
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
