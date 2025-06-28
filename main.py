@@ -11,9 +11,15 @@ from PIL import Image
 import io
 
 from util.auth import SECRET_KEY, fazer_login, fazer_logout, obter_usuario_logado
-from db.repo.imagem_repo import inserir_imagem
+from db.repo.imagem_repo import inserir_imagem, criar_tabela_imagens
+from db.repo.avaliacao_repo import criar_tabela_avaliacao
+from db.repo.usuario_repo import criar_tabela_usuario
+from db.repo.profissao_repo import criar_tabela_profissao
 
-
+criar_tabela_avaliacao()
+criar_tabela_imagens()
+criar_tabela_usuario()
+criar_tabela_profissao()
 
 # Configuração de diretórios
 UPLOAD_DIR = Path("uploads")
@@ -25,19 +31,25 @@ app = FastAPI(title="Upload de Imagem API", version="1.0.0")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-@app.post("/login")
-async def login(request: Request, email: str, senha: str):
-    usuario = fazer_login(request, email, senha)
-    return {"message": "Login realizado com sucesso", "usuario": usuario.email}
+@app.get("/quero-contratar")
+async def quero_contratar(request: Request):
+    return templates.TemplateResponse("quero-contratar/index.html", {"request": request})
 
-@app.post("/logout")
-async def logout(request: Request):
-    return fazer_logout(request)
+@app.get("/quero-trabalhar", response_class=HTMLResponse)
+async def quero_trabalhar(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/perfil")
-async def perfil(request: Request):
-    usuario = obter_usuario_logado(request)
-    return {"usuario": usuario.email}
+@app.get("/cadastro")
+async def cadastro(request: Request):
+    return templates.TemplateResponse("cadastro/index.html", {"request": request})
+
+@app.get("/login")
+async def login_html(request: Request):
+    return templates.TemplateResponse("login/index.html", {"request": request})
+
+@app.get("/tela-inicio")
+async def tela_inicio(request: Request):
+    return templates.TemplateResponse("tela_inicio/index.html", {"request": request})
 
 # Configurações de upload
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
@@ -52,10 +64,6 @@ def is_valid_image(file: UploadFile, contents: bytes) -> bool:
         return True
     except Exception:
         return False
-
-@app.get("/quero-trabalhar", response_class=HTMLResponse)
-async def quero_trabalhar(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/upload")
 async def upload_image(request: Request, image: UploadFile = File(...)):
@@ -112,6 +120,24 @@ async def delete_upload(filename: str):
 async def health_check():
     return {"status": "healthy", "service": "Image Upload API"}
 
+@app.post("/login")
+async def login(request: Request, email: str, senha: str):
+    usuario = fazer_login(request, email, senha)
+    return {"message": "Login realizado com sucesso", "usuario": usuario.email}
+
+@app.post("/logout")
+async def logout(request: Request):
+    return fazer_logout(request)
+
+@app.get("/perfil")
+async def perfil(request: Request):
+    usuario = obter_usuario_logado(request)
+    return {"usuario": usuario.email}
+
+@app.get("/")
+async def index(request: Request):
+    # Exemplo: produtos = obter_produtos_por_pagina(1, 12)
+    return templates.TemplateResponse("menu/index.html", {"request": request})
 
 if __name__ == "__main__":
     import uvicorn
