@@ -1,5 +1,5 @@
 from db.data.database import obter_conexao
-from db.sql.avaliacao_sql import CRIAR_TABELA_AVALIACAO, EXIBIR_AVALIACAO_ORDENADA, INSERIR_AVALIACAO, ATUALIZAR_AVALIACAO, BUSCAR_MEDIA_AVALIACAO
+from db.sql.avaliacao_sql import BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL, CRIAR_TABELA_AVALIACAO, EXIBIR_AVALIACAO_ORDENADA, INSERIR_AVALIACAO, ATUALIZAR_AVALIACAO
 from db.models.avaliacao import Avaliacao
 
 
@@ -18,14 +18,14 @@ def atualizar_avaliacao(avaliacao_id, usuario_id, profissional_id, nota) -> bool
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
         cursor.execute(ATUALIZAR_AVALIACAO, (usuario_id, profissional_id, nota, avaliacao_id))
-    return cursor.rowcount > 0
+        return cursor.rowcount > 0
 
-def buscar_media_avaliacao() -> float:
+def buscar_media_avaliacao(usuario_id: int) -> float:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
-        cursor.execute(BUSCAR_MEDIA_AVALIACAO)
+        cursor.execute(BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL, usuario_id,)
         resultado = cursor.fetchone()
-    return resultado[0] if resultado else 0.0
+        return resultado[0] if resultado else 0.0
 
 def exibir_avaliacao_ordenada() -> list[Avaliacao]:
     with obter_conexao() as conexao:

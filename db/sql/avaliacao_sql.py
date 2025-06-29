@@ -20,8 +20,11 @@ SET usuario_id = ?, profissional_id = ?, nota = ?
 WHERE id = ?;
 """
 
-BUSCAR_MEDIA_AVALIACAO = """
-SELECT AVG(nota) FROM avaliacao;
+BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL = """
+SELECT AVG(nota) AS media, u.nome AS nome_profissional
+FROM avaliacao a
+JOIN usuario u ON a.profissional_id = u.id
+WHERE a.profissional_id = ?;
 """
 
 EXIBIR_AVALIACAO_ORDENADA = """
