@@ -17,6 +17,7 @@ from db.repo.imagem_repo import *
 from db.repo.avaliacao_repo import *
 from db.repo.usuario_repo import *
 from db.repo.profissao_repo import *
+from db.repo.endereco_repo import *
 from db.models.usuario import Usuario
 
 criar_tabela_avaliacao()
@@ -34,7 +35,7 @@ app = FastAPI(title="Upload de Imagem API", version="1.0.0")
 templates = Jinja2Templates(directory="/templates")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
-app.mount("/statics", StaticFiles(directory="statics"), name="statics")
+app.mount("/statics", StaticFiles(directory="/statics"), name="statics")
 
 
 def validar_cpf(cpf: str) -> bool:
@@ -96,7 +97,7 @@ async def cadastrar_usuario(
         caminho_arquivo = UPLOAD_DIR / foto_nome
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
-    endereco_obj = buscar_endereco_por_id(int(endereco))
+    endereco_obj = obter_endereco_por_id(int(endereco))
     profissao_obj = buscar_profissao_por_id(int(profissao))
     usuario = Usuario(
         id=0,
