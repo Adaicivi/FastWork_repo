@@ -1,0 +1,317 @@
+/* Variáveis de cores */
+:root {
+    --primary-color: #3a56a7;
+    --primary-dark: #2c4285;
+    --primary-light: #e2eafc;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --dark-color: #212529;
+    --secondary-color: #6c757d;
+}
+
+/* Estilos gerais */
+body {
+    background-color: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding-top: 50px;
+}
+
+/* Navbar principal */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 80px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+}
+
+/* Segundo Navbar (Tabs) */
+.nav-tabs {
+    border-bottom: none;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--secondary-color);
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--primary-color);
+    background-color: rgba(58, 86, 167, 0.05);
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-color);
+    background-color: transparent;
+    border-bottom: 3px solid var(--primary-color);
+    font-weight: 600;
+}
+
+.navbar .dropdown-toggle img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Cards de Planos */
+.plano-card {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.plano-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.plano-recomendado {
+    border: 2px solid var(--warning-color);
+    position: relative;
+}
+
+.plano-recomendado::before {
+    content: "Recomendado";
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background-color: var(--warning-color);
+    color: #000;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.pricing-card-title {
+    font-size: 2.5rem;
+    margin: 15px 0;
+}
+
+/* Lista de benefícios */
+.list-unstyled li {
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Cards */
+.card {
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+    font-weight: 600;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Formulários */
+.form-control, .form-select {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(58, 86, 167, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Botões */
+.btn {
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    color: white;
+    background-color: var(--primary-color);
+}
+
+.hover-effect:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Imagens */
+.img-thumbnail {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    padding: 0.25rem;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Rodapé */
+footer {
+    background-color: var(--dark-color);
+}
+
+footer a {
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: white !important;
+}
+
+/* Ajustes de responsividade */
+@media (max-width: 768px) {
+    #candidatos-content .d-flex.flex-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    #candidatos-content .d-flex.gap-2 {
+        margin-top: 0.5rem;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+    
+    #candidatos-content .btn-sm {
+        white-space: nowrap;
+    }
+}
+
+/* Ajustes para o conteúdo principal */
+.container {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+}
+
+.content-section {
+    background-color: white;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 1.5625rem;
+    margin-bottom: 1.875rem;
+}
+
+.border-bottom {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Espaçamento consistente para formulários */
+.form-spacing .row {
+    margin-bottom: 1.25rem;
+}
+
+.form-spacing .mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+/* Estilo para a seção de cabeçalho */
+.d-flex.justify-content-between.flex-wrap {
+    padding: 1rem 0;
+    margin-bottom: 1.5rem;
+}
+
+/* Efeitos de hover consistentes */
+.perfil-card {
+    transition: all 0.3s ease;
+    margin-bottom: 1.25rem;
+}
+
+/* Estilos para o upload de foto */
+.upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 40px 20px;
+    margin: 20px 0;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    text-align: center;
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+}
+
+.upload-icon {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.upload-text {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-info {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    display: none;
+}
+
+.file-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.file-size {
+    color: #666;
+    font-size: 14px;
+}
