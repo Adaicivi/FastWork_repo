@@ -28,15 +28,6 @@ def atualizar_usuario(usuario: Usuario) -> int:
         )
         return cursor.rowcount > 0
     
-def inserir_avaliacao_usuario(usuario_id: int, avaliacao: float) -> int:
-    with obter_conexao() as conexao:
-        cursor = conexao.cursor()
-        cursor.execute(
-            INSERIR_AVALIACAO_USUARIO,
-            (avaliacao, usuario_id)
-        )
-        return cursor.rowcount > 0
-    
 def atualizar_status_usuario(usuario_id: int, status: str) -> int:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
@@ -86,8 +77,7 @@ def obter_usuario_por_email(email: str) -> Usuario:
                     nome=resultado["nome"],
                     descricao=resultado["descricao"]
                 ),
-                status=resultado["status"],
-                avaliacao=resultado["avaliacao"]
+                status=resultado["status"]
             )
         return None
 
@@ -116,16 +106,17 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                     nome=resultado["nome"],
                     descricao=resultado["descricao"]
                 ),
-                status=resultado["status"],
-                avaliacao=resultado["avaliacao"]
+                status=resultado["status"]
             )
         return None
     
-def obter_usuario_por_pagina(usuario_id: int) -> Usuario:
+def obter_usuario_por_pagina(numero_pagina, quantidade) -> list[Usuario]:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
-        cursor.execute(OBTER_USUARIO_POR_PAGINA, (usuario_id,))
-        resultado = cursor.fetchone()
+        limite = quantidade
+        offset = (numero_pagina - 1) * limite
+        cursor.execute(OBTER_USUARIO_POR_PAGINA, (limite, offset))
+        resultado = cursor.fetchall()
         if resultado:
             return Usuario(
                 id=resultado["id"],
@@ -146,8 +137,7 @@ def obter_usuario_por_pagina(usuario_id: int) -> Usuario:
                     nome=resultado["nome"],
                     descricao=resultado["descricao"]
                 ),
-                status=resultado["status"],
-                avaliacao=resultado["avaliacao"]
+                status=resultado["status"]
             )
         return None
     
