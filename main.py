@@ -32,7 +32,11 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Criar instância do FastAPI
 app = FastAPI(title="Upload de Imagem API", version="1.0.0")
+<<<<<<< HEAD
+templates = Jinja2Templates(directory="templates")
+=======
 templates = Jinja2Templates(directory="/templates")
+>>>>>>> 022b98b9a42da263dce6d6d264092c1155e1eaf9
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.mount("/statics", StaticFiles(directory="/statics"), name="statics")
