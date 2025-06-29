@@ -32,7 +32,7 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Criar instância do FastAPI
 app = FastAPI(title="Upload de Imagem API", version="1.0.0")
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="Fastwork_repo/templates")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
@@ -49,7 +49,7 @@ def validar_cpf(cpf: str) -> bool:
 
 
 @app.get("/")
-async def index(request: Request):
+async def read_root(request: Request):
     return templates.TemplateResponse("menu.html", {"request": request})
 
 @app.get("/quero-contratar/{id}")
