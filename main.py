@@ -74,27 +74,27 @@ async def cadastrar_usuario(
     nome: str = Form(),
     email: str = Form(),
     senha: str = Form(),
-    foto: UploadFile = File(None),
+    imagem: UploadFile = File(None),
     exp: str = Form(),
     cpf: str = Form(),
     telefone: str = Form(),
     link_contato: str = Form(),
     endereco: str = Form(),
     profissao: str = Form(),
-    status: str = Form(),
+    tipo: str = Form(),
     conf_senha: str = Form()
 ):
     if not validar_cpf(cpf):
         raise HTTPException(status_code=400, detail="CPF inválido")
     if senha != conf_senha:
         raise HTTPException(status_code=400, detail="As senhas não conferem")
-    foto_nome = None
-    if foto:
-        contents = await foto.read()
-        if not is_valid_image(foto, contents):
+    imagem_nome = None
+    if imagem:
+        contents = await imagem.read()
+        if not is_valid_image(imagem, contents):
             raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
-        foto_nome = f"{uuid.uuid4().hex}{Path(foto.filename).suffix.lower()}"
-        caminho_arquivo = UPLOAD_DIR / foto_nome
+        imagem_nome = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
+        caminho_arquivo = UPLOAD_DIR / imagem_nome
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
     endereco_obj = obter_endereco_por_id(int(endereco))
@@ -103,14 +103,14 @@ async def cadastrar_usuario(
         id=0,
         nome=nome,
         email=email,
-        foto=foto_nome,
+        imagem=imagem_nome,
         exp=exp,
         cpf=cpf,
         telefone=telefone,
         link_contato=link_contato,
         endereco=endereco_obj,
         profissao=profissao_obj,
-        status=status,
+        tipo=tipo,
         senha=hash_senha(senha),
     )
     usuario = inserir_usuario(usuario)
@@ -133,8 +133,7 @@ async def fazer_login(
     usuario_json = {
         "id": usuario.id,
         "nome": usuario.nome,
-        "email": usuario.email,
-        "tipo": "admin" if usuario.tipo==1 else "user"
+        "email": usuario.email
     }
     request.session["usuario"] = usuario_json
     return RedirectResponse(url="/", status_code=303)
@@ -160,13 +159,13 @@ async def atualizar_perfil(
     request: Request,
     nome: str = Form(),
     email: str = Form(),
-    foto: UploadFile = File(None),
+    imagem: UploadFile = File(None),
     exp: str = Form(),
     telefone: str = Form(),
     link_contato: str = Form(),
     endereco: str = Form(),
     profissao: str = Form(),
-    status: str = Form(),
+    tipo: str = Form(),
 ):
     usuario_json = request.session.get("usuario")
     if not usuario_json:
@@ -176,37 +175,36 @@ async def atualizar_perfil(
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     usuario.nome = nome
     usuario.email = email
-    usuario.foto = foto.filename if foto else None
-    if foto:
-        contents = await foto.read()
-        if not is_valid_image(foto, contents):
+    usuario.imagem = imagem.filename if imagem else None
+    if imagem:
+        contents = await imagem.read()
+        if not is_valid_image(imagem, contents):
             raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
-        nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(foto.filename).suffix.lower()}"
+        nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
         caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
-        usuario.foto = nome_arquivo_unico
+        usuario.imagem = nome_arquivo_unico
     usuario.exp = exp
     usuario.telefone = telefone
     usuario.link_contato = link_contato
     usuario.endereco = obter_endereco_por_id(int(endereco))
     usuario.profissao = buscar_profissao_por_id(int(profissao))
-    usuario.status = status
+    usuario.tipo = tipo
     if not atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar perfil")
     usuario_json = {
         "id": usuario.id,
         "nome": usuario.nome,
         "email": usuario.email,
-        "foto": usuario.foto,
+        "imagem": usuario.imagem,
         "exp": usuario.exp,
         "cpf": usuario.cpf,
         "telefone": usuario.telefone,
         "link_contato": usuario.link_contato,
         "endereco": usuario.endereco,
         "profissao": usuario.profissao,
-        "status": usuario.status,
-        "tipo": "admin" if usuario.tipo == 1 else "user"
+        "tipo": usuario.tipo
     }
     request.session["usuario"] = usuario_json
     return RedirectResponse(url="/quero-trabalhar", status_code=303)

@@ -15,7 +15,7 @@ def inserir_usuario(usuario: Usuario) -> int:
         cursor = conexao.cursor()
         cursor.execute(
             INSERIR_USUARIO,
-             (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.tipo, usuario.id)
+             (usuario.nome, usuario.email, usuario.senha, usuario.imagem, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.tipo, usuario.id)
         )
         return cursor.lastrowid
     
@@ -24,7 +24,7 @@ def atualizar_usuario(usuario: Usuario) -> int:
         cursor = conexao.cursor()
         cursor.execute(
             ATUALIZAR_USUARIO,
-            (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.tipo, usuario.id)
+            (usuario.nome, usuario.email, usuario.senha, usuario.imagem, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.tipo, usuario.id)
         )
         return cursor.rowcount > 0
     
@@ -63,7 +63,7 @@ def obter_usuario_por_email(email: str) -> Usuario:
                 nome=resultado["nome"],
                 email=resultado["email"],
                 senha=resultado["senha_hash"],
-                foto=resultado["foto"],
+                imagem=resultado["imagem"],
                 exp=resultado["exp"],
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
@@ -92,7 +92,7 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                 nome=resultado["nome"],
                 email=resultado["email"],
                 senha=resultado["senha_hash"],
-                foto=resultado["foto"],
+                imagem=resultado["imagem"],
                 exp=resultado["exp"],
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
@@ -123,7 +123,7 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list[Usuario]:
                 nome=resultado["nome"],
                 email=resultado["email"],
                 senha=resultado["senha_hash"],
-                foto=resultado["foto"],
+                imagem=resultado["imagem"],
                 exp=resultado["exp"],
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],

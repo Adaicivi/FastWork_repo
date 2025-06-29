@@ -224,8 +224,8 @@
                                     <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light">
                                         <i class="bi bi-person fs-1 text-secondary"></i>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadfoto">
-                                        <i class="bi bi-camera me-1"></i> Adicionar foto (Opcional)
+                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadimagem">
+                                        <i class="bi bi-camera me-1"></i> Adicionar imagem (Opcional)
                                     </button>
                                 </div>
                                 <div class="col-md-7 mt-3">
@@ -274,11 +274,11 @@
         </div>
     </div>
 
-    <div class="modal fade" id="uploadfoto" tabindex="-1" aria-labelledby="uploadfotoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="uploadimagem" tabindex="-1" aria-labelledby="uploadimagemModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="uploadfotoModalLabel">📷 Upload de Imagem</h5>
+                    <h5 class="modal-title" id="uploadimagemModalLabel">📷 Upload de Imagem</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -343,7 +343,7 @@
             alert('Upload simulado! Integre com seu backend.');
             
             // Fechar modal após sucesso
-            const modal = bootstrap.Modal.getInstance(document.getElementById('uploadfoto'));
+            const modal = bootstrap.Modal.getInstance(document.getElementById('uploadimagem'));
             modal.hide();
             
             // Resetar o formulário

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS imagem (
     FOREIGN KEY (usuario_id) REFERENCES usuario(id)
 );
 """
+
 INSERT_IMAGEM = """
 INSERT INTO imagem (usuario_id, nome_arquivo, nome_arquivo_original, url)
 VALUES (?, ?, ?, ?)

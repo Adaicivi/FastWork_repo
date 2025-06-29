@@ -277,7 +277,7 @@
             margin-bottom: 1.25rem;
         }
 
-        /* Estilos para o upload de foto */
+        /* Estilos para o upload de imagem */
         .upload-area {
             border: 2px dashed #ddd;
             border-radius: 8px;
@@ -411,8 +411,8 @@
                                             <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 150px; height: 150px;">
                                                 <i class="bi bi-person fs-1 text-secondary"></i>
                                             </div>
-                                            <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadfoto">
-                                                <i class="bi bi-camera me-1"></i> Alterar Foto
+                                            <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadimagem">
+                                                <i class="bi bi-camera me-1"></i> Alterar imagem
                                             </button>
                                         </div>
                                         <div class="col-md-9">
@@ -491,7 +491,7 @@
                                                 <li><i class="bi bi-check-circle text-success me-2"></i> Aparece nas buscas</li>
                                                 <li><i class="bi bi-x-circle text-danger me-2"></i> Destaque limitado</li>
                                                 <li><i class="bi bi-x-circle text-danger me-2"></i> Sem prioridade</li>
-                                                <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 fotos</li>
+                                                <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagems</li>
                                             </ul>
                                         </div>
                                         <div class="card-footer bg-white text-center">
@@ -514,7 +514,7 @@
                                                 <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Gratuito</li>
                                                 <li><i class="bi bi-check-circle text-success me-2"></i> Destaque nas buscas</li>
                                                 <li><i class="bi bi-check-circle text-success me-2"></i> Prioridade média</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 fotos</li>
+                                                <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagems</li>
                                                 <li><i class="bi bi-check-circle text-success me-2"></i> Selo Premium</li>
                                             </ul>
                                         </div>
@@ -538,7 +538,7 @@
                                                 <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Premium</li>
                                                 <li><i class="bi bi-check-circle text-success me-2"></i> Máxima prioridade</li>
                                                 <li><i class="bi bi-check-circle text-success me-2"></i> Topo das buscas</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Fotos ilimitadas</li>
+                                                <li><i class="bi bi-check-circle text-success me-2"></i> imagems ilimitadas</li>
                                                 <li><i class="bi bi-check-circle text-success me-2"></i> Selo Super Premium</li>
                                             </ul>
                                         </div>
@@ -567,13 +567,13 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <!-- Coluna da Foto -->
+                        <!-- Coluna da imagem -->
                         <div class="col-md-4 text-center mb-4 mb-md-0">
                             <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 180px; height: 180px; margin: 0 auto;">
                                 <i class="bi bi-person fs-1 text-secondary"></i>
                             </div>
-                            <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadfoto">
-                                <i class="bi bi-camera me-1"></i> Alterar Foto
+                            <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadimagem">
+                                <i class="bi bi-camera me-1"></i> Alterar imagem
                             </button>
                         </div>
                         
@@ -623,12 +623,12 @@
         </div>
     </div>
 
-    <!-- Modal de Upload de Foto -->
-    <div class="modal fade" id="uploadfoto" tabindex="-1" aria-labelledby="uploadfotoModalLabel" aria-hidden="true">
+    <!-- Modal de Upload de imagem -->
+    <div class="modal fade" id="uploadimagem" tabindex="-1" aria-labelledby="uploadimagemModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="uploadfotoModalLabel">📷 Upload de Imagem</h5>
+                    <h5 class="modal-title" id="uploadimagemModalLabel">📷 Upload de Imagem</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -712,7 +712,7 @@
                     
                     const img = document.createElement('img');
                     img.src = e.target.result;
-                    img.alt = 'Foto de perfil';
+                    img.alt = 'imagem de perfil';
                     img.style.width = '100%';
                     img.style.height = '100%';
                     img.style.objectFit = 'cover';
@@ -726,7 +726,7 @@
                 alert('Upload simulado! Integre com seu backend.');
                 
                 // Fechar modal após sucesso
-                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadfoto'));
+                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadimagem'));
                 modal.hide();
                 
                 // Resetar o formulário
