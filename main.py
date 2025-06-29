@@ -32,10 +32,10 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Criar instância do FastAPI
 app = FastAPI(title="Upload de Imagem API", version="1.0.0")
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="Fastwork_repo/templates")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
-app.mount("/statics", StaticFiles(directory="statics"), name="statics")
+app.mount("/statics", StaticFiles(directory="Fastwork_repo/statics"), name="statics")
 
 
 def validar_cpf(cpf: str) -> bool:
@@ -75,13 +75,8 @@ async def cadastrar_usuario(
     email: str = Form(),
     senha: str = Form(),
     imagem: UploadFile = File(None),
-    exp: str = Form(),
     cpf: str = Form(),
     telefone: str = Form(),
-    link_contato: str = Form(),
-    endereco: str = Form(),
-    profissao: str = Form(),
-    tipo: str = Form(),
     conf_senha: str = Form()
 ):
     if not validar_cpf(cpf):
@@ -97,26 +92,19 @@ async def cadastrar_usuario(
         caminho_arquivo = UPLOAD_DIR / imagem_nome
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
-    endereco_obj = obter_endereco_por_id(int(endereco))
-    profissao_obj = buscar_profissao_por_id(int(profissao))
     usuario = Usuario(
         id=0,
         nome=nome,
         email=email,
         imagem=imagem_nome,
-        exp=exp,
         cpf=cpf,
         telefone=telefone,
-        link_contato=link_contato,
-        endereco=endereco_obj,
-        profissao=profissao_obj,
-        tipo=tipo,
         senha=hash_senha(senha),
     )
     usuario = inserir_usuario(usuario)
     if not usuario:
         raise HTTPException(status_code=400, detail="Erro ao cadastrar usuário")
-    return RedirectResponse(url="/login", status_code=303)
+    return RedirectResponse(url="/quero-contratar", status_code=303)
 
 @app.get("/login")
 async def read_login(request: Request):
