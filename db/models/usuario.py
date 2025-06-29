@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from models.profissao import Profissao
 from models.endereco import Endereco
+from models.imagem import Imagem
 
 @dataclass
 class Usuario:
@@ -8,7 +9,7 @@ class Usuario:
     nome : str
     email : str
     senha : str
-    foto : str
+    foto : Imagem
     exp : str
     cpf : str
     telefone : str

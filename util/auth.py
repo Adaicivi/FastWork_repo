@@ -19,20 +19,6 @@ def autenticar_usuario(email: str, senha: str):
         return None
     return usuario
 
-
-def fazer_login(request: Request, email: str, senha: str):
-    usuario = autenticar_usuario(email, senha)
-    if not usuario:
-        raise HTTPException(status_code=401, detail="Email ou senha incorretos")
-    
-    request.session["usuario_id"] = usuario.id
-    request.session["usuario_email"] = usuario.email
-    return usuario
-
-def fazer_logout(request: Request):
-    request.session.clear()
-    return {"message": "Logout realizado com sucesso"}
-
 def obter_usuario_logado(request: Request) -> Optional[Usuario]:
     usuario_id = request.session.get("usuario_id")
     if not usuario_id:

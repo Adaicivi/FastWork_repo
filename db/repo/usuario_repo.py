@@ -1,6 +1,6 @@
 from data.database import obter_conexao
 from db.models.endereco import Endereco
-from db.sql.usuario_sql import ATUALIZAR_STATUS_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_AVALIACAO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_AVALIACAO_USUARIO, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL_E_SENHA, OBTER_USUARIO_POR_ID
+from db.sql.usuario_sql import ATUALIZAR_STATUS_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_AVALIACAO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_AVALIACAO_USUARIO, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL_E_SENHA, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_PAGINA
 from models.usuario import Usuario
 from models.profissao import Profissao
 from models.endereco import Endereco
@@ -95,6 +95,36 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
         cursor.execute(OBTER_USUARIO_POR_ID, (usuario_id,))
+        resultado = cursor.fetchone()
+        if resultado:
+            return Usuario(
+                id=resultado["id"],
+                nome=resultado["nome"],
+                email=resultado["email"],
+                senha=resultado["senha_hash"],
+                foto=resultado["foto"],
+                exp=resultado["exp"],
+                cpf=resultado["cpf"],
+                telefone=resultado["telefone"],
+                link_contato=resultado["link_contato"],
+                endereco=Endereco(
+                    id=resultado["id"],
+                    cidade=resultado["cidade"],
+                    uf=resultado["uf"]),
+                profissao=Profissao(
+                    id=resultado["id"],
+                    nome=resultado["nome"],
+                    descricao=resultado["descricao"]
+                ),
+                status=resultado["status"],
+                avaliacao=resultado["avaliacao"]
+            )
+        return None
+    
+def obter_usuario_por_pagina(usuario_id: int) -> Usuario:
+    with obter_conexao() as conexao:
+        cursor = conexao.cursor()
+        cursor.execute(OBTER_USUARIO_POR_PAGINA, (usuario_id,))
         resultado = cursor.fetchone()
         if resultado:
             return Usuario(

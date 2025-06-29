@@ -68,6 +68,13 @@ JOIN profissao p ON u.profissao_id = p.id
 WHERE u.id = ?;
 """
 
+OBTER_USUARIO_POR_PAGINA = """
+SELECT u.id, u.nome, u.email, u.foto, u.exp, u.cpf, u.telefone, p.nome AS profissao, u.link_contato, u.endereco_id, u.status
+FROM usuario u
+JOIN profissao p ON u.profissao_id = p.id
+LIMIT ? OFFSET ?;
+"""
+
 DELETAR_USUARIO_POR_ID_SENHA = """
 DELETE FROM usuario
 WHERE id = ? AND senha_hash = ?;
