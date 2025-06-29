@@ -5,3 +5,5 @@ Babel
 python-multipart
 passlib[bcrypt]
 itsdangerous
+pillow
+aiofiles
