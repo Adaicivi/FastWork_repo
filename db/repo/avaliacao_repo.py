@@ -25,7 +25,8 @@ def buscar_media_avaliacao(usuario_id: int) -> float:
         cursor = conexao.cursor()
         cursor.execute(BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL, usuario_id,)
         resultado = cursor.fetchone()
-        return resultado[0] if resultado else 0.0
+        if resultado:
+            return resultado['media']
 
 def exibir_avaliacao_ordenada() -> list[Avaliacao]:
     with obter_conexao() as conexao:
