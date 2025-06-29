@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha_hash VARCHAR(100) NOT NULL,
+    data_nascimento DATE NOT NULL,
     imagem INTEGER DEFAULT NULL,
     exp VARCHAR(255) NOT NULL,
     cpf VARCHAR(11) NOT NULL UNIQUE,
@@ -19,13 +20,13 @@ CREATE TABLE IF NOT EXISTS usuario (
 """
 
 INSERIR_USUARIO = """
-INSERT INTO usuario (nome, email, senha_hash, imagem, exp, cpf, telefone, link_contato, endereco_id, profissao_id, tipo)
+INSERT INTO usuario (nome, email, senha_hash, data_nascimento, imagem, exp, cpf, telefone, link_contato, endereco_id, profissao_id, tipo)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 """
 
 ATUALIZAR_USUARIO = """
 UPDATE usuario
-SET nome = ?, email = ?, senha_hash = ?, imagem = ?, exp = ?,  cpf = ?, telefone = ?, link_contato = ?, endereco_id = ?, profissao_id = ?, tipo = ?
+SET nome = ?, email = ?, senha_hash = ?, data_nascimento = ?, imagem = ?, exp = ?,  cpf = ?, telefone = ?, link_contato = ?, endereco_id = ?, profissao_id = ?, tipo = ?
 WHERE id = ?;
 """
 
@@ -36,22 +37,21 @@ WHERE id = ?;
 """
 
 BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO = """
-SELECT u.nome, u.email, u.imagem, u.exp, u.cpf, u.telefone, p.nome AS profissao, u.link_contato, u.endereco_id u.tipo
+SELECT u.nome, u.email, u.imagem, u.exp, u.cpf, u.telefone, u.data_nascimento, p.nome AS profissao, u.link_contato, u.endereco_id, u.tipo
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
 WHERE u.profissao_id = ?;
 """
 
-
 OBTER_USUARIO_POR_EMAIL_E_SENHA = """
-SELECT u.id, u.nome, u.imagem, u.exp, u.cpf, u.telefone, p.nome AS profissao, u.link_contato, u.endereco_id u.tipo
+SELECT u.id, u.nome, u.imagem, u.exp, u.cpf, u.telefone, u.data_nascimento, p.nome AS profissao, u.link_contato, u.endereco_id, u.tipo
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
 WHERE u.email = ? AND u.senha_hash = ?;
 """
 
 OBTER_USUARIO_POR_ID = """
-SELECT u.nome, u.email, u.cpf, u.telefone, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo
+SELECT u.nome, u.email, u.cpf, u.telefone, u.data_nascimento, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
 WHERE u.id = ?;
@@ -59,7 +59,7 @@ WHERE u.id = ?;
 
 OBTER_USUARIO_POR_PAGINA = """
 SELECT 
-    u.nome, u.imagem, p.nome AS profissao, u.endereco_id,
+    u.nome, u.imagem, u.data_nascimento, p.nome AS profissao, u.endereco_id,
     AVG(a.nota) AS media_avaliacao
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id

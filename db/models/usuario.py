@@ -9,6 +9,7 @@ class Usuario:
     nome : str
     email : str
     senha : str
+    data_nascimento : str
     imagem : Imagem
     exp : str
     cpf : str
