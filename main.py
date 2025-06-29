@@ -32,19 +32,25 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Criar instância do FastAPI
 app = FastAPI(title="Upload de Imagem API", version="1.0.0")
+<<<<<<< HEAD
 templates = Jinja2Templates(directory="templates")
+=======
+templates = Jinja2Templates(directory="/templates")
+>>>>>>> 022b98b9a42da263dce6d6d264092c1155e1eaf9
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+app.mount("/statics", StaticFiles(directory="/statics"), name="statics")
+
 
 def validar_cpf(cpf: str) -> bool:
     cpf = re.sub(r'\D', '', cpf)
     if len(cpf) != 11 or cpf == cpf[0] * 11:
-        return False
+        raise HTTPException(status_code=400, detail="CPF deve conter 11 dígitos numéricos e não pode ser uma sequência repetida.")
     for i in range(9, 11):
         soma = sum(int(cpf[num]) * ((i+1) - num) for num in range(0, i))
         digito = ((soma * 10) % 11) % 10
         if digito != int(cpf[i]):
-            return False
+            raise HTTPException(status_code=400, detail=f"CPF inválido: dígito verificador {i-8} incorreto.")
     return True
 
 
@@ -54,9 +60,13 @@ async def read_root(request: Request):
 
 @app.get("/quero-contratar/{id}")
 async def quero_contratar(request: Request, id: int):
-    usuario = obter_usuario_por_id(id)
-    response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": usuario})
+    usuarios = obter_usuario_por_pagina(id)
+    response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": usuarios})
     return response
+
+@app.get("/tela-inicio")
+async def tela_inicio(request: Request):
+    return templates.TemplateResponse("tela_inicio.html", {"request": request})
 
 @app.get("/cadastro")
 async def read_cadastro(request: Request):
@@ -91,6 +101,8 @@ async def cadastrar_usuario(
         caminho_arquivo = UPLOAD_DIR / foto_nome
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
+    endereco_obj = buscar_endereco_por_id(int(endereco))
+    profissao_obj = buscar_profissao_por_id(int(profissao))
     usuario = Usuario(
         id=0,
         nome=nome,
@@ -100,8 +112,8 @@ async def cadastrar_usuario(
         cpf=cpf,
         telefone=telefone,
         link_contato=link_contato,
-        endereco=endereco,
-        profissao=profissao,
+        endereco=endereco_obj,
+        profissao=profissao_obj,
         status=status,
         senha=hash_senha(senha),
         tipo=0
@@ -182,8 +194,8 @@ async def atualizar_perfil(
     usuario.exp = exp
     usuario.telefone = telefone
     usuario.link_contato = link_contato
-    usuario.endereco = endereco
-    usuario.profissao = profissao
+    usuario.endereco = obter_endereco_por_id(int(endereco))
+    usuario.profissao = buscar_profissao_por_id(int(profissao))
     usuario.status = status
     if not atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar perfil")
@@ -212,7 +224,7 @@ async def senha(request: Request):
     usuario = obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    return templates.TemplateResponse("senha/quero-trabalhar.html", {"request": request, "usuario": usuario})
+    return templates.TemplateResponse("quero-trabalhar.html", {"request": request, "usuario": usuario})
 
 @app.post("/senha")
 async def atualizar_senha(
