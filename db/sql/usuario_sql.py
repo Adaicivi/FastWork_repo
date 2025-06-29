@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     cpf VARCHAR(11) NOT NULL UNIQUE,
     telefone VARCHAR(15) NOT NULL,
     link_contato VARCHAR(255) DEFAULT NULL,
-    endereco_id INTEGER NOT NULL,
+    endereco_id INT,
     profissao_id INT,
     tipo VARCHAR(20) DEFAULT 'c',
     FOREIGN KEY (endereco_id) REFERENCES endereco(id),
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS usuario (
 
 INSERIR_USUARIO = """
 INSERT INTO usuario (nome, email, senha_hash, data_nascimento, imagem, exp, cpf, telefone, link_contato, endereco_id, profissao_id, tipo)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 """
 
 ATUALIZAR_USUARIO = """

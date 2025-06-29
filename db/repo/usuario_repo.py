@@ -25,8 +25,8 @@ def inserir_usuario(usuario: Usuario) -> int:
                 usuario.cpf,
                 usuario.telefone,
                 usuario.link_contato,
-                usuario.endereco.id,
-                usuario.profissao.id,
+                usuario.endereco.id if usuario.endereco else None,  
+                usuario.profissao.id if usuario.profissao else None,
                 usuario.tipo
             )
         )
@@ -47,8 +47,8 @@ def atualizar_usuario(usuario: Usuario) -> int:
                 usuario.cpf,
                 usuario.telefone,
                 usuario.link_contato,
-                usuario.endereco.id,
-                usuario.profissao.id,
+                usuario.endereco.id if usuario.endereco else None,  
+                usuario.profissao.id if usuario.profissao else None,
                 usuario.tipo,
                 usuario.id
             )

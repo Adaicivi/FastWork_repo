@@ -11,11 +11,11 @@ class Usuario:
     email : str
     senha : str
     data_nascimento : str
-    imagem : Optional[Imagem] = None
-    exp : Optional[str] = None
     cpf : str
     telefone : str
+    endereco : Optional[Endereco] = None
+    imagem : Optional[Imagem] = None
+    exp : Optional[str] = None
     link_contato : Optional[str] = None
-    endereco : Endereco
     profissao : Optional[Profissao] = None
     tipo : Optional[str] = None

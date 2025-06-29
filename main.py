@@ -9,6 +9,7 @@ import aiofiles
 from PIL import Image
 import io
 import re
+from typing import Optional
 
 import uvicorn
 
@@ -19,6 +20,7 @@ from db.repo.usuario_repo import *
 from db.repo.profissao_repo import *
 from db.repo.endereco_repo import *
 from db.models.usuario import Usuario
+
 
 criar_tabela_avaliacao()
 criar_tabela_imagens()
@@ -55,8 +57,14 @@ async def read_root(request: Request):
     return templates.TemplateResponse("menu.html", {"request": request})
 
 @app.get("/quero-contratar/{id}")
-async def quero_contratar(request: Request, id: int):
-    usuarios = obter_usuario_por_pagina(id)
+async def read_ususario(request: Request, id: int):
+    usuario = obter_usuario_por_id(id)
+    response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": usuario})
+    return response
+
+@app.get("/quero-contratar")
+async def read_usuarios(request: Request):
+    usuarios = obter_usuario_por_pagina(1, 6)
     response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": usuarios})
     return response
 
@@ -77,7 +85,9 @@ async def cadastrar_usuario(
     imagem: UploadFile = File(None),
     cpf: str = Form(),
     telefone: str = Form(),
-    conf_senha: str = Form()
+    data_nascimento: str = Form(),
+    conf_senha: str = Form(),
+    endereco: Optional[str] = Form(None),  # Linha nova
 ):
     if not validar_cpf(cpf):
         raise HTTPException(status_code=400, detail="CPF inválido")
@@ -92,6 +102,9 @@ async def cadastrar_usuario(
         caminho_arquivo = UPLOAD_DIR / imagem_nome
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
+    endereco_obj = None
+    if endereco:
+        endereco_obj = obter_endereco_por_id(int(endereco))
     usuario = Usuario(
         id=0,
         nome=nome,
@@ -99,7 +112,10 @@ async def cadastrar_usuario(
         imagem=imagem_nome,
         cpf=cpf,
         telefone=telefone,
+        data_nascimento=data_nascimento,
+        tipo="c",
         senha=hash_senha(senha),
+        endereco=endereco_obj,  # Linha alterada
     )
     usuario = inserir_usuario(usuario)
     if not usuario:
@@ -121,7 +137,7 @@ async def fazer_login(
     usuario_json = {
         "id": usuario.id,
         "nome": usuario.nome,
-        "email": usuario.email
+        "email": usuario.email,
     }
     request.session["usuario"] = usuario_json
     return RedirectResponse(url="/", status_code=303)
