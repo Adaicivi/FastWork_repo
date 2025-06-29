@@ -1,7 +1,7 @@
 from typing import Optional
-from data.database import obter_conexao
-from sql.imagem_sql import *
-from models.imagem import Imagem
+from db.data.database import obter_conexao
+from db.sql.imagem_sql import *
+from db.models.imagem import Imagem
 
 def criar_tabela_imagens() -> bool:
     with obter_conexao() as conexao:

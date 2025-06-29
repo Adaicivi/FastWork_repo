@@ -10,6 +10,8 @@ from PIL import Image
 import io
 import re
 
+import uvicorn
+
 
 from util.auth import SECRET_KEY, autenticar_usuario, hash_senha, obter_usuario_logado
 from db.repo.imagem_repo import *
@@ -24,8 +26,8 @@ criar_tabela_usuario()
 criar_tabela_profissao()
 
 # Configuração de diretórios
-UPLOAD_DIR = Path("uploads")
-UPLOAD_DIR.mkdir(exist_ok=True)
+UPLOAD_DIR = Path("fastwork_repo/uploads")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # Criar instância do FastAPI
@@ -315,7 +317,5 @@ async def health_check():
 
 
 if __name__ == "__main__":
-    import uvicorn
-    # Executar servidor
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, port=8000)
 

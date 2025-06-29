@@ -1,6 +1,6 @@
-from data.database import obter_conexao
-from sql.profissao_sql import CRIAR_TABELA_PROFISSAO, EXIBIR_PROFISSAO_ORDENADA, INSERT_PROFISSAO, BUSCAR_PROFISSAO_POR_ID, ATUALIZAR_PROFISSAO
-from models.profissao import Profissao
+from db.data.database import obter_conexao
+from db.sql.profissao_sql import CRIAR_TABELA_PROFISSAO, EXIBIR_PROFISSAO_ORDENADA, INSERT_PROFISSAO, BUSCAR_PROFISSAO_POR_ID, ATUALIZAR_PROFISSAO
+from db.models.profissao import Profissao
 
 
 def criar_tabela_profissao():
