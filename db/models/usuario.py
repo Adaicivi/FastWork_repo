@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from models.profissao import Profissao
-from models.endereco import Endereco
-from models.imagem import Imagem
+from .profissao import Profissao
+from .endereco import Endereco
+from .imagem import Imagem
 
 @dataclass
 class Usuario:

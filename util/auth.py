@@ -15,7 +15,7 @@ def verificar_senha(senha_normal: str, senha_hashed: str) -> bool:
 
 def autenticar_usuario(email: str, senha: str):
     usuario = usuario_repo.obter_usuario_por_email(email)
-    if not usuario or not verificar_senha(senha, usuario.senha_hash):
+    if not usuario or not verificar_senha(senha, usuario.senha):
         return None
     return usuario
 

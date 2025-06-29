@@ -1,6 +1,6 @@
-from data.database import obter_conexao
-from sql.avaliacao_sql import CRIAR_TABELA_AVALIACAO, EXIBIR_AVALIACAO_ORDENADA, INSERIR_AVALIACAO, ATUALIZAR_AVALIACAO, BUSCAR_MEDIA_AVALIACAO
-from models.avaliacao import Avaliacao
+from db.data.database import obter_conexao
+from db.sql.avaliacao_sql import CRIAR_TABELA_AVALIACAO, EXIBIR_AVALIACAO_ORDENADA, INSERIR_AVALIACAO, ATUALIZAR_AVALIACAO, BUSCAR_MEDIA_AVALIACAO
+from db.models.avaliacao import Avaliacao
 
 
 def criar_tabela_avaliacao():
