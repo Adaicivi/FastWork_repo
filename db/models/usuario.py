@@ -16,5 +16,4 @@ class Usuario:
     link_contato : str
     endereco : Endereco
     profissao : Profissao
-    status : str
-    avaliacao : float
+    tipo : str
