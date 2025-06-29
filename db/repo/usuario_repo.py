@@ -46,11 +46,6 @@ def buscar_usuarios_ordenados_por_profissao(profissao_id: int) -> list:
         )
         return cursor.fetchall()
 
-def buscar_usuarios_ordenados_por_avaliacao() -> list:
-    with obter_conexao() as conexao:
-        cursor = conexao.cursor()
-        cursor.execute(BUSCAR_USUARIOS_ORDENADOS_POR_AVALIACAO)
-        return cursor.fetchall()
 
 def obter_usuario_por_email(email: str) -> Usuario:
     with obter_conexao() as conexao:
