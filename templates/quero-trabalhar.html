@@ -396,9 +396,15 @@
                         <div id="perfil-content" class="content-section">
                             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                                 <h1 class="h2">Meu perfil de trabalho</h1>
-                                <button class="btn btn-outline-primary hover-effect">
-                                    <i class="bi bi-eye-fill me-1"></i> Visualizar como cliente
-                                </button>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">Deseja ativar seu perfil de trabalho?</span>
+                                    <div class="btn-group" role="group" aria-label="Ativar perfil">
+                                        <input type="radio" class="btn-check" name="ativarPerfil" id="ativarSim" autocomplete="off">
+                                        <label class="btn btn-outline-success btn-sm" for="ativarSim">Sim</label>
+                                        <input type="radio" class="btn-check" name="ativarPerfil" id="ativarNao" autocomplete="off" checked>
+                                        <label class="btn btn-outline-danger btn-sm" for="ativarNao">Não</label>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="card shadow-sm mb-4 perfil-card">
