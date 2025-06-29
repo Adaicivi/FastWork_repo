@@ -12,7 +12,7 @@ import re
 
 import uvicorn
 
-
+#
 from util.auth import SECRET_KEY, autenticar_usuario, hash_senha, obter_usuario_logado
 from db.repo.imagem_repo import *
 from db.repo.avaliacao_repo import *
