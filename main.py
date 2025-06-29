@@ -3,19 +3,20 @@ from fastapi import FastAPI, File, Form, UploadFile, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from starlette.middleware.sessions import SessionMiddleware
 from pathlib import Path
 import uuid
 import aiofiles
 from PIL import Image
 import io
+import re
 
-from FastWork_repo.db.repo import usuario_repo
+
 from util.auth import SECRET_KEY, autenticar_usuario, hash_senha, obter_usuario_logado
 from db.repo.imagem_repo import *
 from db.repo.avaliacao_repo import *
 from db.repo.usuario_repo import *
 from db.repo.profissao_repo import *
+from db.models.usuario import Usuario
 
 criar_tabela_avaliacao()
 criar_tabela_imagens()
@@ -24,6 +25,8 @@ criar_tabela_profissao()
 
 # Configuração de diretórios
 UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
+
 
 # Criar instância do FastAPI
 app = FastAPI(title="Upload de Imagem API", version="1.0.0")
@@ -31,24 +34,31 @@ templates = Jinja2Templates(directory="templates")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
+def validar_cpf(cpf: str) -> bool:
+    cpf = re.sub(r'\D', '', cpf)
+    if len(cpf) != 11 or cpf == cpf[0] * 11:
+        return False
+    for i in range(9, 11):
+        soma = sum(int(cpf[num]) * ((i+1) - num) for num in range(0, i))
+        digito = ((soma * 10) % 11) % 10
+        if digito != int(cpf[i]):
+            return False
+    return True
+
+
 @app.get("/")
 async def index(request: Request):
-    return templates.TemplateResponse("menu/index.html", {"request": request})
-
+    return templates.TemplateResponse("menu.html", {"request": request})
 
 @app.get("/quero-contratar/{id}")
 async def quero_contratar(request: Request, id: int):
     usuario = obter_usuario_por_id(id)
-    response = templates.TemplateResponse("quero-contratar/index.html", {"request": request, "usuario": usuario})
+    response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": usuario})
     return response
-
-@app.get("/quero-trabalhar", response_class=HTMLResponse)
-async def quero_trabalhar(request: Request):
-    return templates.TemplateResponse("quero-trabalhar/index.html", {"request": request})
 
 @app.get("/cadastro")
 async def read_cadastro(request: Request):
-    return templates.TemplateResponse("cadastro/index.html", {"request": request})
+    return templates.TemplateResponse("cadastro.html", {"request": request})
 
 @app.post("/cadastro")
 async def cadastrar_usuario(
@@ -66,13 +76,24 @@ async def cadastrar_usuario(
     status: str = Form(),
     conf_senha: str = Form()
 ):
+    if not validar_cpf(cpf):
+        raise HTTPException(status_code=400, detail="CPF inválido")
     if senha != conf_senha:
         raise HTTPException(status_code=400, detail="As senhas não conferem")
+    foto_nome = None
+    if foto:
+        contents = await foto.read()
+        if not is_valid_image(foto, contents):
+            raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
+        foto_nome = f"{uuid.uuid4().hex}{Path(foto.filename).suffix.lower()}"
+        caminho_arquivo = UPLOAD_DIR / foto_nome
+        async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
+            await arquivo.write(contents)
     usuario = Usuario(
         id=0,
         nome=nome,
         email=email,
-        foto=foto,
+        foto=foto_nome,
         exp=exp,
         cpf=cpf,
         telefone=telefone,
@@ -83,14 +104,14 @@ async def cadastrar_usuario(
         senha=hash_senha(senha),
         tipo=0
     )
-    usuario = usuario_repo.inserir_usuario(usuario)
+    usuario = inserir_usuario(usuario)
     if not usuario:
         raise HTTPException(status_code=400, detail="Erro ao cadastrar usuário")
     return RedirectResponse(url="/login", status_code=303)
 
 @app.get("/login")
 async def read_login(request: Request):
-    return templates.TemplateResponse("login/index.html", {"request": request})
+    return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
 async def fazer_login(
@@ -115,17 +136,17 @@ async def logout(request: Request):
     request.session.clear()
     return RedirectResponse(url="/login", status_code=303)
 
-@app.get("/perfil")
+@app.get("/quero-trabalhar")
 async def perfil(request: Request):
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         return RedirectResponse(url="/login", status_code=303)
-    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
+    usuario = obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    return templates.TemplateResponse("perfil/index.html", {"request": request, "usuario": usuario})
+    return templates.TemplateResponse("quero-trabalhar.html", {"request": request, "usuario": usuario})
 
-@app.post("/perfil")
+@app.post("/quero-trabalhar")
 async def atualizar_perfil(
     request: Request,
     nome: str = Form(),
@@ -141,11 +162,12 @@ async def atualizar_perfil(
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
-    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
+    usuario = obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     usuario.nome = nome
     usuario.email = email
+    usuario.foto = foto.filename if foto else None
     if foto:
         contents = await foto.read()
         if not is_valid_image(foto, contents):
@@ -161,7 +183,7 @@ async def atualizar_perfil(
     usuario.endereco = endereco
     usuario.profissao = profissao
     usuario.status = status
-    if not usuario_repo.atualizar_usuario(usuario):
+    if not atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar perfil")
     usuario_json = {
         "id": usuario.id,
@@ -178,14 +200,14 @@ async def atualizar_perfil(
         "tipo": "admin" if usuario.tipo == 1 else "user"
     }
     request.session["usuario"] = usuario_json
-    return RedirectResponse(url="/perfil", status_code=303)
+    return RedirectResponse(url="/quero-trabalhar", status_code=303)
 
 @app.get("/senha")
 async def senha(request: Request):
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
-    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
+    usuario = obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return templates.TemplateResponse("senha/index.html", {"request": request, "usuario": usuario})
@@ -200,7 +222,7 @@ async def atualizar_senha(
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
-    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
+    usuario = obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     if not autenticar_usuario(usuario.email, senha_atual):
@@ -208,9 +230,9 @@ async def atualizar_senha(
     if nova_senha != conf_nova_senha:
         raise HTTPException(status_code=400, detail="As novas senhas não conferem")
     usuario.senha = hash_senha(nova_senha)
-    if not usuario_repo.atualizar_usuario(usuario.id, hash_senha(nova_senha)):
+    if not atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar senha")
-    return RedirectResponse(url="/perfil", status_code=303)
+    return RedirectResponse(url="/quero-trabalhar", status_code=303)
 
 
 @app.get("/tela-inicio")
@@ -223,6 +245,8 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 
 def is_valid_image(file: UploadFile, contents: bytes) -> bool:
+    if not file.filename:  # Verificar se filename existe
+        return False
     ext = Path(file.filename).suffix.lower()
     if ext not in ALLOWED_EXTENSIONS:
         return False
@@ -247,6 +271,8 @@ async def upload_image(request: Request, image: UploadFile = File(...)):
         await arquivo.write(contents)
     # --- Inserir no banco ---
     usuario = obter_usuario_logado(request)
+    if not usuario:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado")
     inserir_imagem(
         usuario_id=usuario.id,
         nome_arquivo=nome_arquivo_unico,
@@ -286,7 +312,6 @@ async def delete_upload(filename: str):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "Image Upload API"}
-
 
 
 if __name__ == "__main__":
