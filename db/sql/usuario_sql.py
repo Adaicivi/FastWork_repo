@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     link_contato VARCHAR(255) DEFAULT NULL,
     endereco_id INTEGER NOT NULL,
     profissao_id INT NOT NULL,
-    tipo VARCHAR(20) NOT NULL,
+    tipo VARCHAR(20) NOT NULL DEFAULT 'b',
     FOREIGN KEY (endereco_id) REFERENCES endereco(id),
     FOREIGN KEY (profissao_id) REFERENCES profissao(id)
 );
@@ -41,15 +41,6 @@ JOIN profissao p ON u.profissao_id = p.id
 WHERE u.profissao_id = ?;
 """
 
-BUSCAR_USUARIOS_ORDENADOS_POR_AVALIACAO = """
-SELECT u.id, u.nome, u.foto, u.exp, u.telefone, p.nome AS profissao, u.link_contato, u.endereco_id, AVG(a.nota) AS avaliacao
-FROM usuario u
-JOIN profissao p ON u.profissao_id = p.id
-LEFT JOIN avaliacao a ON u.id = a.usuario_id
-GROUP BY u.id, u.nome, u.foto, u.exp, u.telefone, p.nome, u.link_contato, u.endereco_id
-HAVING AVG(a.nota) IS NOT NULL
-ORDER BY avaliacao DESC;
-"""
 
 OBTER_USUARIO_POR_EMAIL_E_SENHA = """
 SELECT u.id, u.nome, u.foto, u.exp, u.cpf, u.telefone, p.nome AS profissao, u.link_contato, u.endereco_id u.tipo
@@ -59,16 +50,27 @@ WHERE u.email = ? AND u.senha_hash = ?;
 """
 
 OBTER_USUARIO_POR_ID = """
-SELECT u.nome, u.email, u.cpf, u.telefone, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo, u.avaliacao
+SELECT u.nome, u.email, u.cpf, u.telefone, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
 WHERE u.id = ?;
 """
 
 OBTER_USUARIO_POR_PAGINA = """
-SELECT u.id, u.nome, u.email, u.foto, u.exp, u.cpf, u.telefone, p.nome AS profissao, u.link_contato, u.endereco_id, u.tipo
+SELECT 
+    u.nome, u.foto, p.nome AS profissao, u.endereco_id,
+    AVG(a.nota) AS media_avaliacao
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
+LEFT JOIN avaliacao a ON a.usuario_id = u.id
+GROUP BY u.id 
+ORDER BY 
+    CASE u.tipo 
+        WHEN 'a' THEN 0 
+        WHEN 'b' THEN 1 
+        ELSE 2 
+    END,
+    media_avaliacao DESC
 LIMIT ? OFFSET ?;
 """
 

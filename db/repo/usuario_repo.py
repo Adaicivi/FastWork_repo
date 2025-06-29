@@ -1,6 +1,6 @@
 from db.data.database import obter_conexao
 from db.models.endereco import Endereco
-from db.sql.usuario_sql import ATUALIZAR_STATUS_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_AVALIACAO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL_E_SENHA, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_PAGINA
+from db.sql.usuario_sql import ATUALIZAR_TIPO_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_AVALIACAO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL_E_SENHA, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_PAGINA
 from db.models.usuario import Usuario
 from db.models.profissao import Profissao
 from db.models.endereco import Endereco
@@ -15,7 +15,7 @@ def inserir_usuario(usuario: Usuario) -> int:
         cursor = conexao.cursor()
         cursor.execute(
             INSERIR_USUARIO,
-             (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.status, usuario.id)
+             (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.tipo, usuario.id)
         )
         return cursor.lastrowid
     
@@ -24,16 +24,16 @@ def atualizar_usuario(usuario: Usuario) -> int:
         cursor = conexao.cursor()
         cursor.execute(
             ATUALIZAR_USUARIO,
-            (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.status, usuario.id)
+            (usuario.nome, usuario.email, usuario.senha, usuario.foto, usuario.exp, usuario.cpf, usuario.telefone, usuario.link_contato ,usuario.endereco.id, usuario.profissao.id, usuario.tipo, usuario.id)
         )
         return cursor.rowcount > 0
     
-def atualizar_status_usuario(usuario_id: int, status: str) -> int:
+def atualizar_tipo_usuario(usuario_id: int, tipo: str) -> int:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
         cursor.execute(
-            ATUALIZAR_STATUS_USUARIO,
-            (status, usuario_id)
+            ATUALIZAR_TIPO_USUARIO,
+            (tipo, usuario_id)
         )
         return cursor.rowcount > 0
     
@@ -77,7 +77,7 @@ def obter_usuario_por_email(email: str) -> Usuario:
                     nome=resultado["nome"],
                     descricao=resultado["descricao"]
                 ),
-                status=resultado["status"]
+                tipo=resultado["tipo"]
             )
         return None
 
@@ -106,7 +106,7 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                     nome=resultado["nome"],
                     descricao=resultado["descricao"]
                 ),
-                status=resultado["status"]
+                tipo=resultado["tipo"]
             )
         return None
     
@@ -137,7 +137,7 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list[Usuario]:
                     nome=resultado["nome"],
                     descricao=resultado["descricao"]
                 ),
-                status=resultado["status"]
+                tipo=resultado["tipo"]
             )
         return None
     

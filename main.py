@@ -112,7 +112,6 @@ async def cadastrar_usuario(
         profissao=profissao_obj,
         status=status,
         senha=hash_senha(senha),
-        tipo=0
     )
     usuario = inserir_usuario(usuario)
     if not usuario:
