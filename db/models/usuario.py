@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from .profissao import Profissao
 from .endereco import Endereco
 from .imagem import Imagem
+from typing import Optional
 
 @dataclass
 class Usuario:
@@ -9,11 +10,12 @@ class Usuario:
     nome : str
     email : str
     senha : str
-    imagem : Imagem
-    exp : str
+    data_nascimento : str
+    imagem : Optional[Imagem] = None
+    exp : Optional[str] = None
     cpf : str
     telefone : str
-    link_contato : str
+    link_contato : Optional[str] = None
     endereco : Endereco
-    profissao : Profissao
-    tipo : str
+    profissao : Optional[Profissao] = None
+    tipo : Optional[str] = None
