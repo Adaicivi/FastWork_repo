@@ -212,7 +212,7 @@ async def senha(request: Request):
     usuario = obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    return templates.TemplateResponse("senha/index.html", {"request": request, "usuario": usuario})
+    return templates.TemplateResponse("senha/quero-trabalhar.html", {"request": request, "usuario": usuario})
 
 @app.post("/senha")
 async def atualizar_senha(
@@ -239,7 +239,7 @@ async def atualizar_senha(
 
 @app.get("/tela-inicio")
 async def tela_inicio(request: Request):
-    return templates.TemplateResponse("tela_inicio/index.html", {"request": request})
+    return templates.TemplateResponse("tela_inicio.html", {"request": request})
 
 
 # Configurações de upload
