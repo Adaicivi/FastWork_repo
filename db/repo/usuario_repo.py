@@ -154,12 +154,21 @@ def obter_usuario_por_email(email: str) -> Usuario:
             )
         return None
 
-def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
+def obter_usuario_por_pagina(numero_pagina, quantidade, profissao_id=None) -> list:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
         limite = quantidade
         offset = (numero_pagina - 1) * limite
-        cursor.execute(OBTER_USUARIO_POR_PAGINA, (limite, offset))
+        if profissao_id:
+            cursor.execute(
+                "SELECT * FROM usuario WHERE tipo IN ('a', 'b') AND profissao_id = ? LIMIT ? OFFSET ?",
+                (profissao_id, limite, offset)
+            )
+        else:
+            cursor.execute(
+                "SELECT * FROM usuario WHERE tipo IN ('a', 'b') LIMIT ? OFFSET ?",
+                (limite, offset)
+            )
         resultados = cursor.fetchall()
         usuarios = []
         for resultado in resultados:
@@ -194,8 +203,11 @@ def deletar_usuario(usuario_id: int, senha_hash: str) -> int:
         cursor.execute(DELETAR_USUARIO_POR_ID_SENHA, (usuario_id, senha_hash))
         return cursor.rowcount > 0
 
-def contar_usuarios_tipo_ab():
+def contar_usuarios_tipo_ab(profissao_id=None):
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
-        cursor.execute("SELECT COUNT(*) FROM usuario WHERE tipo IN ('a', 'b')")
+        if profissao_id:
+            cursor.execute("SELECT COUNT(*) FROM usuario WHERE tipo IN ('a', 'b') AND profissao_id = ?", (profissao_id,))
+        else:
+            cursor.execute("SELECT COUNT(*) FROM usuario WHERE tipo IN ('a', 'b')")
         return cursor.fetchone()[0]

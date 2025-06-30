@@ -341,23 +341,22 @@
                                         <div class="d-flex flex-wrap align-items-center">
                                             <span class="me-3 fw-bold">Filtrar por:</span>
                                             <div class="d-flex flex-wrap gap-2">
-                                                <!-- Filtros como botões -->
-                                                <button class="btn btn-sm btn-outline-primary active">Todos</button>
-                                                <button class="btn btn-sm btn-outline-primary">
+                                                <a href="?profissao=todos" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'todos' %}active{% endif %}">Todos</a>
+                                                <a href="?profissao=Limpeza" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'Limpeza' %}active{% endif %}">
                                                     <i class="bi bi-broom me-1"></i> Limpeza
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-primary">
+                                                </a>
+                                                <a href="?profissao=Jardinagem" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'Jardinagem' %}active{% endif %}">
                                                     <i class="bi bi-flower1 me-1"></i> Jardinagem
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-primary">
+                                                </a>
+                                                <a href="?profissao=Eletricidade" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'Eletricidade' %}active{% endif %}">
                                                     <i class="bi bi-lightning-charge me-1"></i> Eletricidade
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-primary">
+                                                </a>
+                                                <a href="?profissao=Encanamento" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'Encanamento' %}active{% endif %}">
                                                     <i class="bi bi-droplet me-1"></i> Encanamento
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-primary">
+                                                </a>
+                                                <a href="?profissao=Construção" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'Construção' %}active{% endif %}">
                                                     <i class="bi bi-house-gear me-1"></i> Construção
-                                                </button>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>

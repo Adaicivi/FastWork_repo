@@ -66,10 +66,20 @@ async def read_ususario(request: Request, id: int):
     return response
 
 @app.get("/quero-contratar")
-async def read_usuarios(request: Request, page: int = 1):
+async def read_usuarios(request: Request, page: int = 1, profissao: Optional[str] = None):
     quantidade_por_pagina = 12
-    usuarios = obter_usuario_por_pagina(page, quantidade_por_pagina)
-    total_usuarios = contar_usuarios_tipo_ab()
+    if profissao and profissao != "todos":
+        # Buscar o id da profissão pelo nome
+        profissao_obj = buscar_profissao_por_nome(profissao)
+        if not profissao_obj:
+            usuarios = []
+            total_usuarios = 0
+        else:
+            usuarios = obter_usuario_por_pagina(page, quantidade_por_pagina, profissao_id=profissao_obj.id)
+            total_usuarios = contar_usuarios_tipo_ab(profissao_id=profissao_obj.id)
+    else:
+        usuarios = obter_usuario_por_pagina(page, quantidade_por_pagina)
+        total_usuarios = contar_usuarios_tipo_ab()
     total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
     return templates.TemplateResponse(
         "quero-contratar.html",
@@ -78,7 +88,8 @@ async def read_usuarios(request: Request, page: int = 1):
             "usuario": usuarios,
             "pagina_atual": page,
             "total_paginas": total_paginas,
-            "total_usuarios": total_usuarios  # <-- Adicione isso
+            "total_usuarios": total_usuarios,
+            "filtro_profissao": profissao or "todos"
         }
     )
 
