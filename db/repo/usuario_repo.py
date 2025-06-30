@@ -115,7 +115,7 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                     uf=resultado("endereco_uf")
                 ) if resultado("endereco_id") else None,
                 profissao=Profissao(
-                    id=resultado("profissao_id"),
+                    id=resultado("id"),
                     nome=resultado("profissao"),
                     descricao=resultado("profissao_descricao")
                 ) if resultado("profissao_id") else None,
