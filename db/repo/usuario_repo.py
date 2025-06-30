@@ -91,10 +91,14 @@ def obter_usuario_por_email_e_senha(email: str, senha: str) -> Usuario:
                 telefone=resultado["telefone"],
                 link_contato=resultado["link_contato"],
                 endereco=Endereco(
-                    id=resultado["endereco_id"]
+                    id=resultado["endereco_id"],
+                    cidade=resultado["cidade"],
+                    uf=resultado["uf"]
                 ),
                 profissao=Profissao(
-                    nome=resultado["profissao"]
+                    id=resultado["profissao_id"],
+                    nome=resultado["profissao"],
+                    descricao=resultado("descricao")
                 ),
                 tipo=resultado["tipo"]
             )
@@ -136,10 +140,14 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
                 imagem=resultado["imagem"],
                 data_nascimento=resultado["data_nascimento"],
                 profissao=Profissao(
-                    nome=resultado["profissao"]
+                    id=resultado["profissao_id"],
+                    nome=resultado["profissao"],
+                    descricao=resultado("descricao")
                 ),
                 endereco=Endereco(
-                    id=resultado["endereco_id"]
+                    id=resultado["endereco_id"],
+                    cidade=resultado["cidade"],
+                    uf=resultado["uf"]
                 )
             ))
         return usuarios
