@@ -59,7 +59,7 @@ JOIN profissao p ON u.profissao_id = p.id
 LEFT JOIN avaliacao a ON a.usuario_id = u.id
 LEFT JOIN endereco e ON u.endereco_id = e.id
 LEFT JOIN imagem i ON u.imagem = i.id
-WHERE u.tipo IN ('a', 'b', 'c')
+WHERE u.tipo IN ('a', 'b')
 GROUP BY u.id 
 ORDER BY 
     CASE u.tipo 

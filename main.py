@@ -20,6 +20,7 @@ from db.repo.usuario_repo import *
 from db.repo.profissao_repo import *
 from db.repo.endereco_repo import *
 from db.models.usuario import Usuario
+from db.models.imagem import Imagem
 
 
 criar_tabela_avaliacao()
@@ -104,12 +105,16 @@ async def cadastrar_usuario(
         caminho_arquivo = UPLOAD_DIR / imagem_nome
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
-        imagem_id = inserir_imagem(
-        usuario_id=0,  # ou o id do usuário, se já existir
-        nome_arquivo=imagem_nome,
-        nome_arquivo_original=imagem.filename,
-        url=f"/uploads/{imagem_nome}"
-    )
+        imagem_obj = Imagem(
+            id=None,
+            usuario_id=0,  # ou usuario.id se já existir
+            nome_arquivo=imagem_nome,
+            nome_arquivo_original=imagem.filename,
+            url=f"/uploads/{imagem_nome}",
+            criado_em=None
+        )
+        imagem_obj = inserir_imagem(imagem_obj)
+        imagem_id = imagem_obj.id
     else:
         imagem_id = None
     endereco_obj = None
@@ -125,7 +130,7 @@ async def cadastrar_usuario(
         data_nascimento=data_nascimento,
         tipo="c",
         senha=hash_senha(senha),
-        endereco=endereco_obj,  # Linha alterada
+        endereco=endereco_obj,
     )
     usuario = inserir_usuario(usuario)
     if not usuario:
