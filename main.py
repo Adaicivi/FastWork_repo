@@ -57,8 +57,7 @@ def validar_cpf(cpf: str) -> bool:
 
 @app.get("/")
 async def read_root(request: Request):
-    usuario = obter_usuario_logado(request)
-    return templates.TemplateResponse("menu.html", {"request": request, "usuario": usuario})
+    return templates.TemplateResponse("menu.html", {"request": request})
 
 @app.get("/quero-contratar/{id}")
 async def read_ususario(request: Request, id: int):
@@ -67,20 +66,10 @@ async def read_ususario(request: Request, id: int):
     return response
 
 @app.get("/quero-contratar")
-async def read_usuarios(request: Request, page: int = 1, profissao: Optional[str] = None):
+async def read_usuarios(request: Request, page: int = 1):
     quantidade_por_pagina = 12
-    if profissao and profissao != "todos":
-        # Buscar o id da profissão pelo nome
-        profissao_obj = buscar_profissao_por_nome(profissao)
-        if not profissao_obj:
-            usuarios = []
-            total_usuarios = 0
-        else:
-            usuarios = obter_usuario_por_pagina(page, quantidade_por_pagina, profissao_id=profissao_obj.id)
-            total_usuarios = contar_usuarios_tipo_ab(profissao_id=profissao_obj.id)
-    else:
-        usuarios = obter_usuario_por_pagina(page, quantidade_por_pagina)
-        total_usuarios = contar_usuarios_tipo_ab()
+    usuarios = obter_usuario_por_pagina(page, quantidade_por_pagina)
+    total_usuarios = contar_usuarios_tipo_ab()
     total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
     return templates.TemplateResponse(
         "quero-contratar.html",
@@ -89,8 +78,7 @@ async def read_usuarios(request: Request, page: int = 1, profissao: Optional[str
             "usuario": usuarios,
             "pagina_atual": page,
             "total_paginas": total_paginas,
-            "total_usuarios": total_usuarios,
-            "filtro_profissao": profissao or "todos"
+            "total_usuarios": total_usuarios  # <-- Adicione isso
         }
     )
 
@@ -158,7 +146,6 @@ async def cadastrar_usuario(
     usuario = inserir_usuario(usuario)
     if not usuario:
         raise HTTPException(status_code=400, detail="Erro ao cadastrar usuário")
-    request.session["usuario_id"] = usuario.id
     return RedirectResponse(url="/quero-contratar", status_code=303)
 
 @app.get("/login")
@@ -180,7 +167,6 @@ async def fazer_login(
         "email": usuario.email,
     }
     request.session["usuario"] = usuario_json
-    request.session["usuario_id"] = usuario.id
     return RedirectResponse(url="/", status_code=303)
 
 
@@ -191,9 +177,12 @@ async def logout(request: Request):
 
 @app.get("/quero-trabalhar")
 async def perfil(request: Request):
-    usuario = obter_usuario_logado(request)
-    if not usuario:
+    usuario_json = request.session.get("usuario")
+    if not usuario_json:
         return RedirectResponse(url="/login", status_code=303)
+    usuario = obter_usuario_por_id(usuario_json["id"])
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return templates.TemplateResponse("quero-trabalhar.html", {"request": request, "usuario": usuario})
 
 @app.post("/quero-trabalhar")
