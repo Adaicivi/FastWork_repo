@@ -66,7 +66,7 @@ async def read_ususario(request: Request, id: int):
 
 @app.get("/quero-contratar")
 async def read_usuarios(request: Request):
-    usuarios = obter_usuario_por_pagina(1, 6)
+    usuarios = obter_usuario_por_pagina(1, 12)
     response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": usuarios})
     return response
 
