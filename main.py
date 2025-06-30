@@ -26,6 +26,8 @@ criar_tabela_avaliacao()
 criar_tabela_imagens()
 criar_tabela_usuario()
 criar_tabela_profissao()
+criar_tabela_enderecos()
+
 
 # Configuração de diretórios
 UPLOAD_DIR = Path("uploads")
@@ -164,7 +166,7 @@ async def atualizar_perfil(
     nome: str = Form(),
     email: str = Form(),
     imagem: UploadFile = File(None),
-    exp: str = Form(),
+    experiencia: str = Form(),
     telefone: str = Form(),
     link_contato: str = Form(),
     endereco: str = Form(),
@@ -189,7 +191,7 @@ async def atualizar_perfil(
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
         usuario.imagem = nome_arquivo_unico
-    usuario.exp = exp
+    usuario.experiencia = experiencia
     usuario.telefone = telefone
     usuario.link_contato = link_contato
     usuario.endereco = obter_endereco_por_id(int(endereco))
@@ -202,7 +204,7 @@ async def atualizar_perfil(
         "nome": usuario.nome,
         "email": usuario.email,
         "imagem": usuario.imagem,
-        "exp": usuario.exp,
+        "experiencia": usuario.experiencia,
         "cpf": usuario.cpf,
         "telefone": usuario.telefone,
         "link_contato": usuario.link_contato,
