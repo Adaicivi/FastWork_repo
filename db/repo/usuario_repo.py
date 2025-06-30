@@ -1,6 +1,6 @@
 from db.data.database import obter_conexao
 from db.models.endereco import Endereco
-from db.sql.usuario_sql import ATUALIZAR_TIPO_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_PAGINA
+from db.sql.usuario_sql import ATUALIZAR_TIPO_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_PAGINA
 from db.models.usuario import Usuario
 from db.models.profissao import Profissao
 from db.models.endereco import Endereco
@@ -122,53 +122,13 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                 tipo=resultado["tipo"]
             )
         return None
-    
-def obter_usuario_por_email(email: str) -> Usuario:
-    with obter_conexao() as conexao:
-        cursor = conexao.cursor()
-        cursor.execute(OBTER_USUARIO_POR_EMAIL, (email,))
-        resultado = cursor.fetchone()
-        if resultado:
-            return Usuario(
-                id=resultado["id"],
-                nome=resultado["nome"],
-                email=resultado["email"],
-                senha=resultado["senha_hash"],
-                data_nascimento=resultado["data_nascimento"],
-                cpf=resultado["cpf"],
-                telefone=resultado["telefone"],
-                endereco=Endereco(
-                    id=resultado["endereco_id"],
-                    cidade=resultado["endereco_cidade"],
-                    uf=resultado["endereco_uf"]
-                ) if resultado["endereco_id"] else None,
-                imagem=resultado["url_imagem"],
-                experiencia=resultado["experiencia"],
-                link_contato=resultado["link_contato"],
-                profissao=Profissao(
-                    id=resultado["profissao_id"],
-                    nome=resultado["profissao"],
-                    descricao=resultado["profissao_descricao"]
-                ) if resultado["profissao_id"] else None,
-                tipo=resultado["tipo"]
-            )
-        return None
 
-def obter_usuario_por_pagina(numero_pagina, quantidade, profissao_id=None) -> list:
+def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
         limite = quantidade
         offset = (numero_pagina - 1) * limite
-        if profissao_id:
-            cursor.execute(
-                "SELECT * FROM usuario WHERE tipo IN ('a', 'b') AND profissao_id = ? LIMIT ? OFFSET ?",
-                (profissao_id, limite, offset)
-            )
-        else:
-            cursor.execute(
-                "SELECT * FROM usuario WHERE tipo IN ('a', 'b') LIMIT ? OFFSET ?",
-                (limite, offset)
-            )
+        cursor.execute(OBTER_USUARIO_POR_PAGINA, (limite, offset))
         resultados = cursor.fetchall()
         usuarios = []
         for resultado in resultados:
@@ -203,11 +163,8 @@ def deletar_usuario(usuario_id: int, senha_hash: str) -> int:
         cursor.execute(DELETAR_USUARIO_POR_ID_SENHA, (usuario_id, senha_hash))
         return cursor.rowcount > 0
 
-def contar_usuarios_tipo_ab(profissao_id=None):
+def contar_usuarios_tipo_ab():
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
-        if profissao_id:
-            cursor.execute("SELECT COUNT(*) FROM usuario WHERE tipo IN ('a', 'b') AND profissao_id = ?", (profissao_id,))
-        else:
-            cursor.execute("SELECT COUNT(*) FROM usuario WHERE tipo IN ('a', 'b')")
+        cursor.execute("SELECT COUNT(*) FROM usuario WHERE tipo IN ('a', 'b')")
         return cursor.fetchone()[0]
