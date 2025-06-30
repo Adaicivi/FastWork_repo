@@ -26,6 +26,8 @@ criar_tabela_avaliacao()
 criar_tabela_imagens()
 criar_tabela_usuario()
 criar_tabela_profissao()
+criar_tabela_enderecos()
+
 
 # Configuração de diretórios
 UPLOAD_DIR = Path("uploads")
