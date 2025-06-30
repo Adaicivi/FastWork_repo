@@ -171,7 +171,7 @@ async def fazer_login(
     }
     request.session["usuario"] = usuario_json
     request.session["usuario_id"] = usuario.id
-    return RedirectResponse(url="/", status_code=303)
+    return RedirectResponse(url="/quero-contratar", status_code=303)
 
 
 @app.get("/logout")
