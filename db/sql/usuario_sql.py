@@ -4,11 +4,11 @@ CREATE TABLE IF NOT EXISTS usuario (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha_hash VARCHAR(100) NOT NULL,
-    data_nascimento DATE NOT NULL,
-    imagem INTEGER DEFAULT NULL,
-    experiencia VARCHAR(255),
     cpf VARCHAR(11) NOT NULL UNIQUE,
     telefone VARCHAR(15) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    experiencia VARCHAR(255),
+    imagem INTEGER DEFAULT NULL,
     link_contato VARCHAR(255) DEFAULT NULL,
     endereco_id INT,
     profissao_id INT,
@@ -20,13 +20,13 @@ CREATE TABLE IF NOT EXISTS usuario (
 """
 
 INSERIR_USUARIO = """
-INSERT INTO usuario (nome, email, senha_hash, data_nascimento, imagem, experiencia, cpf, telefone, link_contato, endereco_id, profissao_id, tipo)
+INSERT INTO usuario (nome, email, senha_hash, cpf, telefone, data_nascimento, experiencia, imagem, link_contato, endereco_id, profissao_id, tipo)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 """
 
 ATUALIZAR_USUARIO = """
 UPDATE usuario
-SET nome = ?, email = ?, senha_hash = ?, data_nascimento = ?, imagem = ?, experiencia = ?,  cpf = ?, telefone = ?, link_contato = ?, endereco_id = ?, profissao_id = ?, tipo = ?
+SET nome = ?, email = ?, senha_hash = ?, cpf = ?, telefone = ?, data_nascimento = ?, experiencia = ?, imagem = ?, link_contato = ?, endereco_id = ?, profissao_id = ?, tipo = ?
 WHERE id = ?;
 """
 
@@ -44,16 +44,16 @@ WHERE u.profissao_id = ?;
 """
 
 OBTER_USUARIO_POR_ID = """
-SELECT u.nome, u.email, u.senha_hash, u.data_nascimento, u.imagem, i.url AS url_imagem, u.experiencia, u.cpf, u.telefone, u.link_contato, u.endereco_id, e.cidade AS endereco_cidade, e.uf AS endereco_uf, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo
+SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco_id, e.cidade AS endereco_cidade, e.uf AS endereco_uf, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
-LEFT endereco e ON u.endereco_id = e.id
+LEFT JOIN endereco e ON u.endereco_id = e.id
 LEFT JOIN imagem i ON u.imagem = i.id
 WHERE u.id = ?;
 """
 
 OBTER_USUARIO_POR_PAGINA = """
-SELECT u.id, u.nome, u.email, u.senha_hash, u.data_nascimento, u.imagem, u.experiencia, u.cpf, u.telefone, u.link_contato, u.endereco_id, e.cidade AS endereco_cidade, e.uf AS endereco_uf, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo, AVG(a.nota) AS media_avaliacao
+SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, u.link_contato, u.endereco_id, e.cidade AS endereco_cidade, e.uf AS endereco_uf, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo, AVG(a.nota) AS media_avaliacao
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
 LEFT JOIN avaliacao a ON a.usuario_id = u.id

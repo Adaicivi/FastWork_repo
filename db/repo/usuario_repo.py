@@ -102,27 +102,26 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                 id=resultado["id"],
                 nome=resultado["nome"],
                 email=resultado["email"],
-                senha=resultado("senha_hash"),
+                senha=resultado["senha_hash"],
                 data_nascimento=resultado["data_nascimento"],
-                imagem=resultado("url_imagem"),
-                experiencia=resultado("experiencia"),
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
-                link_contato=resultado("link_contato"),
                 endereco=Endereco(
-                    id=resultado("endereco_id"),
-                    cidade=resultado("endereco_cidade"),
-                    uf=resultado("endereco_uf")
-                ) if resultado("endereco_id") else None,
+                    id=resultado["endereco_id"],
+                    cidade=resultado["endereco_cidade"],
+                    uf=resultado["endereco_uf"]
+                ) if resultado["endereco_id"] else None,
+                imagem=resultado["url_imagem"],
+                experiencia=resultado["experiencia"],
+                link_contato=resultado["link_contato"],
                 profissao=Profissao(
-                    id=resultado("id"),
-                    nome=resultado("profissao"),
-                    descricao=resultado("profissao_descricao")
-                ) if resultado("profissao_id") else None,
+                    id=resultado["profissao_id"],
+                    nome=resultado["profissao"],
+                    descricao=resultado["profissao_descricao"]
+                ) if resultado["profissao_id"] else None,
                 tipo=resultado["tipo"]
             )
         return None
-
 
 def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
     with obter_conexao() as conexao:
@@ -137,25 +136,25 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
                 id=resultado["id"],
                 nome=resultado["nome"],
                 email=resultado["email"],
-                senha=resultado("senha_hash"),
+                senha=resultado["senha_hash"],
                 data_nascimento=resultado["data_nascimento"],
-                imagem=resultado("imagem"),
-                experiencia=resultado("experiencia"),
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
-                link_contato=resultado("link_contato"),
                 endereco=Endereco(
-                    id=resultado("endereco_id"),
-                    cidade=resultado("endereco_cidade"),
-                    uf=resultado("endereco_uf")
-                ) if resultado("endereco_id") else None,
+                    id=resultado["endereco_id"],
+                    cidade=resultado["endereco_cidade"],
+                    uf=resultado["endereco_uf"]
+                ) if resultado["endereco_id"] else None,
+                imagem=resultado["imagem"],
+                experiencia=resultado["experiencia"],
+                link_contato=resultado["link_contato"],
                 profissao=Profissao(
-                    id=resultado("id"),
-                    nome=resultado("profissao"),
-                    descricao=resultado("profissao_descricao")
-                ) if resultado("profissao_id") else None,
+                    id=resultado["profissao_id"],
+                    nome=resultado["profissao"],
+                    descricao=resultado["profissao_descricao"]
+                ) if resultado["profissao_id"] else None,
                 tipo=resultado["tipo"]
-                ))
+            ))
         return usuarios
     
 def deletar_usuario(usuario_id: int, senha_hash: str) -> int:
