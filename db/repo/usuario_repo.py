@@ -137,16 +137,15 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
                 nome=resultado["nome"],
                 imagem=resultado["imagem"],
                 data_nascimento=resultado["data_nascimento"],
-                profissao=Profissao(
-                    id=resultado["profissao_id"],
-                    nome=resultado["profissao"]
-                ),
                 endereco=Endereco(
                     id=resultado["endereco_id"],
                     cidade=resultado["endereco_cidade"],
-                    uf=resultado["endereco_uf"]
-                )
-            ))
+                    uf=resultado["endereco_uf"]),
+                profissao=Profissao(
+                    id=resultado["profissao_id"],
+                    nome=resultado["profissao"],
+                    descricao=resultado["profissao_descricao"]
+                )))  
         return usuarios
     
 def deletar_usuario(usuario_id: int, senha_hash: str) -> int:
