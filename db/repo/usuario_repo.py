@@ -139,7 +139,7 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
                 email=resultado["email"],
                 senha=resultado("senha_hash"),
                 data_nascimento=resultado["data_nascimento"],
-                imagem=resultado("url_imagem"),
+                imagem=resultado("imagem"),
                 experiencia=resultado("experiencia"),
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
