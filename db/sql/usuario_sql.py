@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     senha_hash VARCHAR(100) NOT NULL,
     data_nascimento DATE NOT NULL,
     imagem INTEGER DEFAULT NULL,
-    exp VARCHAR(255),
+    experiencia VARCHAR(255),
     cpf VARCHAR(11) NOT NULL UNIQUE,
     telefone VARCHAR(15) NOT NULL,
     link_contato VARCHAR(255) DEFAULT NULL,
@@ -20,13 +20,13 @@ CREATE TABLE IF NOT EXISTS usuario (
 """
 
 INSERIR_USUARIO = """
-INSERT INTO usuario (nome, email, senha_hash, data_nascimento, imagem, exp, cpf, telefone, link_contato, endereco_id, profissao_id, tipo)
+INSERT INTO usuario (nome, email, senha_hash, data_nascimento, imagem, experiencia, cpf, telefone, link_contato, endereco_id, profissao_id, tipo)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 """
 
 ATUALIZAR_USUARIO = """
 UPDATE usuario
-SET nome = ?, email = ?, senha_hash = ?, data_nascimento = ?, imagem = ?, exp = ?,  cpf = ?, telefone = ?, link_contato = ?, endereco_id = ?, profissao_id = ?, tipo = ?
+SET nome = ?, email = ?, senha_hash = ?, data_nascimento = ?, imagem = ?, experiencia = ?,  cpf = ?, telefone = ?, link_contato = ?, endereco_id = ?, profissao_id = ?, tipo = ?
 WHERE id = ?;
 """
 
@@ -37,14 +37,14 @@ WHERE id = ?;
 """
 
 BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO = """
-SELECT u.nome, u.email, u.imagem, u.exp, u.cpf, u.telefone, u.data_nascimento, p.nome AS profissao, u.link_contato, u.endereco_id, u.tipo
+SELECT u.nome, u.email, u.imagem, u.experiencia, u.cpf, u.telefone, u.data_nascimento, p.nome AS profissao, u.link_contato, u.endereco_id, u.tipo
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
 WHERE u.profissao_id = ?;
 """
 
 OBTER_USUARIO_POR_EMAIL_E_SENHA = """
-SELECT u.id, u.nome, u.imagem, u.exp, u.cpf, u.telefone, u.data_nascimento, p.nome AS profissao, u.link_contato, u.endereco_id, u.tipo
+SELECT u.id, u.nome, u.imagem, u.experiencia, u.cpf, u.telefone, u.data_nascimento, p.nome AS profissao, u.link_contato, u.endereco_id, u.tipo
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
 WHERE u.email = ? AND u.senha_hash = ?;

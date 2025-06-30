@@ -15,7 +15,7 @@ class Usuario:
     telefone : str
     endereco : Optional[Endereco] = None
     imagem : Optional[Imagem] = None
-    exp : Optional[str] = None
+    experiencia : Optional[str] = None
     link_contato : Optional[str] = None
     profissao : Optional[Profissao] = None
     tipo : Optional[str] = None
