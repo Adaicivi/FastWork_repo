@@ -95,6 +95,14 @@
             margin-bottom: 20px;
         }
 
+        .perfil-card .card-body img {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #e2eafc;
+        }
+
         .perfil-avaliacao {
             color: var(--warning-color);
             font-size: 17.6px; /* 1.1rem */
@@ -375,7 +383,7 @@
                                         <div class="perfil-card h-100">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center mb-3">
-                                                    <img src="/uploads/{{ u.imagem if u.imagem else 'default.png' }}" class="rounded-circle me-3" alt="{{ u.nome }}">
+                                                    <img src="{{ u.imagem if u.imagem else '/uploads/default.jpg' }}" class="rounded-circle me-3" alt="{{ u.nome }}">
                                                     <div>
                                                         <h5 class="card-title mb-0">{{u.nome}}</h5>
                                                         <small class="text-muted">

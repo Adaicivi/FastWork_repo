@@ -145,7 +145,7 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
                     cidade=resultado["endereco_cidade"],
                     uf=resultado["endereco_uf"]
                 ) if resultado["endereco_id"] else None,
-                imagem=resultado["imagem"],
+                imagem=resultado["url_imagem"],
                 experiencia=resultado["experiencia"],
                 link_contato=resultado["link_contato"],
                 profissao=Profissao(

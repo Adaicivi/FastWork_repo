@@ -104,6 +104,14 @@ async def cadastrar_usuario(
         caminho_arquivo = UPLOAD_DIR / imagem_nome
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
+        imagem_id = inserir_imagem(
+        usuario_id=0,  # ou o id do usuário, se já existir
+        nome_arquivo=imagem_nome,
+        nome_arquivo_original=imagem.filename,
+        url=f"/uploads/{imagem_nome}"
+    )
+    else:
+        imagem_id = None
     endereco_obj = None
     if endereco:
         endereco_obj = obter_endereco_por_id(int(endereco))
@@ -111,7 +119,7 @@ async def cadastrar_usuario(
         id=0,
         nome=nome,
         email=email,
-        imagem=imagem_nome,
+        imagem=imagem_id,
         cpf=cpf,
         telefone=telefone,
         data_nascimento=data_nascimento,
@@ -181,7 +189,7 @@ async def atualizar_perfil(
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     usuario.nome = nome
     usuario.email = email
-    usuario.imagem = imagem.filename if imagem else None
+
     if imagem:
         contents = await imagem.read()
         if not is_valid_image(imagem, contents):
@@ -190,7 +198,15 @@ async def atualizar_perfil(
         caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
-        usuario.imagem = nome_arquivo_unico
+        # Insere na tabela imagem e pega o ID
+        imagem_id = inserir_imagem(
+            usuario_id=usuario.id,
+            nome_arquivo=nome_arquivo_unico,
+            nome_arquivo_original=imagem.filename,
+            url=f"/uploads/{nome_arquivo_unico}"
+        )
+        usuario.imagem = imagem_id  # <-- agora é o ID da imagem
+    # Se não enviar imagem, mantém a atual
     usuario.experiencia = experiencia
     usuario.telefone = telefone
     usuario.link_contato = link_contato
@@ -199,6 +215,7 @@ async def atualizar_perfil(
     usuario.tipo = tipo
     if not atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar perfil")
+    # Atualiza sessão
     usuario_json = {
         "id": usuario.id,
         "nome": usuario.nome,
