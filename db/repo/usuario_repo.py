@@ -138,10 +138,13 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
                 imagem=resultado["imagem"],
                 data_nascimento=resultado["data_nascimento"],
                 profissao=Profissao(
+                    id=resultado["profissao_id"],
                     nome=resultado["profissao"]
                 ),
                 endereco=Endereco(
-                    id=resultado["endereco_id"]
+                    id=resultado["endereco_id"],
+                    cidade=resultado["endereco_cidade"],
+                    uf=resultado["endereco_uf"]
                 )
             ))
         return usuarios

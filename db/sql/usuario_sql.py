@@ -54,7 +54,7 @@ WHERE u.id = ?;
 
 OBTER_USUARIO_POR_PAGINA = """
 SELECT 
-    u.nome, u.imagem, u.data_nascimento, p.nome AS profissao, u.endereco_id,
+    u.nome, u.imagem, u.data_nascimento, u.profissao_id, p.nome AS profissao, u.endereco_id, e.cidade AS endereco_cidade, e.uf AS endereco_uf
     AVG(a.nota) AS media_avaliacao
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
