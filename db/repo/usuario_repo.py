@@ -69,9 +69,28 @@ def buscar_usuarios_ordenados_por_profissao(profissao_id: int) -> list:
         cursor = conexao.cursor()
         cursor.execute(
             BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO,
-            (profissao_id,)
-        )
-        return cursor.fetchall()
+            (profissao_id,))
+        resultados = cursor.fetchall()
+        usuarios = []
+        for resultado in resultados:
+            usuarios.append(Usuario(
+                nome=resultado["nome"],
+                email=resultado["email"],
+                imagem=resultado["imagem"],
+                experiencia=resultado["experiencia"],
+                cpf=resultado["cpf"],
+                telefone=resultado["telefone"],
+                data_nascimento=resultado["data_nascimento"],
+                profissao=Profissao(
+                    nome=resultado["profissao"]
+                ),
+                link_contato=resultado["link_contato"],
+                endereco=Endereco(
+                    id=resultado["endereco_id"]
+                ) if resultado["endereco_id"] else None,
+                tipo=resultado["tipo"]
+            ))
+        return usuarios
 
 def obter_usuario_por_id(usuario_id: int) -> Usuario:
     with obter_conexao() as conexao:
