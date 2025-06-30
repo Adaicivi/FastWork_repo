@@ -59,12 +59,14 @@ SELECT
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
 LEFT JOIN avaliacao a ON a.usuario_id = u.id
+LEFT JOIN endereco e ON u.endereco_id = e.id
+WHERE u.tipo IN ('a', 'b', 'c')
 GROUP BY u.id 
 ORDER BY 
     CASE u.tipo 
         WHEN 'a' THEN 0 
         WHEN 'b' THEN 1 
-        ELSE 2 
+        ELSE 2
     END,
     media_avaliacao DESC
 LIMIT ? OFFSET ?;
