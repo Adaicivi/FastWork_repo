@@ -162,7 +162,7 @@
                         <h2 class="text-center">Login</h2>
                     </div>
                     <div class="card-body">
-                        <form id="loginForm">
+                        <form id="loginForm" method="post" action="/login">
                             <div class="mb-3">
                                 <label for="email" class="form-label">E-mail</label>
                                 <input type="text" class="form-control" id="email" required>
@@ -172,9 +172,9 @@
                                 <input type="password" class="form-control" id="password" required>
                             </div>
                             <div class="d-grid">
-                               <a href="/quero-contratar" class="btn btn-primary btn-lg px-4">
+                                <button type="submit" class="btn btn-primary btn-lg px-4">
                                     Entrar
-                                </a>
+                                </button>
                             </div>
                         </form>
                         <div class="text-center mt-3">
