@@ -52,6 +52,15 @@ LEFT JOIN imagem i ON u.imagem = i.id
 WHERE u.id = ?;
 """
 
+OBTER_USUARIO_POR_EMAIL = """
+SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco_id, e.cidade AS endereco_cidade, e.uf AS endereco_uf, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo
+FROM usuario u
+JOIN profissao p ON u.profissao_id = p.id
+LEFT JOIN endereco e ON u.endereco_id = e.id
+LEFT JOIN imagem i ON u.imagem = i.id
+WHERE u.email = ?;
+"""
+
 OBTER_USUARIO_POR_PAGINA = """
 SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco_id, e.cidade AS endereco_cidade, e.uf AS endereco_uf, u.profissao_id, p.nome AS profissao, p.descricao AS profissao_descricao, u.tipo, AVG(a.nota) AS media_avaliacao
 FROM usuario u

@@ -141,6 +141,7 @@ async def cadastrar_usuario(
 async def read_login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
+
 @app.post("/login")
 async def fazer_login(
     request: Request, 
