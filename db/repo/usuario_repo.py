@@ -73,37 +73,6 @@ def buscar_usuarios_ordenados_por_profissao(profissao_id: int) -> list:
         )
         return cursor.fetchall()
 
-def obter_usuario_por_email_e_senha(email: str, senha: str) -> Usuario:
-    with obter_conexao() as conexao:
-        cursor = conexao.cursor()
-        cursor.execute(OBTER_USUARIO_POR_EMAIL_E_SENHA, (email, senha))
-        resultado = cursor.fetchone()
-        if resultado:
-            return Usuario(
-                id=resultado["id"],
-                nome=resultado["nome"],
-                email=resultado["email"],
-                senha=resultado["senha_hash"],
-                data_nascimento=resultado["data_nascimento"],
-                imagem=resultado["imagem"],
-                experiencia=resultado["experiencia"],
-                cpf=resultado["cpf"],
-                telefone=resultado["telefone"],
-                link_contato=resultado["link_contato"],
-                endereco=Endereco(
-                    id=resultado["endereco_id"],
-                    cidade=resultado["cidade"],
-                    uf=resultado["uf"]
-                ),
-                profissao=Profissao(
-                    id=resultado["profissao_id"],
-                    nome=resultado["profissao"],
-                    descricao=resultado("descricao")
-                ),
-                tipo=resultado["tipo"]
-            )
-        return None
-
 def obter_usuario_por_id(usuario_id: int) -> Usuario:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
@@ -114,18 +83,28 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                 id=usuario_id,
                 nome=resultado["nome"],
                 email=resultado["email"],
+                senha=resultado("senha_hash"),
                 data_nascimento=resultado["data_nascimento"],
+                imagem=resultado("url_imagem"),
+                experiencia=resultado("experiencia"),
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
+                link_contato=resultado("link_contato"),
+                endereco=Endereco(
+                    id=resultado("endereco_id"),
+                    cidade=resultado("endereco_cidade"),
+                    uf=resultado("endereco_uf")
+                ) if resultado("endereco_id") else None,
                 profissao=Profissao(
-                    id=resultado["profissao_id"],
-                    nome=resultado["profissao"],
-                    descricao=resultado["profissao_descricao"]
-                ),
+                    id=resultado("profissao_id"),
+                    nome=resultado("profissao"),
+                    descricao=resultado("profissao_descricao")
+                ) if resultado("profissao_id") else None,
                 tipo=resultado["tipo"]
             )
         return None
-    
+
+
 def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
     with obter_conexao() as conexao:
         cursor = conexao.cursor()
@@ -140,14 +119,10 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
                 imagem=resultado["imagem"],
                 data_nascimento=resultado["data_nascimento"],
                 profissao=Profissao(
-                    id=resultado["profissao_id"],
-                    nome=resultado["profissao"],
-                    descricao=resultado("descricao")
+                    nome=resultado["profissao"]
                 ),
                 endereco=Endereco(
-                    id=resultado["endereco_id"],
-                    cidade=resultado["cidade"],
-                    uf=resultado["uf"]
+                    id=resultado["endereco_id"]
                 )
             ))
         return usuarios
