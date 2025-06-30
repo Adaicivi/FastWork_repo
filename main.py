@@ -57,7 +57,8 @@ def validar_cpf(cpf: str) -> bool:
 
 @app.get("/")
 async def read_root(request: Request):
-    return templates.TemplateResponse("menu.html", {"request": request})
+    usuario = obter_usuario_logado(request)
+    return templates.TemplateResponse("menu.html", {"request": request, "usuario": usuario})
 
 @app.get("/quero-contratar/{id}")
 async def read_ususario(request: Request, id: int):
@@ -160,6 +161,7 @@ async def fazer_login(
     senha: str = Form()):
     usuario = autenticar_usuario(email, senha)
     if not usuario:
+        # Retorne o template com mensagem de erro, se quiser
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
     usuario_json = {
         "id": usuario.id,
@@ -167,6 +169,7 @@ async def fazer_login(
         "email": usuario.email,
     }
     request.session["usuario"] = usuario_json
+    request.session["usuario_id"] = usuario.id  # <-- ESSENCIAL!
     return RedirectResponse(url="/", status_code=303)
 
 
@@ -177,12 +180,9 @@ async def logout(request: Request):
 
 @app.get("/quero-trabalhar")
 async def perfil(request: Request):
-    usuario_json = request.session.get("usuario")
-    if not usuario_json:
-        return RedirectResponse(url="/login", status_code=303)
-    usuario = obter_usuario_por_id(usuario_json["id"])
+    usuario = obter_usuario_logado(request)
     if not usuario:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        return RedirectResponse(url="/login", status_code=303)
     return templates.TemplateResponse("quero-trabalhar.html", {"request": request, "usuario": usuario})
 
 @app.post("/quero-trabalhar")
