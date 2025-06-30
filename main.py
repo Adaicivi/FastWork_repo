@@ -66,10 +66,21 @@ async def read_ususario(request: Request, id: int):
     return response
 
 @app.get("/quero-contratar")
-async def read_usuarios(request: Request):
-    usuarios = obter_usuario_por_pagina(1, 12)
-    response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": usuarios})
-    return response
+async def read_usuarios(request: Request, page: int = 1):
+    quantidade_por_pagina = 12
+    usuarios = obter_usuario_por_pagina(page, quantidade_por_pagina)
+    total_usuarios = contar_usuarios_tipo_ab()
+    total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
+    return templates.TemplateResponse(
+        "quero-contratar.html",
+        {
+            "request": request,
+            "usuario": usuarios,
+            "pagina_atual": page,
+            "total_paginas": total_paginas,
+            "total_usuarios": total_usuarios  # <-- Adicione isso
+        }
+    )
 
 @app.get("/tela-inicio")
 async def tela_inicio(request: Request):

@@ -372,13 +372,14 @@
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <h4 class="mb-0">Profissionais Disponíveis</h4>
                                     <div class="d-flex">
-                                        <span class="badge bg-primary me-2">12 resultados</span>
+                                        <span class="badge bg-primary me-2">{{ total_usuarios }} resultados</span>
                                     </div>
                                 </div>
                                 
                                 <div class="row row-cols-1 row-cols-md-3 g-4">
                                     <!-- Perfil 1 (mantido igual) -->
                                     {% for u in usuario %}
+                                    {% if u.tipo in ['a', 'b'] %}
                                     <div class="col">
                                         <div class="perfil-card h-100">
                                             <div class="card-body">
@@ -403,26 +404,67 @@
                                             </div>
                                             <div class="card-footer bg-white border-top">
                                                 <div class="d-flex justify-content-end mt-3">
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#perfilModal">
+                                                    <!-- Botão -->
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#perfilModal{{u.id}}">
                                                         <i class="bi bi-person"></i> Exibir perfil
                                                     </button>
+
+                                                    <!-- Modal-->
+                                                    <div class="modal fade" id="perfilModal{{u.id}}" tabindex="-1" aria-labelledby="perfilModalLabel{{u.id}}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                        <div class="modal-content rounded-4 shadow-lg">
+                                                        <div class="modal-header bg-primary text-white rounded-top-4">
+                                                            <h5 class="modal-title d-flex align-items-center" id="perfilModalLabel{{u.id}}">
+                                                            <i class="bi bi-person-circle me-2 fs-4"></i>Perfil Completo do Profissional
+                                                            </h5>
+                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                                        </div>
+                                                        <div class="modal-body p-4">
+                                                            <!-- Aqui você usa os dados do usuário u normalmente -->
+                                                            <div class="row">
+                                                            <div class="col-md-4 text-center mb-4 mb-md-0">
+                                                                <div class="position-relative mb-3">
+                                                                <img src="{{ u.imagem if u.imagem else '/uploads/default.jpg' }}" class="rounded-circle img-thumbnail border-3 border-primary" style="width: 180px; height: 180px; object-fit: cover;" alt="imagem do profissional">
+                                                                </div>
+                                                                <h4 class="mb-1">{{ u.nome }}</h4>
+                                                                <span class="fs-4 fw-normal mb-1">{{ u.profissao.nome if u.profissao else '' }}</span>
+                                                                <div class="rating mb-3">
+                                                                <span class="text-warning fs-5">★★★★☆</span>
+                                                                <small class="text-muted">(4.2 - 15 avaliações)</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <!-- Informações pessoais e sobre o profissional, usando {{ u.campo }} -->
+                                                            </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer border-top-0 bg-light rounded-bottom-4">
+                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                            <button type="button" class="btn btn-primary">Avaliar Profissional</button>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    {% endif %}
                                     {% endfor %}
                                 </div>
-                                <!-- Paginação (mantida igual) -->
+                                <!-- Paginação (atualizado com lógica de páginas) -->
                                 <nav class="mt-4">
                                     <ul class="pagination justify-content-center">
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                                        <li class="page-item {% if pagina_atual == 1 %}disabled{% endif %}">
+                                            <a class="page-link" href="?page={{ pagina_atual - 1 }}" tabindex="-1">Anterior</a>
                                         </li>
-                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                        <li class="page-item">
-                                            <a class="page-link" href="#">Próxima</a>
+                                        {% for p in range(1, total_paginas + 1) %}
+                                            <li class="page-item {% if p == pagina_atual %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+                                            </li>
+                                        {% endfor %}
+                                        <li class="page-item {% if pagina_atual == total_paginas %}disabled{% endif %}">
+                                            <a class="page-link" href="?page={{ pagina_atual + 1 }}">Próxima</a>
                                         </li>
                                     </ul>
                                 </nav>

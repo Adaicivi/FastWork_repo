@@ -162,3 +162,9 @@ def deletar_usuario(usuario_id: int, senha_hash: str) -> int:
         cursor = conexao.cursor()
         cursor.execute(DELETAR_USUARIO_POR_ID_SENHA, (usuario_id, senha_hash))
         return cursor.rowcount > 0
+
+def contar_usuarios_tipo_ab():
+    with obter_conexao() as conexao:
+        cursor = conexao.cursor()
+        cursor.execute("SELECT COUNT(*) FROM usuario WHERE tipo IN ('a', 'b')")
+        return cursor.fetchone()[0]
