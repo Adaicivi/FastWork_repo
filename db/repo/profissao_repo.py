@@ -31,3 +31,12 @@ def exibir_profissao_ordenada() -> list[Profissao]:
         cursor = conexao.cursor()
         cursor.execute(EXIBIR_PROFISSAO_ORDENADA)
         return cursor.fetchall()
+
+def buscar_profissao_por_nome(nome: str):
+    with obter_conexao() as conexao:
+        cursor = conexao.cursor()
+        cursor.execute("SELECT * FROM profissao WHERE nome = ?", (nome,))
+        resultado = cursor.fetchone()
+        if resultado:
+            return Profissao(id=resultado["id"], nome=resultado["nome"], descricao=resultado["descricao"])
+        return None
