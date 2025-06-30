@@ -9,7 +9,7 @@ class Usuario:
     id: int
     nome : str
     email : str
-    senha : str
+    senha_hash : str
     data_nascimento : str
     cpf : str
     telefone : str

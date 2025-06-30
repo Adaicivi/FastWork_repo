@@ -611,7 +611,7 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modalRedefinirSenha">
-                                            <i class="bi bi-key"></i> Redefinir Senha
+                                            <i class="bi bi-key"></i> Redefinir senha_hash
                                         </button>
                                     </div>
                                 </div>
@@ -628,31 +628,31 @@
         </div>
     </div>
 
-    <!-- Modal de Redefinição de Senha -->
+    <!-- Modal de Redefinição de senha_hash -->
     <div class="modal fade" id="modalRedefinirSenha" tabindex="-1" aria-labelledby="modalRedefinirSenhaLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form method="post" action="/senha" class="modal-content">
+            <form method="post" action="/senha_hash" class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalRedefinirSenhaLabel">Redefinir Senha</h5>
+                    <h5 class="modal-title" id="modalRedefinirSenhaLabel">Redefinir senha_hash</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="senha_atual" class="form-label">Senha Atual</label>
+                        <label for="senha_atual" class="form-label">senha_hash Atual</label>
                         <input type="password" class="form-control" id="senha_atual" name="senha_atual" required>
                     </div>
                     <div class="mb-3">
-                        <label for="nova_senha" class="form-label">Nova Senha</label>
+                        <label for="nova_senha" class="form-label">Nova senha_hash</label>
                         <input type="password" class="form-control" id="nova_senha" name="nova_senha" required>
                     </div>
                     <div class="mb-3">
-                        <label for="conf_nova_senha" class="form-label">Confirmar Nova Senha</label>
+                        <label for="conf_nova_senha" class="form-label">Confirmar Nova senha_hash</label>
                         <input type="password" class="form-control" id="conf_nova_senha" name="conf_nova_senha" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar Nova Senha</button>
+                    <button type="submit" class="btn btn-primary">Salvar Nova senha_hash</button>
                 </div>
             </form>
         </div>

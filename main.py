@@ -57,13 +57,16 @@ def validar_cpf(cpf: str) -> bool:
 
 @app.get("/")
 async def read_root(request: Request):
-    usuario = obter_usuario_logado(request)
+    try:
+        usuario = obter_usuario_logado(request)
+    except Exception:
+        usuario = None
     return templates.TemplateResponse("menu.html", {"request": request, "usuario": usuario})
 
 @app.get("/quero-contratar/{id}")
 async def read_ususario(request: Request, id: int):
     usuario = obter_usuario_por_id(id)
-    response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": usuario})
+    response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": [usuario]})
     return response
 
 @app.get("/quero-contratar")
@@ -96,13 +99,13 @@ async def cadastrar_usuario(
     request: Request,
     nome: str = Form(),
     email: str = Form(),
-    senha: str = Form(),
+    senha: str = Form(),  # Recebe senha em texto puro
     imagem: UploadFile = File(None),
     cpf: str = Form(),
     telefone: str = Form(),
     data_nascimento: str = Form(),
     conf_senha: str = Form(),
-    endereco: Optional[str] = Form(None),  # Linha nova
+    endereco: Optional[str] = Form(None),
 ):
     if not validar_cpf(cpf):
         raise HTTPException(status_code=400, detail="CPF inválido")
@@ -125,8 +128,7 @@ async def cadastrar_usuario(
             url=f"/uploads/{imagem_nome}",
             criado_em=None
         )
-        imagem_obj = inserir_imagem(imagem_obj)
-        imagem_id = imagem_obj.id
+        imagem_id = inserir_imagem(imagem_obj)
     else:
         imagem_id = None
     endereco_obj = None
@@ -141,7 +143,7 @@ async def cadastrar_usuario(
         telefone=telefone,
         data_nascimento=data_nascimento,
         tipo="c",
-        senha=hash_senha(senha),
+        senha_hash=hash_senha(senha),  # Só hasheia uma vez a senha digitada
         endereco=endereco_obj,
     )
     usuario = inserir_usuario(usuario)
@@ -158,10 +160,9 @@ async def read_login(request: Request):
 async def fazer_login(
     request: Request, 
     email: str = Form(), 
-    senha: str = Form()):
+    senha: str = Form()):  # Recebe senha em texto puro
     usuario = autenticar_usuario(email, senha)
     if not usuario:
-        # Retorne o template com mensagem de erro, se quiser
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
     usuario_json = {
         "id": usuario.id,
@@ -169,7 +170,7 @@ async def fazer_login(
         "email": usuario.email,
     }
     request.session["usuario"] = usuario_json
-    request.session["usuario_id"] = usuario.id  # <-- ESSENCIAL!
+    request.session["usuario_id"] = usuario.id
     return RedirectResponse(url="/", status_code=303)
 
 
@@ -249,8 +250,8 @@ async def atualizar_perfil(
     request.session["usuario"] = usuario_json
     return RedirectResponse(url="/quero-trabalhar", status_code=303)
 
-@app.get("/senha")
-async def senha(request: Request):
+@app.get("/senha_hash")
+async def senha_hash(request: Request):
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
@@ -259,7 +260,7 @@ async def senha(request: Request):
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return templates.TemplateResponse("quero-trabalhar.html", {"request": request, "usuario": usuario})
 
-@app.post("/senha")
+@app.post("/senha_hash")
 async def atualizar_senha(
     request: Request,
     senha_atual: str = Form(),
@@ -273,12 +274,12 @@ async def atualizar_senha(
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     if not autenticar_usuario(usuario.email, senha_atual):
-        raise HTTPException(status_code=400, detail="Senha atual incorreta")
+        raise HTTPException(status_code=400, detail="senha_hash atual incorreta")
     if nova_senha != conf_nova_senha:
         raise HTTPException(status_code=400, detail="As novas senhas não conferem")
-    usuario.senha = hash_senha(nova_senha)
+    usuario.senha_hash = hash_senha(nova_senha)
     if not atualizar_usuario(usuario):
-        raise HTTPException(status_code=400, detail="Erro ao atualizar senha")
+        raise HTTPException(status_code=400, detail="Erro ao atualizar senha_hash")
     return RedirectResponse(url="/quero-trabalhar", status_code=303)
 
 

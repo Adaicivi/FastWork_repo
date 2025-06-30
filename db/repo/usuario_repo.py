@@ -1,6 +1,6 @@
 from db.data.database import obter_conexao
 from db.models.endereco import Endereco
-from db.sql.usuario_sql import ATUALIZAR_TIPO_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_PAGINA
+from db.sql.usuario_sql import ATUALIZAR_TIPO_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_EMAIL, OBTER_USUARIO_POR_PAGINA
 from db.models.usuario import Usuario
 from db.models.profissao import Profissao
 from db.models.endereco import Endereco
@@ -18,7 +18,7 @@ def inserir_usuario(usuario: Usuario) -> int:
             (
                 usuario.nome,
                 usuario.email,
-                usuario.senha,
+                usuario.senha_hash,
                 usuario.cpf,
                 usuario.telefone,
                 usuario.data_nascimento,
@@ -40,7 +40,7 @@ def atualizar_usuario(usuario: Usuario) -> int:
             (
                 usuario.nome,
                 usuario.email,
-                usuario.senha,
+                usuario.senha_hash,
                 usuario.cpf,
                 usuario.telefone,
                 usuario.data_nascimento,
@@ -102,7 +102,38 @@ def obter_usuario_por_id(usuario_id: int) -> Usuario:
                 id=resultado["id"],
                 nome=resultado["nome"],
                 email=resultado["email"],
-                senha=resultado["senha_hash"],
+                senha_hash=resultado["senha_hash"],
+                data_nascimento=resultado["data_nascimento"],
+                cpf=resultado["cpf"],
+                telefone=resultado["telefone"],
+                endereco=Endereco(
+                    id=resultado["endereco_id"],
+                    cidade=resultado["endereco_cidade"],
+                    uf=resultado["endereco_uf"]
+                ) if resultado["endereco_id"] else None,
+                imagem=resultado["url_imagem"],
+                experiencia=resultado["experiencia"],
+                link_contato=resultado["link_contato"],
+                profissao=Profissao(
+                    id=resultado["profissao_id"],
+                    nome=resultado["profissao"],
+                    descricao=resultado["profissao_descricao"]
+                ) if resultado["profissao_id"] else None,
+                tipo=resultado["tipo"]
+            )
+        return None
+
+def obter_usuario_por_email(email: str) -> Usuario:
+    with obter_conexao() as conexao:
+        cursor = conexao.cursor()
+        cursor.execute(OBTER_USUARIO_POR_EMAIL, (email,))
+        resultado = cursor.fetchone()
+        if resultado:
+            return Usuario(
+                id=resultado["id"],
+                nome=resultado["nome"],
+                email=resultado["email"],
+                senha_hash=resultado["senha_hash"],
                 data_nascimento=resultado["data_nascimento"],
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
@@ -136,7 +167,7 @@ def obter_usuario_por_pagina(numero_pagina, quantidade) -> list:
                 id=resultado["id"],
                 nome=resultado["nome"],
                 email=resultado["email"],
-                senha=resultado["senha_hash"],
+                senha_hash=resultado["senha_hash"],
                 data_nascimento=resultado["data_nascimento"],
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
