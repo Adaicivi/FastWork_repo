@@ -338,9 +338,8 @@ async def atualizar_imagem_usuario(
     )
     
     imagem_id = imagem_repo.inserir_imagem(imagem_obj)
-    
-    # Atualiza o usuário com a nova imagem
-    usuario.imagem = imagem_id
+    imagem_salva = imagem_repo.obter_imagem_por_id(imagem_id)
+    usuario.imagem = imagem_salva.url if imagem_salva else None
     if not usuario_repo.atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar imagem do usuário")
     
