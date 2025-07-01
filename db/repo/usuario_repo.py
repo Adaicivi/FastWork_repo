@@ -1,4 +1,4 @@
-from db.data.database import obter_conexao
+from util.database import obter_conexao
 from db.models.endereco import Endereco
 from db.sql.usuario_sql import ATUALIZAR_TIPO_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_EMAIL, OBTER_USUARIO_POR_PAGINA
 from db.models.usuario import Usuario

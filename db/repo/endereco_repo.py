@@ -1,5 +1,5 @@
 from db.sql.endereco_sql import *
-from db.data.database import obter_conexao
+from util.database import obter_conexao
 from db.models.endereco import Endereco
 
 def criar_tabela_enderecos() -> bool:

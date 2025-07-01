@@ -1,5 +1,5 @@
 from typing import Optional
-from db.data.database import obter_conexao
+from util.database import obter_conexao
 from db.sql.imagem_sql import *
 from db.models.imagem import Imagem
 

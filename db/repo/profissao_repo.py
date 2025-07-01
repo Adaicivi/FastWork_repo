@@ -1,4 +1,4 @@
-from db.data.database import obter_conexao
+from util.database import obter_conexao
 from db.sql.profissao_sql import CRIAR_TABELA_PROFISSAO, EXIBIR_PROFISSAO_ORDENADA, INSERT_PROFISSAO, BUSCAR_PROFISSAO_POR_ID, ATUALIZAR_PROFISSAO
 from db.models.profissao import Profissao
 

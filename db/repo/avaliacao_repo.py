@@ -1,4 +1,4 @@
-from db.data.database import obter_conexao
+from util.database import obter_conexao
 from db.sql.avaliacao_sql import BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL, CRIAR_TABELA_AVALIACAO, EXIBIR_AVALIACAO_ORDENADA, INSERIR_AVALIACAO, ATUALIZAR_AVALIACAO
 from db.models.avaliacao import Avaliacao
 
