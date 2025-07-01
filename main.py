@@ -256,6 +256,24 @@ async def escolher_plano(request: Request, plano: str = Form(...)):
         raise HTTPException(status_code=400, detail="Plano inválido")
 
     request.session["usuario"] = usuario_json
+    # Redireciona com parâmetros para manter o radio e mostrar mensagem
+    return RedirectResponse(url="/perfil?ativarPerfil=sim&plano=ok", status_code=303)
+
+@app.post("/perfil/ativar")
+async def ativar_perfil_trabalho(request: Request, ativarPerfil: str = Form(...)):
+    usuario_json = request.session.get("usuario")
+    if not usuario_json:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado")
+    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    if ativarPerfil == "nao":
+        usuario.tipo = "c"
+        usuario_repo.atualizar_tipo_usuario(usuario.id, "c")
+        usuario_json["tipo"] = "c"
+        request.session["usuario"] = usuario_json
+    # Se for "sim", não faz nada aqui, pois o plano será escolhido no modal
     return RedirectResponse(url="/perfil", status_code=303)
 
 @app.get("/senha_hash")

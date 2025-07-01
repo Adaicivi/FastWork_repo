@@ -347,9 +347,11 @@
                                     <span class="me-2">Deseja ativar seu perfil de trabalho?</span>
                                     <form method="post" action="/perfil/ativar" id="ativarPerfilForm">
                                         <div class="btn-group" role="group" aria-label="Ativar perfil">
-                                            <input type="radio" class="btn-check" name="ativarPerfil" id="ativarSim" value="sim" autocomplete="off">
+                                            <input type="radio" class="btn-check" name="ativarPerfil" id="ativarSim" value="sim" autocomplete="off"
+                                            {% if request.query_params.get('ativarPerfil') == 'sim' %}checked{% endif %}>
                                             <label class="btn btn-outline-success btn-sm" for="ativarSim">Sim</label>
-                                            <input type="radio" class="btn-check" name="ativarPerfil" id="ativarNao" value="nao" autocomplete="off" checked>
+                                            <input type="radio" class="btn-check" name="ativarPerfil" id="ativarNao" value="nao" autocomplete="off"
+                                            {% if request.query_params.get('ativarPerfil') != 'sim' %}checked{% endif %}>
                                             <label class="btn btn-outline-danger btn-sm" for="ativarNao">Não</label>
                                         </div>
                                         <button type="submit" class="btn btn-primary btn-sm ms-2">Salvar</button>
@@ -667,15 +669,33 @@
             }
         }
 
-        // Ao marcar "Sim" para ativar perfil, abre o modal de planos
         document.addEventListener('DOMContentLoaded', function() {
+            // Ao marcar "Sim", abre o modal e impede submit do form de ativação
             document.getElementById('ativarSim').addEventListener('change', function() {
                 if (this.checked) {
                     var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
                     modalPlanos.show();
                 }
             });
+
+            // Intercepta o submit do form de ativação
+            document.getElementById('ativarPerfilForm').addEventListener('submit', function(e) {
+                // Se "Sim" está marcado, não envia o form (o usuário deve escolher um plano)
+                if (document.getElementById('ativarSim').checked) {
+                    e.preventDefault();
+                    var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
+                    modalPlanos.show();
+                }
+                // Se "Não" está marcado, permite o submit normalmente
+            });
         });
     </script>
+
+    {% if request.query_params.get('plano') == 'ok' %}
+    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 2000; min-width: 300px;" role="alert">
+        Plano ativado com sucesso!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+    {% endif %}
 </body>
 </html>
