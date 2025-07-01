@@ -31,7 +31,7 @@ def buscar_media_avaliacao_profissional(profissional_id: int) -> Optional[float]
         cursor = conexao.cursor()
         cursor.execute(BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL, (profissional_id,))
         resultado = cursor.fetchone()
-        if resultado:
+        if resultado and resultado['media'] is not None:
             return resultado['media']
     return None
 
