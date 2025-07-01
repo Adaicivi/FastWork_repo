@@ -389,7 +389,7 @@
                                                 <div class="perfil-card h-100 card">
                                                     <div class="card-body">
                                                         <div class="d-flex align-items-center mb-3">
-                                                            <img src="{{ u.imagem_url if u.imagem_url else '/uploads/default.jpg' }}" class="rounded-circle me-3" alt="{{ u.nome }}">
+                                                            <img src="{% if u.imagem %}/usuarios/imagem/{{u.imagem}}{% else %}/uploads/default.jpg{% endif %}" alt="Foto de perfil" class="img-thumbnail" style="width: 100px; height: 100px;">
                                                             <div>
                                                                 <h5 class="card-title mb-0">{{u.nome}}</h5>
                                                                 <small class="text-muted">
@@ -732,6 +732,51 @@
               </div>
               <div class="modal-footer">
                 <button type="submit" class="btn btn-primary" id="submitBtn{{u.id}}" disabled>Enviar Imagem</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    <!-- Exemplo de card/listagem de usuário -->
+    {% for u in usuarios %}
+    <div class="perfil-card card mb-3">
+      <div class="card-body d-flex align-items-center">
+        <img src="{{ u.imagem_url if u.imagem_url else '/uploads/default.jpg' }}" alt="Foto de perfil" class="me-3 rounded-circle" width="64" height="64">
+        <div>
+          <h5 class="mb-1">{{ u.nome }}</h5>
+          <p class="mb-0">{{ u.profissao }}</p>
+          <!-- Botão para abrir modal de upload de imagem -->
+          <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadimagem{{u.id}}">
+            Alterar Imagem
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Upload de Imagem para este usuário -->
+    <div class="modal fade" id="uploadimagem{{u.id}}" tabindex="-1" aria-labelledby="uploadimagemModalLabel{{u.id}}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg">
+          <div class="modal-header">
+            <h5 class="modal-title" id="uploadimagemModalLabel{{u.id}}">📷 Upload de Imagem</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" enctype="multipart/form-data" action="/usuarios/imagem/{{u.id}}">
+              <div class="upload-area" onclick="document.getElementById('fileInput{{u.id}}').click()">
+                <span class="upload-icon"><i class="bi bi-cloud-arrow-up"></i></span>
+                <span class="upload-text">Clique ou arraste para selecionar uma imagem</span>
+                <input type="file" class="file-input" id="fileInput{{u.id}}" name="imagem" accept="image/*" onchange="showFileInfoModal(this, '{{u.id}}')">
+              </div>
+              <div class="file-info" id="fileInfo{{u.id}}" style="display:none;">
+                <span class="file-name" id="fileName{{u.id}}"></span>
+                <span class="file-size" id="fileSize{{u.id}}"></span>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn{{u.id}}" disabled>Enviar</button>
               </div>
             </form>
           </div>
