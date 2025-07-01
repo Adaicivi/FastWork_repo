@@ -1,9 +1,8 @@
-from typing import Optional
-from fastapi import HTTPException, Request, Response
 import hashlib
-
-from db.models.usuario import Usuario
+from typing import Optional
+from fastapi import HTTPException, Request
 from db.repo import usuario_repo
+from db.models.usuario import Usuario
 
 SECRET_KEY = "729b9f5e3861e5173bb01c12e373a0da69bd3a35bfae7478bdf023811fbafff2"
 
@@ -15,24 +14,13 @@ def verificar_senha(senha_normal: str, senha_hashed: str) -> bool:
 
 def autenticar_usuario(email: str, senha: str):
     usuario = usuario_repo.obter_usuario_por_email(email)
-    print("Usuário encontrado:", usuario)
     if not usuario or not verificar_senha(senha, usuario.senha_hash):
         return None
-    print("Hash esperado:", usuario.senha_hash)
-    print("Hash informado:", hash_senha(senha))
     return usuario
 
 def obter_usuario_logado(request: Request) -> Optional[Usuario]:
-    usuario_id = request.session.get("usuario_id")
-    if not usuario_id:
-        raise HTTPException(status_code=401, detail="Não autenticado")
-    
-    usuario = usuario_repo.obter_usuario_por_id(usuario_id)
+    usuario = request.session.get("usuario")
     if not usuario:
-        request.session.clear()
-        raise HTTPException(status_code=401, detail="Usuário não encontrado")
-    
+        raise HTTPException(status_code=401, detail="Não autenticado")
     return usuario
 
-if __name__ == "__main__":
-    print("senha_hash do usuário:", hash_senha("123456"))

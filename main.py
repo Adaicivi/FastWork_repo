@@ -1,340 +1,446 @@
-from starlette.middleware.sessions import SessionMiddleware
-from fastapi import FastAPI, File, Form, UploadFile, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
+# Imports organizados seguindo padrão do Código 1
+from fastapi.responses import RedirectResponse, JSONResponse
+import uvicorn
+from fastapi import FastAPI, Form, HTTPException, Request, File, UploadFile
 from fastapi.templating import Jinja2Templates
-from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 import uuid
 import aiofiles
-from PIL import Image
-import io
-import re
+from pathlib import Path
 from typing import Optional
 
-import uvicorn
-
-from util.auth import SECRET_KEY, autenticar_usuario, hash_senha, obter_usuario_logado
-from db.repo.imagem_repo import *
-from db.repo.avaliacao_repo import *
-from db.repo.usuario_repo import *
-from db.repo.profissao_repo import *
-from db.repo.endereco_repo import *
+# Models
 from db.models.usuario import Usuario
 from db.models.imagem import Imagem
 
+# Repositories  
+from db.repo import (
+    usuario_repo, 
+    endereco_repo, 
+    profissao_repo,
+    imagem_repo,
+    avaliacao_repo
+)
 
-criar_tabela_avaliacao()
-criar_tabela_imagens()
-criar_tabela_usuario()
-criar_tabela_profissao()
-criar_tabela_enderecos()
+# Utils
+from util import initializer
+from util.auth import SECRET_KEY, autenticar_usuario, hash_senha
+from util.validacao import validar_cpf, validar_imagem
 
-
-# Configuração de diretórios
+# Configurações centralizadas
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 UPLOAD_DIR = Path("uploads")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+# Cria as tabelas no banco de dados se não existirem
+initializer.criar_tabelas()
+# Insere dados iniciais no banco de dados
 
-# Criar instância do FastAPI
-app = FastAPI(title="Upload de Imagem API", version="1.0.0")
+# Configura diretórios necessários
+initializer.configurar_diretorios()
+
+# Cria a instância do FastAPI para a aplicação web
+app = FastAPI(title="Sistema de Contratação", version="1.0.0")
+# Configura o Jinja2 para renderizar templates HTML
 templates = Jinja2Templates(directory="templates")
+# Adiciona o middleware de sessão para gerenciar sessões de usuário
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
-app.mount("/statics", StaticFiles(directory="statics"), name="statics")
+# Configura arquivos estáticos
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
-def validar_cpf(cpf: str) -> bool:
-    cpf = re.sub(r'\D', '', cpf)
-    if len(cpf) != 11 or cpf == cpf[0] * 11:
-        raise HTTPException(status_code=400, detail="CPF deve conter 11 dígitos numéricos e não pode ser uma sequência repetida.")
-    for i in range(9, 11):
-        soma = sum(int(cpf[num]) * ((i+1) - num) for num in range(0, i))
-        digito = ((soma * 10) % 11) % 10
-        if digito != int(cpf[i]):
-            raise HTTPException(status_code=400, detail=f"CPF inválido: dígito verificador {i-8} incorreto.")
-    return True
-
+# ============================================================================
+# ROTAS PRINCIPAIS (seguindo padrão do Código 1)
+# ============================================================================
 
 @app.get("/")
-async def read_root(request: Request):
-    try:
-        usuario = obter_usuario_logado(request)
-    except Exception:
-        usuario = None
-    return templates.TemplateResponse("menu.html", {"request": request, "usuario": usuario})
-
-@app.get("/quero-contratar/{id}")
-async def read_ususario(request: Request, id: int):
-    usuario = obter_usuario_por_id(id)
-    response = templates.TemplateResponse("quero-contratar.html", {"request": request, "usuario": [usuario]})
+def read_root(request: Request):
+    # Obtém o usuário logado se existir
+    usuario_logado = _obter_usuario_sessao(request)
+    # Retorna a página inicial
+    response = templates.TemplateResponse("menu.html", {
+        "request": request, 
+        "usuario": usuario_logado
+    })
     return response
 
-@app.get("/quero-contratar")
-async def read_usuarios(request: Request, page: int = 1):
+@app.get("/usuarios")
+def read_usuarios(request: Request, page: int = 1):
+    # Obtém os primeiros 12 usuários do banco de dados
     quantidade_por_pagina = 12
-    usuarios = obter_usuario_por_pagina(page, quantidade_por_pagina)
-    total_usuarios = contar_usuarios_tipo_ab()
+    usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
+    total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
     total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
-    return templates.TemplateResponse(
-        "quero-contratar.html",
-        {
-            "request": request,
-            "usuario": usuarios,
-            "pagina_atual": page,
-            "total_paginas": total_paginas,
-            "total_usuarios": total_usuarios  # <-- Adicione isso
-        }
-    )
+    
+    # Cria uma página com os usuários capturados
+    response = templates.TemplateResponse("quero-contratar.html", {
+        "request": request, 
+        "usuario": usuarios,
+        "pagina_atual": page,
+        "total_paginas": total_paginas,
+        "total_usuarios": total_usuarios
+    })
+    return response
 
-@app.get("/tela-inicio")
-async def tela_inicio(request: Request):
-    return templates.TemplateResponse("tela_inicio.html", {"request": request})
+@app.get("/usuarios/{id}")
+def read_usuario(request: Request, id: int):
+    # Obtém um usuário específico do banco de dados pelo ID
+    usuario = usuario_repo.obter_usuario_por_id(id)
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Cria uma página com o usuário capturado
+    response = templates.TemplateResponse("quero-contratar.html", {
+        "request": request, 
+        "usuario": [usuario]
+    })
+    return response
 
-@app.get("/cadastro")
-async def read_cadastro(request: Request):
+# ============================================================================
+# ROTAS DE AUTENTICAÇÃO (seguindo padrão do Código 1)
+# ============================================================================
+
+@app.get("/cadastrar")
+def read_cadastrar(request: Request):
+    # Retorna a página de cadastro de usuário
     return templates.TemplateResponse("cadastro.html", {"request": request})
 
-@app.post("/cadastro")
+@app.post("/cadastrar")
 async def cadastrar_usuario(
     request: Request,
     nome: str = Form(),
     email: str = Form(),
-    senha: str = Form(),  # Recebe senha em texto puro
-    imagem: UploadFile = File(None),
     cpf: str = Form(),
     telefone: str = Form(),
     data_nascimento: str = Form(),
+    senha: str = Form(),
     conf_senha: str = Form(),
-    endereco: Optional[str] = Form(None),
+    endereco: Optional[str] = Form(None)
 ):
+    # Validações básicas seguindo padrão do Código 1
     if not validar_cpf(cpf):
         raise HTTPException(status_code=400, detail="CPF inválido")
+    
     if senha != conf_senha:
         raise HTTPException(status_code=400, detail="As senhas não conferem")
-    imagem_nome = None
-    if imagem:
-        contents = await imagem.read()
-        if not is_valid_image(imagem, contents):
-            raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
-        imagem_nome = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
-        caminho_arquivo = UPLOAD_DIR / imagem_nome
-        async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
-            await arquivo.write(contents)
-        imagem_obj = Imagem(
-            id=None,
-            usuario_id=0,  # ou usuario.id se já existir
-            nome_arquivo=imagem_nome,
-            nome_arquivo_original=imagem.filename,
-            url=f"/uploads/{imagem_nome}",
-            criado_em=None
-        )
-        imagem_id = inserir_imagem(imagem_obj)
-    else:
-        imagem_id = None
+    
+    # Busca endereco se informado
     endereco_obj = None
     if endereco:
-        endereco_obj = obter_endereco_por_id(int(endereco))
+        endereco_obj = endereco_repo.obter_endereco_por_id(int(endereco))
+    
+    # Cria um objeto Usuario com os dados informados
     usuario = Usuario(
         id=0,
         nome=nome,
         email=email,
-        imagem=imagem_id,
         cpf=cpf,
         telefone=telefone,
         data_nascimento=data_nascimento,
-        tipo="c",
-        senha_hash=hash_senha(senha),  # Só hasheia uma vez a senha digitada
+        senha_hash=hash_senha(senha),
+        tipo="c",  # cliente por padrão
         endereco=endereco_obj,
+        imagem=None  # sem imagem no cadastro inicial
     )
-    usuario = inserir_usuario(usuario)
+    
+    # Tenta inserir o usuário no repositório
+    usuario = usuario_repo.inserir_usuario(usuario)
     if not usuario:
         raise HTTPException(status_code=400, detail="Erro ao cadastrar usuário")
-    return RedirectResponse(url="/quero-contratar", status_code=303)
+    
+    # Se conseguiu inserir o usuário, redireciona para a página de login
+    return RedirectResponse(url="/login", status_code=303)
 
 @app.get("/login")
-async def read_login(request: Request):
+def read_login(request: Request):
+    # Retorna a página de login
     return templates.TemplateResponse("login.html", {"request": request})
 
-
 @app.post("/login")
-async def fazer_login(
+async def login(
     request: Request, 
     email: str = Form(), 
-    senha: str = Form()):  # Recebe senha em texto puro
+    senha: str = Form()
+):
+    # Verifica se o email e senha informados estão corretos
     usuario = autenticar_usuario(email, senha)
     if not usuario:
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
+    
+    # Se encontrou o usuário, cria um objeto JSON com os dados do usuário
     usuario_json = {
         "id": usuario.id,
         "nome": usuario.nome,
         "email": usuario.email,
+        "tipo": usuario.tipo
     }
+    
+    # Armazena os dados do usuário na sessão
     request.session["usuario"] = usuario_json
     request.session["usuario_id"] = usuario.id
+    
+    # Redireciona para a página inicial
     return RedirectResponse(url="/quero-contratar", status_code=303)
-
 
 @app.get("/logout")
 async def logout(request: Request):
+    # Limpa a sessão do usuário
     request.session.clear()
-    return RedirectResponse(url="/login", status_code=303)
+    # Redireciona para a página inicial
+    return RedirectResponse(url="/", status_code=303)
 
-@app.get("/quero-trabalhar")
-async def perfil(request: Request):
-    usuario = obter_usuario_logado(request)
+# ============================================================================
+# ROTAS DE PERFIL (seguindo padrão do Código 1)
+# ============================================================================
+
+@app.get("/perfil")
+async def perfil_usuario(request: Request):
+    # Captura os dados do usuário da sessão (logado)
+    usuario_json = request.session.get("usuario")
+    if not usuario_json:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado")
+    
+    # Busca os dados do usuário no repositório
+    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
     if not usuario:
-        return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse("quero-trabalhar.html", {"request": request, "usuario": usuario})
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Retorna a página de perfil com os dados do usuário
+    return templates.TemplateResponse("quero-trabalhar.html", {
+        "request": request, 
+        "usuario": usuario
+    })
 
-@app.post("/quero-trabalhar")
+@app.post("/perfil")
 async def atualizar_perfil(
     request: Request,
     nome: str = Form(),
     email: str = Form(),
-    imagem: UploadFile = File(None),
-    experiencia: str = Form(),
     telefone: str = Form(),
-    link_contato: str = Form(),
-    endereco: str = Form(),
-    profissao: str = Form(),
-    tipo: str = Form(),
+    experiencia: str = Form(None),
+    link_contato: str = Form(None), 
+    endereco: str = Form(None),
+    profissao: str = Form(None),
+    tipo: str = Form("c")
 ):
+    # Captura os dados do usuário da sessão (logado)
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
-    usuario = obter_usuario_por_id(usuario_json["id"])
+    
+    # Busca os dados do usuário no repositório
+    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Atualiza os dados do usuário
     usuario.nome = nome
     usuario.email = email
-
-    if imagem:
-        contents = await imagem.read()
-        if not is_valid_image(imagem, contents):
-            raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
-        nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
-        caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
-        async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
-            await arquivo.write(contents)
-        # Insere na tabela imagem e pega o ID
-        imagem_id = inserir_imagem(
-            usuario_id=usuario.id,
-            nome_arquivo=nome_arquivo_unico,
-            nome_arquivo_original=imagem.filename,
-            url=f"/uploads/{nome_arquivo_unico}"
-        )
-        usuario.imagem = imagem_id  # <-- agora é o ID da imagem
-    # Se não enviar imagem, mantém a atual
-    usuario.experiencia = experiencia
     usuario.telefone = telefone
+    usuario.experiencia = experiencia
     usuario.link_contato = link_contato
-    usuario.endereco = obter_endereco_por_id(int(endereco))
-    usuario.profissao = buscar_profissao_por_id(int(profissao))
     usuario.tipo = tipo
-    if not atualizar_usuario(usuario):
+    
+    # Atualiza relacionamentos se informados
+    if endereco:
+        usuario.endereco = endereco_repo.obter_endereco_por_id(int(endereco))
+    if profissao:
+        usuario.profissao = profissao_repo.obter_profissao_por_id(int(profissao))
+    
+    # Atualiza o usuário no repositório
+    if not usuario_repo.atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar perfil")
-    # Atualiza sessão
+    
+    # Atualiza os dados do usuário na sessão
     usuario_json = {
         "id": usuario.id,
         "nome": usuario.nome,
         "email": usuario.email,
-        "imagem": usuario.imagem,
-        "experiencia": usuario.experiencia,
-        "cpf": usuario.cpf,
-        "telefone": usuario.telefone,
-        "link_contato": usuario.link_contato,
-        "endereco": usuario.endereco,
-        "profissao": usuario.profissao,
         "tipo": usuario.tipo
     }
     request.session["usuario"] = usuario_json
-    return RedirectResponse(url="/quero-trabalhar", status_code=303)
+    
+    # Redireciona para a página de perfil
+    return RedirectResponse(url="/perfil", status_code=303)
 
-@app.get("/senha_hash")
-async def senha_hash(request: Request):
+@app.get("/senha")
+async def senha_usuario(request: Request):
+    # Captura os dados do usuário da sessão (logado)
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
-    usuario = obter_usuario_por_id(usuario_json["id"])
-    if not usuario:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    return templates.TemplateResponse("quero-trabalhar.html", {"request": request, "usuario": usuario})
+    
+    # Retorna a página de alteração de senha
+    return templates.TemplateResponse("senha.html", {"request": request})
 
-@app.post("/senha_hash")
+@app.post("/senha")
 async def atualizar_senha(
     request: Request,
     senha_atual: str = Form(),
     nova_senha: str = Form(),
     conf_nova_senha: str = Form()
 ):
+    # Captura os dados do usuário da sessão (logado)
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
-    usuario = obter_usuario_por_id(usuario_json["id"])
+    
+    # Busca os dados do usuário no repositório
+    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Verifica a senha atual
     if not autenticar_usuario(usuario.email, senha_atual):
-        raise HTTPException(status_code=400, detail="senha_hash atual incorreta")
+        raise HTTPException(status_code=400, detail="Senha atual incorreta")
+    
+    # Verifica se as novas senhas conferem
     if nova_senha != conf_nova_senha:
-        raise HTTPException(status_code=400, detail="As novas senhas não conferem")
-    usuario.senha_hash = hash_senha(nova_senha)
-    if not atualizar_usuario(usuario):
-        raise HTTPException(status_code=400, detail="Erro ao atualizar senha_hash")
-    return RedirectResponse(url="/quero-trabalhar", status_code=303)
+        raise HTTPException(status_code=400, detail="As senhas não conferem")
+    
+    # Atualiza a senha do usuário
+    if not usuario_repo.atualizar_senha_usuario(usuario.id, hash_senha(nova_senha)):
+        raise HTTPException(status_code=400, detail="Erro ao atualizar senha")
+    
+    # Redireciona para a página de perfil
+    return RedirectResponse(url="/perfil", status_code=303)
 
+# ============================================================================
+# ROTAS DE UPLOAD DE IMAGEM (nova funcionalidade organizada)
+# ============================================================================
 
-@app.get("/tela-inicio")
-async def tela_inicio(request: Request):
-    return templates.TemplateResponse("tela_inicio.html", {"request": request})
-
-
-# Configurações de upload
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
-ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
-
-def is_valid_image(file: UploadFile, contents: bytes) -> bool:
-    if not file.filename:  # Verificar se filename existe
-        return False
-    ext = Path(file.filename).suffix.lower()
-    if ext not in ALLOWED_EXTENSIONS:
-        return False
-    try:
-        Image.open(io.BytesIO(contents))
-        return True
-    except Exception:
-        return False
-
-@app.post("/upload")
-async def upload_image(request: Request, image: UploadFile = File(...)):
-    contents = await image.read()
-    if not image.filename:
-        raise HTTPException(status_code=400, detail="Nenhum arquivo enviado")
-    if len(contents) > MAX_FILE_SIZE:
-        raise HTTPException(status_code=413, detail="Arquivo muito grande")
-    if not is_valid_image(image, contents):
-        raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
-    nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(image.filename).suffix.lower()}"
-    caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
-    async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
-        await arquivo.write(contents)
-    # --- Inserir no banco ---
-    usuario = obter_usuario_logado(request)
+@app.get("/usuarios/imagem/{id}")
+async def gerenciar_imagem_usuario(request: Request, id: int):
+    # Verifica se é o próprio usuário ou admin
+    usuario_json = request.session.get("usuario")
+    if not usuario_json or (usuario_json["id"] != id and usuario_json.get("tipo") != "admin"):
+        raise HTTPException(status_code=403, detail="Acesso negado")
+    
+    # Busca o usuário
+    usuario = usuario_repo.obter_usuario_por_id(id)
     if not usuario:
-        raise HTTPException(status_code=401, detail="Usuário não autenticado")
-    inserir_imagem(
-        usuario_id=usuario.id,
-        nome_arquivo=nome_arquivo_unico,
-        nome_arquivo_original=image.filename,
-        url=f"/uploads/{nome_arquivo_unico}"
-    )
-    return JSONResponse(content={
-        "sucesso": True,
-        "nome_arquivo": nome_arquivo_unico,
-        "url": f"/uploads/{nome_arquivo_unico}"
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Retorna página de gerenciamento de imagem
+    return templates.TemplateResponse("gerenciar_imagem.html", {
+        "request": request, 
+        "usuario": usuario
     })
 
-@app.get("/uploads/list")
+@app.post("/usuarios/imagem/{id}")
+async def atualizar_imagem_usuario(
+    request: Request, 
+    id: int,
+    imagem: UploadFile = File(...)
+):
+    # Verifica se é o próprio usuário ou admin
+    usuario_json = request.session.get("usuario")
+    if not usuario_json or (usuario_json["id"] != id and usuario_json.get("tipo") != "admin"):
+        raise HTTPException(status_code=403, detail="Acesso negado")
+    
+    # Busca o usuário
+    usuario = usuario_repo.obter_usuario_por_id(id)
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Valida e processa a imagem
+    contents = await imagem.read()
+    if not _validar_upload_imagem(imagem, contents):
+        raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
+    
+    # Salva o arquivo
+    nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
+    caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
+    
+    async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
+        await arquivo.write(contents)
+    
+    # Cria registro da imagem no banco
+    imagem_obj = Imagem(
+        id=None,
+        usuario_id=id,
+        nome_arquivo=nome_arquivo_unico,
+        nome_arquivo_original=imagem.filename,
+        url=f"/uploads/{nome_arquivo_unico}",
+        criado_em=None
+    )
+    
+    imagem_id = imagem_repo.inserir_imagem(imagem_obj)
+    
+    # Atualiza o usuário com a nova imagem
+    usuario.imagem = imagem_id
+    if not usuario_repo.atualizar_usuario(usuario):
+        raise HTTPException(status_code=400, detail="Erro ao atualizar imagem do usuário")
+    
+    # Redireciona para o perfil
+    return RedirectResponse(url="/perfil", status_code=303)
+
+@app.delete("/usuarios/imagem/{id}")
+async def excluir_imagem_usuario(request: Request, id: int):
+    # Verifica se é o próprio usuário ou admin
+    usuario_json = request.session.get("usuario")
+    if not usuario_json or (usuario_json["id"] != id and usuario_json.get("tipo") != "admin"):
+        raise HTTPException(status_code=403, detail="Acesso negado")
+    
+    # Busca o usuário
+    usuario = usuario_repo.obter_usuario_por_id(id)
+    if not usuario or not usuario.imagem:
+        raise HTTPException(status_code=404, detail="Imagem não encontrada")
+    
+    # Remove o arquivo físico
+    imagem = imagem_repo.obter_imagem_por_id(usuario.imagem)
+    if imagem:
+        caminho_arquivo = UPLOAD_DIR / imagem.nome_arquivo
+        if caminho_arquivo.exists():
+            caminho_arquivo.unlink()
+        
+        # Remove do banco
+        imagem_repo.excluir_imagem(imagem.id)
+    
+    # Remove a referência do usuário
+    usuario.imagem = None
+    usuario_repo.atualizar_usuario(usuario)
+    
+    return JSONResponse(content={"success": True, "message": "Imagem removida"})
+
+# ============================================================================
+# ROTAS ADMINISTRATIVAS (seguindo padrão do Código 1)
+# ============================================================================
+
+@app.get("/usuarios/promover/{id}")
+async def promover_usuario(request: Request, id: int):
+    # Busca o usuário pelo ID
+    usuario = usuario_repo.obter_usuario_por_id(id)
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Promove o usuário para administrador
+    usuario_repo.atualizar_tipo_usuario(id, "admin")
+    
+    # Redireciona para a lista de usuários
+    return RedirectResponse(url="/usuarios", status_code=303)
+
+@app.get("/usuarios/rebaixar/{id}")
+async def rebaixar_usuario(request: Request, id: int):
+    # Busca o usuário pelo ID
+    usuario = usuario_repo.obter_usuario_por_id(id)
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Rebaixa o usuário para comum
+    usuario_repo.atualizar_tipo_usuario(id, "c")
+    
+    # Redireciona para a lista de usuários
+    return RedirectResponse(url="/usuarios", status_code=303)
+
+# ============================================================================
+# ROTAS DE API (funcionalidades extras organizadas)
+# ============================================================================
+
+@app.get("/api/uploads/list")
 async def listar_uploads():
+    # Lista todos os uploads disponíveis
     uploads = []
     for file_path in UPLOAD_DIR.glob("*"):
         if file_path.is_file():
@@ -345,23 +451,52 @@ async def listar_uploads():
                 "url": f"/uploads/{file_path.name}",
                 "criado_em": stat.st_ctime
             })
+    
     uploads.sort(key=lambda x: x["criado_em"], reverse=True)
     return JSONResponse(content={"uploads": uploads})
 
-
-@app.delete("/uploads/{filename}")
-async def delete_upload(filename: str):
-    file_path = UPLOAD_DIR / filename
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="Arquivo não encontrado")
-    file_path.unlink()
-    return JSONResponse(content={"success": True, "message": f"{filename} deletado"})
-
-@app.get("/health")
+@app.get("/api/health")
 async def health_check():
-    return {"status": "healthy", "service": "Image Upload API"}
+    # Endpoint de verificação de saúde da aplicação
+    return {"status": "healthy", "service": "Sistema de Contratação"}
 
+# ============================================================================
+# FUNÇÕES AUXILIARES (centralizadas)
+# ============================================================================
+
+def _obter_usuario_sessao(request: Request):
+    """Obtém o usuário da sessão sem lançar exceção"""
+    try:
+        usuario_json = request.session.get("usuario")
+        if usuario_json:
+            return usuario_repo.obter_usuario_por_id(usuario_json["id"])
+    except Exception:
+        pass
+    return None
+
+def _validar_upload_imagem(file: UploadFile, contents: bytes) -> bool:
+    """Valida se o arquivo de upload é uma imagem válida"""
+    if not file.filename:
+        return False
+    
+    # Verifica extensão
+    ext = Path(file.filename).suffix.lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        return False
+    
+    # Verifica tamanho
+    if len(contents) > MAX_FILE_SIZE:
+        return False
+    
+    # Usa validação personalizada se disponível
+    try:
+        return validar_imagem(file, contents)
+    except Exception:
+        return False
+
+# ============================================================================
+# CONFIGURAÇÃO DE EXECUÇÃO
+# ============================================================================
 
 if __name__ == "__main__":
-    uvicorn.run(app, port=8000)
-
+    uvicorn.run(app=app, port=8000)
