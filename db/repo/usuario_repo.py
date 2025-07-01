@@ -5,7 +5,7 @@ from db.models.usuario import Usuario
 from db.models.endereco import Endereco
 from db.models.profissao import Profissao
 
-def criar_tabela_usuarios() -> bool:
+def criar_tabela_usuario() -> bool:
     try: 
         with obter_conexao() as conexao:            
             cursor = conexao.cursor()
@@ -19,7 +19,6 @@ def inserir_usuario(usuario: Usuario) -> Optional[int]:
     try:
         with obter_conexao() as conexao:
             cursor = conexao.cursor()
-            # Corrigindo a ordem dos parâmetros conforme a query SQL
             cursor.execute(INSERIR_USUARIO, 
                 (usuario.nome, usuario.email, usuario.senha, usuario.cpf, 
                  usuario.telefone, usuario.data_nascimento, usuario.experiencia, 
@@ -36,7 +35,6 @@ def atualizar_usuario(usuario: Usuario) -> bool:
     try:
         with obter_conexao() as conexao:
             cursor = conexao.cursor()
-            # Corrigindo a ordem dos parâmetros conforme a query SQL
             cursor.execute(ATUALIZAR_USUARIO, 
                 (usuario.nome, usuario.email, usuario.senha, usuario.cpf,
                  usuario.telefone, usuario.data_nascimento, usuario.experiencia,
@@ -104,7 +102,6 @@ def obter_usuario_por_id(usuario_id: int) -> Optional[Usuario]:
         return None
 
 def obter_usuario_por_email(email: str) -> Optional[Usuario]:
-    """Função que estava faltando - implementada conforme a query SQL existente"""
     try:
         with obter_conexao() as conexao:   
             cursor = conexao.cursor()
@@ -147,7 +144,7 @@ def obter_usuarios_por_profissao(profissao_id: int) -> list[Usuario]:
             return [Usuario(
                 nome=resultado["nome"],
                 email=resultado["email"],
-                imagem=resultado["url_imagem"],  # Corrigido para usar url_imagem
+                imagem=resultado["url_imagem"], 
                 experiencia=resultado["experiencia"],
                 cpf=resultado["cpf"],
                 telefone=resultado["telefone"],
@@ -182,7 +179,7 @@ def obter_usuarios_por_pagina(numero_pagina: int, quantidade: int) -> list[Usuar
                     cidade=resultado["endereco_cidade"],
                     uf=resultado["endereco_uf"]
                 ) if resultado["endereco_id"] else None,
-                imagem=resultado["url_imagem"],  # Corrigido para usar url_imagem
+                imagem=resultado["url_imagem"],
                 experiencia=resultado["experiencia"],
                 link_contato=resultado["link_contato"],
                 profissao=Profissao(
