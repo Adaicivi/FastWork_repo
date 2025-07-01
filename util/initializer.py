@@ -1,7 +1,7 @@
 from db.repo import (
     avaliacao_repo,
     imagem_repo,
-    usuario_repo,
+    usuario_repo
 )
 from config.settings import UPLOAD_DIR
 
