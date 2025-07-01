@@ -22,6 +22,7 @@ from db.repo import (
     imagem_repo,
     avaliacao_repo
 )
+from db.sql.avaliacao_sql import BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL
 
 # Utils
 from util import initializer
@@ -71,12 +72,20 @@ def read_usuarios(request: Request, page: int = 1):
     usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
     total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
     total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
+    medias_avaliacao = {}
+    for u in usuarios:
+        if u.tipo in ['a', 'b']:
+            media = avaliacao_repo.buscar_media_avaliacao_profissional(u.id)
+            medias_avaliacao[u.id] = media
+    usuario_logado = _obter_usuario_sessao(request)
     return templates.TemplateResponse("quero-contratar.html", {
         "request": request,
         "usuario": usuarios,
         "pagina_atual": page,
         "total_paginas": total_paginas,
-        "total_usuarios": total_usuarios
+        "total_usuarios": total_usuarios,
+        "medias_avaliacao": medias_avaliacao,
+        "usuario_logado": usuario_logado
     })
 
 @app.get("/usuarios/{id}")
@@ -84,9 +93,11 @@ def read_usuario(request: Request, id: int):
     usuario = usuario_repo.obter_usuario_por_id(id)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    usuario_logado = _obter_usuario_sessao(request)
     return templates.TemplateResponse("quero-contratar.html", {
         "request": request,
-        "usuario": [usuario]
+        "usuario": [usuario],
+        "usuario_logado": usuario_logado
     })
 
 # ============================================================================
