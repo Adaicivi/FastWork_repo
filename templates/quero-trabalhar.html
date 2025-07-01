@@ -327,11 +327,6 @@
                                     <i class="bi bi-person-badge me-1"></i> Perfil de Trabalho
                                 </button>
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="planos-tab" data-bs-toggle="tab" data-bs-target="#planos-tab-pane" type="button" role="tab">
-                                    <i class="bi bi-gem me-1"></i> Planos de Exibição
-                                </button>
-                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -407,8 +402,37 @@
                                                         </select>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <label class="form-label">Endereço</label>
-                                                        <input type="text" class="form-control" name="endereco" value="{{ usuario.endereco }}">
+                                                        <label class="form-label">Estado</label>
+                                                        <select class="form-select" name="estado" >
+                                                            <option value="">Selecione</option>
+                                                            <option value="AC" {% if usuario.estado == 'AC' %}selected{% endif %}>Acre</option>
+                                                            <option value="AL" {% if usuario.estado == 'AL' %}selected{% endif %}>Alagoas</option>
+                                                            <option value="AP" {% if usuario.estado == 'AP' %}selected{% endif %}>Amapá</option>
+                                                            <option value="AM" {% if usuario.estado == 'AM' %}selected{% endif %}>Amazonas</option>
+                                                            <option value="BA" {% if usuario.estado == 'BA' %}selected{% endif %}>Bahia</option>
+                                                            <option value="CE" {% if usuario.estado == 'CE' %}selected{% endif %}>Ceará</option>
+                                                            <option value="DF" {% if usuario.estado == 'DF' %}selected{% endif %}>Distrito Federal</option>
+                                                            <option value="ES" {% if usuario.estado == 'ES' %}selected{% endif %}>Espírito Santo</option>
+                                                            <option value="GO" {% if usuario.estado == 'GO' %}selected{% endif %}>Goiás</option>
+                                                            <option value="MA" {% if usuario.estado == 'MA' %}selected{% endif %}>Maranhão</option>
+                                                            <option value="MT" {% if usuario.estado == 'MT' %}selected{% endif %}>Mato Grosso</option>
+                                                            <option value="MS" {% if usuario.estado == 'MS' %}selected{% endif %}>Mato Grosso do Sul</option>
+                                                            <option value="MG" {% if usuario.estado == 'MG' %}selected{% endif %}>Minas Gerais</option>
+                                                            <option value="PA" {% if usuario.estado == 'PA' %}selected{% endif %}>Pará</option>
+                                                            <option value="PB" {% if usuario.estado == 'PB' %}selected{% endif %}>Paraíba</option>
+                                                            <option value="PR" {% if usuario.estado == 'PR' %}selected{% endif %}>Paraná</option>
+                                                            <option value="PE" {% if usuario.estado == 'PE' %}selected{% endif %}>Pernambuco</option>
+                                                            <option value="PI" {% if usuario.estado == 'PI' %}selected{% endif %}>Piauí</option>
+                                                            <option value="RJ" {% if usuario.estado == 'RJ' %}selected{% endif %}>Rio de Janeiro</option>
+                                                            <option value="RN" {% if usuario.estado == 'RN' %}selected{% endif %}>Rio Grande do Norte</option>
+                                                            <option value="RS" {% if usuario.estado == 'RS' %}selected{% endif %}>Rio Grande do Sul</option>
+                                                            <option value="RO" {% if usuario.estado == 'RO' %}selected{% endif %}>Rondônia</option>
+                                                            <option value="RR" {% if usuario.estado == 'RR' %}selected{% endif %}>Roraima</option>
+                                                            <option value="SC" {% if usuario.estado == 'SC' %}selected{% endif %}>Santa Catarina</option>
+                                                            <option value="SP" {% if usuario.estado == 'SP' %}selected{% endif %}>São Paulo</option>
+                                                            <option value="SE" {% if usuario.estado == 'SE' %}selected{% endif %}>Sergipe</option>
+                                                            <option value="TO" {% if usuario.estado == 'TO' %}selected{% endif %}>Tocantins</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
@@ -435,42 +459,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Tab Planos de Exibição -->
-                    <div class="tab-pane fade" id="planos-tab-pane" role="tabpanel" aria-labelledby="planos-tab">
-                        <div class="content-section">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h2 class="h4">Meus Planos de Exibição</h2>
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPlanos">
-                                    <i class="bi bi-gem me-1"></i> Escolher Plano
-                                </button>
-                            </div>
-                            <div class="alert alert-info shadow-sm mb-4">
-                                Você está atualmente no plano <strong>Gratuito</strong>. Para acessar mais recursos, considere mudar para um plano pago.
-                            </div>
-                            <div class="row g-4 mb-4">
-                                <div class="col-md-6">
-                                    <div class="card border-info shadow-sm h-100">
-                                        <div class="card-body">
-                                            <h5 class="card-title mb-2"><i class="bi bi-gem me-2 text-info"></i>Plano Gratuito</h5>
-                                            <p class="card-text mb-1">Perfil básico, aparece nas buscas, limite de 5 imagens.</p>
-                                            <span class="badge bg-info text-dark">Ativo</span>
-                                        </div>
-                                        <div class="card-footer text-muted small">
-                                            Renovação: Mensal
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Você pode adicionar outros cards de planos ativos aqui -->
-                            </div>
-                            <div class="text-center">
-                                <p class="mb-4">Ou</p>
-                                <button class="btn btn-warning btn-lg px-4 shadow" data-bs-toggle="modal" data-bs-target="#modalPlanos">
-                                    <i class="bi bi-gem me-1"></i> Assinar Plano Premium
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </main>
         </div>
@@ -487,19 +475,23 @@
                 <div class="modal-body">
                     <div class="row">
                         <!-- Coluna da imagem -->
-                        <div class="col-md-4 text-center mb-4 mb-md-0">
-                            <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 180px; height: 180px; margin: 0 auto; overflow: hidden;">
+                        <div class="col-md-4 text-center mb-4 mb-md-0 d-flex flex-column align-items-center">
+                            <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light"
+                                 style="width: 180px; height: 180px; margin: 0 auto; overflow: hidden;">
                                 {% if usuario.imagem %}
-                                    <img src="{{ usuario.imagem_url if usuario.imagem_url else '/uploads/default.jpg' }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    <img src="{{ usuario.imagem_url if usuario.imagem_url else '/uploads/default.jpg' }}"
+                                         alt="imagem do usuário"
+                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 {% else %}
                                     <i class="bi bi-person fs-1 text-secondary"></i>
                                 {% endif %}
                             </div>
-                            <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadimagem">
+                            <button class="btn btn-sm btn-outline-primary w-100 hover-effect mt-2"
+                                    data-bs-toggle="modal" data-bs-target="#uploadimagem">
                                 <i class="bi bi-camera me-1"></i> Alterar imagem
                             </button>
                         </div>
-                        <!-- Coluna dos Formulários -->
+                        <!-- Coluna dos dados do usuário -->
                         <div class="col-md-8">
                             <form>
                                 <div class="row">
@@ -526,9 +518,10 @@
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Data de nascimento</label>
                                         <input type="date" class="form-control" value="{{ usuario.data_nascimento }}">
-                                    <div class="col-md-6">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
                                         <label class="form-label">Área de Atuação</label>
-                                        <select class="form-select" name="profissao" >
+                                        <select class="form-select" name="profissao">
                                             <option value="">Selecione</option>
                                             <option value="Limpeza" {% if usuario.profissao == 'Limpeza' %}selected{% endif %}>Limpeza</option>
                                             <option value="Jardinagem" {% if usuario.profissao == 'Jardinagem' %}selected{% endif %}>Jardinagem</option>
@@ -539,13 +532,11 @@
                                             <option value="Pintor" {% if usuario.profissao == 'Pintor' %}selected{% endif %}>Pintor</option>
                                         </select>
                                     </div>
-                                    </div>
-                                            </select>
-                                        </div>
-                                    <div class="row mb-3">
-                                    <div class="col-md-6">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
                                         <label class="form-label">Estado</label>
-                                        <select class="form-select" name="estado" >
+                                        <select class="form-select" name="estado">
                                             <option value="">Selecione</option>
                                             <option value="AC" {% if usuario.estado == 'AC' %}selected{% endif %}>Acre</option>
                                             <option value="AL" {% if usuario.estado == 'AL' %}selected{% endif %}>Alagoas</option>
@@ -576,23 +567,21 @@
                                             <option value="TO" {% if usuario.estado == 'TO' %}selected{% endif %}>Tocantins</option>
                                         </select>
                                     </div>
-                                </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-12">
-                                            <label class="form-label">Experiência</label>
-                                            <textarea class="form-control" name="experiencia" rows="3">{{ usuario.experiencia }}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-12">
-                                            <label class="form-label">Link para Contato (WhatsApp, LinkedIn, etc.)</label>
-                                            <input type="text" class="form-control" name="link_contato" value="{{ usuario.link_contato }}">
-                                        </div>
-                                    </div>
-                                    </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Senha</label>
                                         <input type="password" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Experiência</label>
+                                        <textarea class="form-control" name="experiencia" rows="3">{{ usuario.experiencia }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Link para Contato (WhatsApp, LinkedIn, etc.)</label>
+                                        <input type="text" class="form-control" name="link_contato" value="{{ usuario.link_contato }}">
                                     </div>
                                 </div>
                                 <div class="text-end">
@@ -658,11 +647,8 @@
                   <div class="card-body">
                     <h2 class="card-title pricing-card-title text-center mb-3">R$0<small class="text-muted fw-light">/mês</small></h2>
                     <ul class="list-unstyled mt-3 mb-4">
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Perfil básico</li>
                       <li><i class="bi bi-check-circle text-success me-2"></i> Aparece nas buscas</li>
-                      <li><i class="bi bi-x-circle text-danger me-2"></i> Destaque limitado</li>
                       <li><i class="bi bi-x-circle text-danger me-2"></i> Sem prioridade</li>
-                      <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagens</li>
                     </ul>
                   </div>
                   <div class="card-footer bg-white text-center">
@@ -686,9 +672,6 @@
                     <ul class="list-unstyled mt-3 mb-4">
                       <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Gratuito</li>
                       <li><i class="bi bi-check-circle text-success me-2"></i> Destaque nas buscas</li>
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Prioridade média</li>
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagens</li>
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Selo Premium</li>
                     </ul>
                   </div>
                   <div class="card-footer bg-white text-center">
