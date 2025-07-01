@@ -251,25 +251,31 @@ async def atualizar_perfil(
     endereco: str = Form(None),
     profissao: str = Form(None),
     tipo: str = Form("c"),
-    imagem: UploadFile = File(None)  # <-- adicione isso
+    imagem: UploadFile = File(None)
 ):
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
+    
     usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    # Atualiza dados básicos
     usuario.nome = nome
     usuario.email = email
     usuario.telefone = telefone
     usuario.experiencia = experiencia
     usuario.link_contato = link_contato
     usuario.tipo = tipo
+    
+    # Processa endereço
     if endereco and endereco.isdigit():
         usuario.endereco = endereco_repo.obter_endereco_por_id(int(endereco))
     else:
         usuario.endereco = None
 
+    # Processa profissão
     if profissao and profissao.isdigit():
         usuario.profissao = profissao_repo.obter_profissao_por_id(int(profissao))
     else:
@@ -277,28 +283,51 @@ async def atualizar_perfil(
 
     # Processa a imagem se enviada
     if imagem and imagem.filename:
-        contents = await imagem.read()
-        if not _validar_upload_imagem(imagem, contents):
-            raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
-        nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
-        caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
-        async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
-            await arquivo.write(contents)
-        # Crie o registro da imagem
-        imagem_obj = Imagem(
-            id=None,
-            usuario_id=usuario.id,
-            nome_arquivo=nome_arquivo_unico,
-            nome_arquivo_original=imagem.filename,
-            url=f"/uploads/{nome_arquivo_unico}",
-            criado_em=None
-        )
-        imagem_id = imagem_repo.inserir_imagem(imagem_obj)
-        if not imagem_id:
-            raise HTTPException(status_code=400, detail="Erro ao salvar imagem")
-        usuario.imagem = f"/uploads/{nome_arquivo_unico}"  # Salve a URL!
+        try:
+            contents = await imagem.read()
+            if not _validar_upload_imagem(imagem, contents):
+                raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
+            
+            # Gera nome único para o arquivo
+            nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
+            caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
+            
+            # Salva o arquivo físico
+            async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
+                await arquivo.write(contents)
+            
+            # Cria o registro da imagem na tabela
+            imagem_obj = Imagem(
+                id=None,
+                usuario_id=usuario.id,
+                nome_arquivo=nome_arquivo_unico,
+                nome_arquivo_original=imagem.filename,
+                url=f"/uploads/{nome_arquivo_unico}",
+                criado_em=None
+            )
+            
+            # Insere a imagem e obtém o ID
+            imagem_id = imagem_repo.inserir_imagem(imagem_obj)
+            if not imagem_id:
+                # Remove o arquivo se não conseguir salvar no banco
+                if caminho_arquivo.exists():
+                    caminho_arquivo.unlink()
+                raise HTTPException(status_code=400, detail="Erro ao salvar imagem no banco")
+            
+            # CORREÇÃO: Salva o ID da imagem, não a URL
+            usuario.imagem = imagem_id
+            
+        except Exception as e:
+            # Remove arquivo se algo der errado
+            if 'caminho_arquivo' in locals() and caminho_arquivo.exists():
+                caminho_arquivo.unlink()
+            raise HTTPException(status_code=400, detail=f"Erro ao processar imagem: {str(e)}")
 
-    usuario_repo.atualizar_usuario(usuario)
+    # Atualiza o usuário no banco
+    if not usuario_repo.atualizar_usuario(usuario):
+        raise HTTPException(status_code=400, detail="Erro ao atualizar usuário")
+    
+    # Atualiza sessão
     usuario_json = {
         "id": usuario.id,
         "nome": usuario.nome,
@@ -306,6 +335,7 @@ async def atualizar_perfil(
         "tipo": usuario.tipo
     }
     request.session["usuario"] = usuario_json
+    
     return RedirectResponse(url="/perfil", status_code=303)
 
 
