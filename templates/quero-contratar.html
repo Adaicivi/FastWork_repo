@@ -392,19 +392,19 @@
                                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                                     <div>
                                                         <span class="text-warning fs-5">
-                                                        {% if a.nota >= 5 %}
-                                                            ★★★★★
-                                                        {% elif a.nota == 4 %}
-                                                            ★★★★☆
-                                                        {% elif a.nota == 3 %}
-                                                            ★★★☆☆
-                                                        {% elif a.nota == 2 %}
-                                                            ★★☆☆☆
-                                                        {% elif a.nota == 1 %}
-                                                            ★☆☆☆☆
-                                                        {% else %}
-                                                            ☆☆☆☆☆
-                                                        {% endif %}
+                                                            {% if a.nota == 5 %}
+                                                                ★★★★★
+                                                            {% elif a.nota >= 4 and a.nota < 5 %}
+                                                                ★★★★☆
+                                                            {% elif a.nota >= 3  and a.nota < 4%}
+                                                                ★★★☆☆
+                                                            {% elif a.nota >= 2  and a.nota < 3 %}
+                                                                ★★☆☆☆
+                                                            {% elif a.nota <= 2 %}
+                                                                ★☆☆☆☆
+                                                            {% else %}
+                                                                ☆☆☆☆☆
+                                                            {% endif %}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -469,15 +469,15 @@
                             {% for a in avaliacao %}
                             <div class="rating mb-3">
                                 <span class="text-warning fs-5">
-                                    {% if a.nota >= 5 %}
+                                    {% if a.nota == 5 %}
                                         ★★★★★
-                                    {% elif a.nota == 4 %}
+                                    {% elif a.nota >= 4 and a.nota < 5 %}
                                         ★★★★☆
-                                    {% elif a.nota == 3 %}
+                                    {% elif a.nota >= 3  and a.nota < 4%}
                                         ★★★☆☆
-                                    {% elif a.nota == 2 %}
+                                    {% elif a.nota >= 2  and a.nota < 3 %}
                                         ★★☆☆☆
-                                    {% elif a.nota == 1 %}
+                                    {% elif a.nota <= 2 %}
                                         ★☆☆☆☆
                                     {% else %}
                                         ☆☆☆☆☆
