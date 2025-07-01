@@ -6,15 +6,15 @@ from db.models.usuario import Usuario
 
 SECRET_KEY = "729b9f5e3861e5173bb01c12e373a0da69bd3a35bfae7478bdf023811fbafff2"
 
-def hash_senha(senha: str) -> str:
-    return hashlib.sha256(senha.encode()).hexdigest()
+def hash_senha(senha_hash: str) -> str:
+    return hashlib.sha256(senha_hash.encode()).hexdigest()
 
 def verificar_senha(senha_normal: str, senha_hashed: str) -> bool:
     return hash_senha(senha_normal) == senha_hashed
 
-def autenticar_usuario(email: str, senha: str):
+def autenticar_usuario(email: str, senha_hash: str):
     usuario = usuario_repo.obter_usuario_por_email(email)
-    if not usuario or not verificar_senha(senha, usuario.senha_hash):
+    if not usuario or not verificar_senha(senha_hash, usuario.senha_hash):
         return None
     return usuario
 
