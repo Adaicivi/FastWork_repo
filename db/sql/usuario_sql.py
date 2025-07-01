@@ -85,3 +85,8 @@ DELETAR_USUARIO_POR_ID_SENHA = """
 DELETE FROM usuario
 WHERE id = ? AND senha_hash = ?;
 """
+
+CONTAR_USUARIOS = """
+SELECT COUNT(*) as total
+FROM usuario;
+"""
