@@ -553,8 +553,12 @@
                     <div class="row">
                         <!-- Coluna da imagem -->
                         <div class="col-md-4 text-center mb-4 mb-md-0">
-                            <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 180px; height: 180px; margin: 0 auto;">
-                                <i class="bi bi-person fs-1 text-secondary"></i>
+                            <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 180px; height: 180px; margin: 0 auto; overflow: hidden;">
+                                {% if usuario.imagem %}
+                                    <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                {% else %}
+                                    <i class="bi bi-person fs-1 text-secondary"></i>
+                                {% endif %}
                             </div>
                             <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadimagem">
                                 <i class="bi bi-camera me-1"></i> Alterar imagem
@@ -647,26 +651,23 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <form method="POST" enctype="multipart/form-data" id="uploadForm" action="/usuarios/imagem/{{ usuario.id }}">
                         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                             <div class="upload-icon">📁</div>
                             <div class="upload-text">
                                 Clique para selecionar uma imagem
                             </div>
-                            <input type="file" id="fileInput" name="image" class="file-input" accept="image/*" onchange="showFileInfo(this)">
+                            <input type="file" id="fileInput" name="imagem" class="file-input" accept="image/*" onchange="showFileInfo(this)">
                         </div>
-                        
-                        <div class="file-info" id="fileInfo">
+                        <div class="file-info" id="fileInfo" style="display:none;">
                             <div class="file-name" id="fileName"></div>
                             <div class="file-size" id="fileSize"></div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Enviar Imagem</button>
+                        </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="submitBtn" disabled onclick="handleUpload()">
-                        Enviar Imagem
-                    </button>
                 </div>
             </div>
         </div>

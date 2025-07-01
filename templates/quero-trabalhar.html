@@ -537,8 +537,12 @@
                     <div class="row">
                         <!-- Coluna da imagem -->
                         <div class="col-md-4 text-center mb-4 mb-md-0">
-                            <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 180px; height: 180px; margin: 0 auto;">
-                                <i class="bi bi-person fs-1 text-secondary"></i>
+                            <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 180px; height: 180px; margin: 0 auto; overflow: hidden;">
+                                {% if usuario.imagem %}
+                                    <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                {% else %}
+                                    <i class="bi bi-person fs-1 text-secondary"></i>
+                                {% endif %}
                             </div>
                             <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadimagem">
                                 <i class="bi bi-camera me-1"></i> Alterar imagem
