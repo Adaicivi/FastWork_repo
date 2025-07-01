@@ -2,8 +2,6 @@ from typing import Optional
 from util.database import obter_conexao
 from db.sql.usuario_sql import ATUALIZAR_SENHA_USUARIO, ATUALIZAR_TIPO_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CONTAR_USUARIOS_TIPO_AB, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_PAGINA  
 from db.models.usuario import Usuario
-from db.models.endereco import Endereco
-from db.models.profissao import Profissao
 
 def criar_tabela_usuario() -> bool:
     try: 
@@ -35,13 +33,21 @@ def atualizar_usuario(usuario: Usuario) -> bool:
     try:
         with obter_conexao() as conexao:
             cursor = conexao.cursor()
-            cursor.execute(ATUALIZAR_USUARIO, 
-                (usuario.nome, usuario.email, usuario.senha_hash, usuario.cpf,
-                 usuario.telefone, usuario.data_nascimento, usuario.experiencia,
-                 usuario.imagem, usuario.link_contato,
-                 usuario.endereco.id if usuario.endereco else None,
-                 usuario.profissao.id if usuario.profissao else None,
-                 usuario.tipo, usuario.id))
+            cursor.execute(ATUALIZAR_USUARIO, (
+                usuario.nome,
+                usuario.email,
+                usuario.senha_hash,
+                usuario.cpf,
+                usuario.telefone,
+                usuario.data_nascimento,
+                usuario.experiencia,
+                usuario.imagem if isinstance(usuario.imagem, int) else (usuario.imagem.id if usuario.imagem else None),
+                usuario.link_contato,
+                usuario.endereco.id if usuario.endereco else None,
+                usuario.profissao.id if usuario.profissao else None,
+                usuario.tipo,
+                usuario.id
+            ))
             return (cursor.rowcount > 0)
     except Exception as e:
         print(f"Erro ao atualizar usuário: {e}")
@@ -101,10 +107,10 @@ def obter_usuario_por_id(usuario_id: int) -> Optional[Usuario]:
                     experiencia=resultado["experiencia"],
                     link_contato=resultado["link_contato"],
                     profissao=Profissao(
-                        id=resultado["profissao_id"],
+                        id=resultado["profissao"],
                         nome=resultado["profissao"],
                         descricao=resultado["profissao_descricao"]
-                    ) if resultado["profissao_id"] else None,
+                    ) if resultado["profissao"] else None,
                     tipo=resultado["tipo"])
             return None
     except Exception as e:
@@ -135,21 +141,21 @@ def obter_usuario_por_email(email: str) -> Optional[Usuario]:
                     experiencia=resultado["experiencia"],
                     link_contato=resultado["link_contato"],
                     profissao=Profissao(
-                        id=resultado["profissao_id"],
+                        id=resultado["profissao"],
                         nome=resultado["profissao"],
                         descricao=resultado["profissao_descricao"]
-                    ) if resultado["profissao_id"] else None,
+                    ) if resultado["profissao"] else None,
                     tipo=resultado["tipo"])
             return None
     except Exception as e:
         print(f"Erro ao obter usuário por email: {e}")
         return None
 
-def obter_usuarios_por_profissao(profissao_id: int) -> list[Usuario]:
+def obter_usuarios_por_profissao(profissao: int) -> list[Usuario]:
     try:
         with obter_conexao() as conexao:      
             cursor = conexao.cursor()
-            cursor.execute(BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, (profissao_id,))
+            cursor.execute(BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, (profissao,))
             resultados = cursor.fetchall()
             return [Usuario(
                 nome=resultado["nome"],
@@ -193,10 +199,10 @@ def obter_usuarios_por_pagina(numero_pagina: int, quantidade: int) -> list[Usuar
                 experiencia=resultado["experiencia"],
                 link_contato=resultado["link_contato"],
                 profissao=Profissao(
-                    id=resultado["profissao_id"],
+                    id=resultado["profissao"],
                     nome=resultado["profissao"],
                     descricao=resultado["profissao_descricao"]
-                ) if resultado["profissao_id"] else None,
+                ) if resultado["profissao"] else None,
                 tipo=resultado["tipo"]
             ) for resultado in resultados]
     except Exception as e:
@@ -221,9 +227,9 @@ def obter_usuarios_por_profissao_nome(nome_profissao: str) -> list[Usuario]:
             cursor.execute("""
                 SELECT u.*, p.nome as profissao, p.descricao as profissao_descricao, i.url as url_imagem, e.cidade as endereco_cidade, e.uf as endereco_uf
                 FROM usuario u
-                JOIN profissao p ON u.profissao_id = p.id
+                JOIN profissao p ON u.profissao = p.id
                 LEFT JOIN imagem i ON u.imagem = i.id
-                LEFT JOIN endereco e ON u.endereco_id = e.id
+                LEFT JOIN endereco e ON u.endereco = e.id
                 WHERE p.nome = ? AND u.tipo IN ('a', 'b')
             """, (nome_profissao,))
             resultados = cursor.fetchall()
@@ -244,10 +250,10 @@ def obter_usuarios_por_profissao_nome(nome_profissao: str) -> list[Usuario]:
                 experiencia=resultado["experiencia"],
                 link_contato=resultado["link_contato"],
                 profissao=Profissao(
-                    id=resultado["profissao_id"],
+                    id=resultado["profissao"],
                     nome=resultado["profissao"],
                     descricao=resultado["profissao_descricao"]
-                ) if resultado["profissao_id"] else None,
+                ) if resultado["profissao"] else None,
                 tipo=resultado["tipo"]
             ) for resultado in resultados]
     except Exception as e:

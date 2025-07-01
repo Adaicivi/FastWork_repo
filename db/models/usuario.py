@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from .profissao import Profissao
-from .endereco import Endereco
 from .imagem import Imagem
 from typing import Optional
 
@@ -14,9 +12,9 @@ class Usuario:
     data_nascimento : datetime
     cpf : str
     telefone : str
-    endereco : Optional[Endereco] = None
+    endereco : Optional[str] =None
     imagem : Optional[Imagem] = None
     experiencia : Optional[str] = None
     link_contato : Optional[str] = None
-    profissao : Optional[Profissao] = None
+    profissao : Optional[str] = None
     tipo : Optional[str] = None

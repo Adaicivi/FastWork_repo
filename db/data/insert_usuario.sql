@@ -1,4 +1,4 @@
-INSERT INTO usuario (nome, email, senha_hash, data_nascimento, imagem, experiencia, cpf, telefone, link_contato, endereco_id, profissao_id, tipo) VALUES
+INSERT INTO usuario (nome, email, senha_hash, data_nascimento, imagem, experiencia, cpf, telefone, link_contato, endereco_id, profissao, tipo) VALUES
 ('João Silva', 'joao.silva@example.com', '96cae35ce8a9b0244178bf28e4966c2ce1b8385723a96a6b838858cdd6ca0a1e', '1985-05-15', NULL, '5 anos de experiencia', '123.456.789-09', '(11) 98765-4321', NULL, 1, 1, 'a'),
 ('Maria Souza', 'maria.souza@example.com', '96cae35ce8a9b0244178bf28e4966c2ce1b8385723a96a6b838858cdd6ca0a1e', '1990-08-22', NULL, 'Especialista em limpeza', '987.654.321-00', '(21) 97654-3210', NULL, 2, 2, 'b'),
 ('Carlos Oliveira', 'carlos.oliveira@example.com', '96cae35ce8a9b0244178bf28e4966c2ce1b8385723a96a6b838858cdd6ca0a1e', '1982-03-10', NULL, NULL, '111.222.333-44', '(31) 96543-2109', NULL, 3, 3, 'a'),

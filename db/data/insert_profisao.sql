@@ -1,4 +1,5 @@
 INSERT INTO profissao (nome, descricao) VALUES
+('nada','nada')
 ('Limpeza', 'Profissional especializado em serviços de limpeza residencial, comercial ou industrial.'),
 ('Jardinagem', 'Profissional responsável pelo cuidado, manutenção e criação de jardins e áreas verdes.'),
 ('Eletricidade', 'Profissional que realiza instalações, manutenções e reparos elétricos.'),
