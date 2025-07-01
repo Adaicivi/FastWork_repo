@@ -384,7 +384,7 @@
                                 <div class="row row-cols-1 row-cols-md-3 g-4">
                                     <!-- Perfil 1 (mantido igual) -->
                                     {% for u in usuario %}
-                                    {% if u.tipo in ['a', 'b'] %}
+                                    {% if u.tipo in ['a', 'b'] and u.profissao in ['Limpeza', 'Jardinagem', 'Eletricidade', 'Encanamento', 'Construção'] %}
                                     <div class="col">
                                         <div class="perfil-card h-100 card">
                                             <div class="card-body">

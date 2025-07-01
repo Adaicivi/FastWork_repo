@@ -74,11 +74,13 @@ def read_root(request: Request):
     return response
 
 
+PROFISSOES_VALIDAS = ["Limpeza", "Jardinagem", "Eletricidade", "Encanamento", "Construção"]
+
 @app.get("/usuarios")
 def read_usuarios(request: Request, page: int = 1, profissao: Optional[str] = None):
     quantidade_por_pagina = 12
-    if profissao and profissao != "todos":
-        usuarios = usuario_repo.obter_usuarios_por_profissao(profissao)
+    if profissao and profissao != "todos" and profissao in PROFISSOES_VALIDAS:
+        usuarios = [u for u in usuario_repo.obter_usuarios_por_profissao(profissao) if u.profissao == profissao]
         # Ordena: tipo 'a' primeiro, depois 'b'
         usuarios = sorted(usuarios, key=lambda u: (u.tipo != 'a', u.tipo))
         total_usuarios = len(usuarios)
