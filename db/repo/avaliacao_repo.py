@@ -14,11 +14,19 @@ def criar_tabela_avaliacao() -> bool:
         print(f"Erro ao criar tabela de avaliações: {e}")
         return False
 
-def inserir_avaliacao(usuario_id: int, profissional_id: int, nota: float) -> Optional[int]:
-    with obter_conexao() as conexao:
-        cursor = conexao.cursor()
-        cursor.execute(INSERIR_AVALIACAO, (usuario_id, profissional_id, nota))
-        return cursor.lastrowid
+def inserir_avaliacao(avaliador_id: int, avaliado_id: int, nota: int) -> bool:
+    try:
+        with obter_conexao() as conexao:
+            cursor = conexao.cursor()
+            cursor.execute(
+                "INSERT INTO avaliacao (avaliador_id, avaliado_id, nota) VALUES (?, ?, ?)",
+                (avaliador_id, avaliado_id, nota)
+            )
+            conexao.commit()
+            return True
+    except Exception as e:
+        print(f"Erro ao inserir avaliação: {e}")
+        return False
 
 def atualizar_avaliacao(avaliacao_id: int, usuario_id: int, profissional_id: int, nota: float) -> bool:
     with obter_conexao() as conexao:
@@ -47,3 +55,16 @@ def obter_avaliacoes_ordenadas() -> list[Avaliacao]:
             nota=resultado["nota"],
             data_avaliacao=resultado["data_avaliacao"]
         ) for resultado in resultados]
+
+def ja_avaliou(avaliador_id: int, avaliado_id: int) -> bool:
+    try:
+        with obter_conexao() as conexao:
+            cursor = conexao.cursor()
+            cursor.execute(
+                "SELECT 1 FROM avaliacao WHERE avaliador_id = ? AND avaliado_id = ?",
+                (avaliador_id, avaliado_id)
+            )
+            return cursor.fetchone() is not None
+    except Exception as e:
+        print(f"Erro ao verificar avaliação: {e}")
+        return False
