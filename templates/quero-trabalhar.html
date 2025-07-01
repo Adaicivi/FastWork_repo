@@ -377,7 +377,7 @@
                                             </button>
                                         </div>
                                         <div class="col-md-9">
-                                            <form class="form-spacing" method="post" action="/perfil">
+                                            <form class="form-spacing" method="post" action="/perfil" enctype="multipart/form-data">
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Nome Completo</label>
@@ -414,6 +414,17 @@
                                                             <!-- Adicione outras opções aqui -->
                                                         </select>
                                                     </div>
+                                                </div>
+                                                <div class="mb-3 text-center">
+                                                    <label class="form-label">Foto de Perfil</label>
+                                                    <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 150px; height: 150px;">
+                                                        {% if usuario.imagem %}
+                                                            <img id="previewImg" src="{{ usuario.imagem }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                        {% else %}
+                                                            <img id="previewImg" src="/uploads/default.jpg" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                        {% endif %}
+                                                    </div>
+                                                    <input type="file" class="form-control" name="imagem" id="imagemInput" accept="image/*" onchange="previewImagem(event)">
                                                 </div>
                                                 <div class="d-flex justify-content-end">
                                                     <button type="submit" class="btn btn-primary">
@@ -668,6 +679,17 @@
             }
         }
 
+        function previewImagem(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Ao marcar "Sim", abre o modal de planos e NÃO envia o form
             document.getElementById('ativarSim').addEventListener('change', function() {
@@ -693,6 +715,7 @@
                 }
                 // Se "Não" está marcado, permite o submit normalmente
             });
+
         });
     </script>
 
