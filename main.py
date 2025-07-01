@@ -77,29 +77,31 @@ def read_root(request: Request):
 @app.get("/usuarios")
 def read_usuarios(request: Request, page: int = 1, profissao: Optional[str] = None):
     quantidade_por_pagina = 12
-    if profissao and profissao != "todos":
-        usuarios = usuario_repo.obter_usuarios_por_profissao(profissao)
-        # Ordena: tipo 'a' primeiro, depois 'b'
-        usuarios = sorted(usuarios, key=lambda u: (u.tipo != 'a', u.tipo))
+    PROFISSOES_VALIDAS = ['Limpeza', 'Jardinagem', 'Eletricidade', 'Encanamento', 'Construção']
+
+    # Filtra por profissão se for válida
+    if profissao and profissao != "todos" and profissao in PROFISSOES_VALIDAS:
+        usuarios = usuario_repo.obter_usuarios_por_profissao_nome(profissao)
         total_usuarios = len(usuarios)
         total_paginas = 1
-        usuarios = usuarios[(page-1)*quantidade_por_pagina : page*quantidade_por_pagina]
     else:
         usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
-        # Ordena: tipo 'a' primeiro, depois 'b'
-        usuarios = sorted(usuarios, key=lambda u: (u.tipo != 'a', u.tipo))
         total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
         total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
 
     medias_avaliacao = {}
     for u in usuarios:
-        if u.tipo in ['a', 'b']:
-            media = avaliacao_repo.buscar_media_avaliacao_profissional(u.id)
-            medias_avaliacao[u.id] = media
+        # Busca a média real de avaliações do profissional
+        media = avaliacao_repo.buscar_media_avaliacao_profissional(u.id)
+        medias_avaliacao[u.id] = media
+
+    # Ordena usuários: tipo 'a' antes de 'b'
+    usuarios = sorted(usuarios, key=lambda u: (u.tipo != 'a', u.tipo))
+
     usuario_logado = _obter_usuario_sessao(request)
     return templates.TemplateResponse("quero-contratar.html", {
         "request": request,
-        "usuario": usuarios,
+        "usuarios": usuarios,
         "pagina_atual": page,
         "total_paginas": total_paginas,
         "total_usuarios": total_usuarios,
@@ -286,7 +288,9 @@ async def atualizar_perfil(
         imagem_id = imagem_repo.inserir_imagem(imagem_obj)
         if not imagem_id:
             raise HTTPException(status_code=400, detail="Erro ao salvar imagem")
-        usuario.imagem = f"/uploads/{nome_arquivo_unico}"  # Salve a URL!
+        usuario.imagem = imagem_id
+        if not usuario_repo.atualizar_usuario(usuario):
+            raise HTTPException(status_code=400, detail="Erro ao atualizar imagem do usuário")
 
     usuario_repo.atualizar_usuario(usuario)
     usuario_json = {
