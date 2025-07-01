@@ -287,34 +287,29 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/usuarios">
+                        <a class="nav-link" href="/usuarios">
                             <i class="bi bi-briefcase me-1"></i> Quero Contratar
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/perfil">
+                        <a class="nav-link active" href="/perfil">
                             <i class="bi bi-person-lines-fill me-1"></i> Quero Trabalhar
                         </a>
                     </li>
                 </ul>
+                <!-- Navbar -->
                 <ul class="navbar-nav ms-auto">
-                    {% if usuario %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="User" class="rounded-circle me-1" style="width: 40px; height: 40px; object-fit: cover;">
-                                {{ usuario.nome }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow">
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#usuarioModal"><i class="bi bi-person me-2"></i> Perfil</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login"><i class="bi bi-box-arrow-in-right me-1"></i> Entrar</a>
-                        </li>
-                    {% endif %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <img src="{{ usuario_logado.imagem if usuario_logado.imagem else '/uploads/default.jpg' }}" alt="User" class="rounded-circle me-1">
+                            {{ usuario_logado.nome }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#usuarioModal"><i class="bi bi-person me-2"></i> Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -388,27 +383,31 @@
                                                         </span>
                                                     </div>
                                                 </div>
-                                                {% for a in avaliacao %}
+                                                {% set media = medias_avaliacao.get(u.id) %}
                                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                                     <div>
                                                         <span class="text-warning fs-5">
-                                                            {% if a.nota == 5 %}
-                                                                ★★★★★
-                                                            {% elif a.nota >= 4 and a.nota < 5 %}
-                                                                ★★★★☆
-                                                            {% elif a.nota >= 3  and a.nota < 4%}
-                                                                ★★★☆☆
-                                                            {% elif a.nota >= 2  and a.nota < 3 %}
-                                                                ★★☆☆☆
-                                                            {% elif a.nota <= 2 %}
-                                                                ★☆☆☆☆
+                                                            {% if media is not none %}
+                                                                {% if media >= 4.75 %}
+                                                                    ⭐⭐⭐⭐⭐
+                                                                {% elif media >= 3.75 %}
+                                                                    ⭐⭐⭐⭐☆
+                                                                {% elif media >= 2.75 %}
+                                                                    ⭐⭐⭐☆☆
+                                                                {% elif media >= 1.75 %}
+                                                                    ⭐⭐☆☆☆
+                                                                {% elif media >= 0.75 %}
+                                                                    ⭐☆☆☆☆
+                                                                {% else %}
+                                                                    ☆☆☆☆☆
+                                                                {% endif %}
+                                                                <small class="text-muted">({{ "%.1f"|format(media) }})</small>
                                                             {% else %}
-                                                                ☆☆☆☆☆
+                                                                <span class="text-muted">Sem avaliações</span>
                                                             {% endif %}
                                                         </span>
                                                     </div>
                                                 </div>
-                                                {% endfor %}
                                             </div>
                                             <div class="card-footer bg-white border-top">
                                                 <div class="d-flex justify-content-end mt-3">
@@ -462,30 +461,33 @@
                         <!-- Coluna da imagem -->
                         <div class="col-md-4 text-center mb-4 mb-md-0">
                             <div class="position-relative mb-3">
-                                <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" class="rounded-circle img-thumbnail border-3 border-primary" style="width: 180px; height: 180px; object-fit: cover;" alt="imagem do profissional">
+                                <img src="{{ u.imagem if u.imagem else '/uploads/default.jpg' }}" class="rounded-circle img-thumbnail border-3 border-primary" style="width: 180px; height: 180px; object-fit: cover;" alt="imagem do profissional">
                             </div>
                             <h4 class="mb-1">{{u.nome}}</h4>
                             <span class=" fs-4 fw-normal mb-1">{{u.profissao.nome}}</span>
-                            {% for a in avaliacao %}
+                            {% set media = medias_avaliacao.get(u.id) %}
                             <div class="rating mb-3">
                                 <span class="text-warning fs-5">
-                                    {% if a.nota == 5 %}
-                                        ★★★★★
-                                    {% elif a.nota >= 4 and a.nota < 5 %}
-                                        ★★★★☆
-                                    {% elif a.nota >= 3  and a.nota < 4%}
-                                        ★★★☆☆
-                                    {% elif a.nota >= 2  and a.nota < 3 %}
-                                        ★★☆☆☆
-                                    {% elif a.nota <= 2 %}
-                                        ★☆☆☆☆
+                                    {% if media is not none %}
+                                        {% if media >= 4.75 %}
+                                            ⭐⭐⭐⭐⭐
+                                        {% elif media >= 3.75 %}
+                                            ⭐⭐⭐⭐☆
+                                        {% elif media >= 2.75 %}
+                                            ⭐⭐⭐☆☆
+                                        {% elif media >= 1.75 %}
+                                            ⭐⭐☆☆☆
+                                        {% elif media >= 0.75 %}
+                                            ⭐☆☆☆☆
+                                        {% else %}
+                                            ☆☆☆☆☆
+                                        {% endif %}
+                                        <small class="text-muted">({{ "%.1f"|format(media) }})</small>
                                     {% else %}
-                                        ☆☆☆☆☆
+                                        <span class="text-muted">Sem avaliações</span>
                                     {% endif %}
                                 </span>
-                                <small class="text-muted">(4.2 - 15 avaliações)</small>
                             </div>
-                            {% endfor %}
                         </div>
                         
                         <!-- Coluna das Informações -->
@@ -541,7 +543,7 @@
     {% endfor %}
 
 
-    <!-- Modal de Usuário -->
+     <!-- Modal de Usuário -->
     <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4">
@@ -564,39 +566,37 @@
                                 <i class="bi bi-camera me-1"></i> Alterar imagem
                             </button>
                         </div>
-                        
                         <!-- Coluna dos Formulários -->
                         <div class="col-md-8">
                             <form>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Nome completo</label>
-                                        <input type="text" class="form-control" value="João Silva">
+                                        <input type="text" class="form-control" value="{{ usuario.nome }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">CPF</label>
-                                        <input type="text" class="form-control" value="123.456.789-00" readonly>
+                                        <input type="text" class="form-control" value="{{ usuario.cpf }}" readonly>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">E-mail</label>
-                                        <input type="email" class="form-control" value="joao.silva@email.com">
+                                        <input type="email" class="form-control" value="{{ usuario.email }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Telefone</label>
-                                        <input type="tel" class="form-control" value="(11) 98765-4321">
+                                        <input type="tel" class="form-control" value="{{ usuario.telefone }}">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Data de nascimento</label>
-                                        <input type="date" class="form-control" value="1990-01-01">
+                                        <input type="date" class="form-control" value="{{ usuario.data_nascimento }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modalRedefinirSenha">
-                                            <i class="bi bi-key"></i> Redefinir senha_hash
-                                        </button>
+                                        <label class="form-label">Senha</label>
+                                        <input type="password" class="form-control" value="">
                                     </div>
                                 </div>
                                 <div class="text-end">
@@ -642,7 +642,7 @@
         </div>
     </div>
 
-    <!-- Modal de Upload de imagem -->
+    <!-- Modal de Upload de Imagem -->
     <div class="modal fade" id="uploadimagem" tabindex="-1" aria-labelledby="uploadimagemModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg">
@@ -651,12 +651,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" enctype="multipart/form-data" id="uploadForm" action="/usuarios/imagem/{{ usuario.id }}">
+                    <form method="POST" enctype="multipart/form-data" id="uploadForm" action="/usuarios/imagem/{{ usuario_logado.id }}">
                         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                             <div class="upload-icon">📁</div>
-                            <div class="upload-text">
-                                Clique para selecionar uma imagem
-                            </div>
+                            <div class="upload-text">Clique ou arraste para selecionar uma imagem (máx. 5MB)</div>
                             <input type="file" id="fileInput" name="imagem" class="file-input" accept="image/*" onchange="showFileInfo(this)">
                         </div>
                         <div class="file-info" id="fileInfo" style="display:none;">
