@@ -1,7 +1,8 @@
 from typing import Optional
 from util.database import obter_conexao
-from db.sql.avaliacao_sql import *
+from db.sql.avaliacao_sql import CRIAR_TABELA_AVALIACAO 
 from db.models.avaliacao import Avaliacao
+from db.sql.avaliacao_sql import CRIAR_TABELA_AVALIACAO, INSERIR_AVALIACAO, ATUALIZAR_AVALIACAO,    BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL, EXIBIR_AVALIACAO_ORDENADA
 
 def criar_tabela_avaliacao() -> bool:
     try:

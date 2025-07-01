@@ -1,6 +1,6 @@
 from typing import Optional, List
 from util.database import obter_conexao
-from db.sql.profissao_sql import *
+from db.sql.profissao_sql import COUNT_PROFISSOES, CREATE_TABLE_PROFISSAO, DELETE_PROFISSAO, EXISTS_PROFISSAO, EXISTS_PROFISSAO_BY_NOME, GET_ALL_PROFISSOES, GET_PROFISSAO_BY_ID, INSERT_PROFISSAO, SEARCH_PROFISSOES_BY_DESCRICAO, SEARCH_PROFISSOES_BY_NOME, UPDATE_PROFISSAO
 from db.models.profissao import Profissao
 
 def criar_tabela_profissao() -> bool:

@@ -1,6 +1,6 @@
 from typing import Optional, List
 from util.database import obter_conexao
-from db.sql.endereco_sql import *
+from db.sql.endereco_sql import CREATE_TABLE_ENDERECO, INSERT_ENDERECO, UPDATE_ENDERECO, DELETE_ENDERECO, GET_ENDERECO_BY_ID, GET_ALL_ENDERECOS, SEARCH_ENDERECOS_BY_CIDADE, SEARCH_ENDERECOS_BY_UF, COUNT_ENDERECOS, EXISTS_ENDERECO  
 from db.models.endereco import Endereco
 
 def criar_tabela_enderecos() -> bool:
