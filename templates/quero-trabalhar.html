@@ -600,26 +600,23 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <form method="POST" enctype="multipart/form-data" id="uploadForm" action="/usuarios/imagem/{{ usuario.id }}">
                         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                             <div class="upload-icon">📁</div>
                             <div class="upload-text">
                                 Clique para selecionar uma imagem
                             </div>
-                            <input type="file" id="fileInput" name="image" class="file-input" accept="image/*" onchange="showFileInfo(this)">
+                            <input type="file" id="fileInput" name="imagem" class="file-input" accept="image/*" onchange="showFileInfo(this)">
                         </div>
-                        
-                        <div class="file-info" id="fileInfo">
+                        <div class="file-info" id="fileInfo" style="display:none;">
                             <div class="file-name" id="fileName"></div>
                             <div class="file-size" id="fileSize"></div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Enviar Imagem</button>
+                        </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="submitBtn" disabled onclick="handleUpload()">
-                        Enviar Imagem
-                    </button>
                 </div>
             </div>
         </div>
