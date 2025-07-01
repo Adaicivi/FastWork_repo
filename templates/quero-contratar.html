@@ -381,17 +381,30 @@
                                                     <div>
                                                         <h5 class="card-title mb-0">{{u.nome}}</h5>
                                                         <small class="text-muted">
-                                                            {{u.endereco.cidade if u.endereco else ''}} {{u.endereco.uf if u.endereco else ''}}
+                                                            {{u.endereco.cidade}}-{{u.endereco.uf}}
                                                         </small>
                                                         <span class="badge bg-primary mt-1">
-                                                            {{u.profissao.nome if u.profissao else ''}}
+                                                            {{u.profissao.nome}}
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <!--<p class="card-text mb-2"><strong>experienciaeriência:</strong> 3 anos em limpeza comercial</p>-->
                                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                                     <div>
-                                                        <p class="perfil-avaliacao mb-0">⭐⭐⭐⭐☆ (4.2)</p>
+                                                        <span class="text-warning fs-5">
+                                                        {% if u.avaliacao >= 5 %}
+                                                            ★★★★★
+                                                        {% elif u.avaliacao == 4 %}
+                                                            ★★★★☆
+                                                        {% elif u.avaliacao == 3 %}
+                                                            ★★★☆☆
+                                                        {% elif u.avaliacao == 2 %}
+                                                            ★★☆☆☆
+                                                        {% elif u.avaliacao == 1 %}
+                                                            ★☆☆☆☆
+                                                        {% else %}
+                                                            ☆☆☆☆☆
+                                                        {% endif %}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -401,81 +414,6 @@
                                                     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#perfilModal{{u.id}}">
                                                         <i class="bi bi-person"></i> Exibir perfil
                                                     </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Modal de Exibição de perfil do freela-->
-                                    <div class="modal fade" id="perfilModal{{u.id}}" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered modal-lg">
-                                            <div class="modal-content rounded-4 shadow-lg">
-                                                <div class="modal-header bg-primary text-white rounded-top-4">
-                                                    <h5 class="modal-title d-flex align-items-center" id="perfilModalLabel">
-                                                        <i class="bi bi-person-circle me-2 fs-4"></i>Perfil Completo do Profissional
-                                                    </h5>
-                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                                                </div>
-                                                <div class="modal-body p-4">
-                                                    <div class="row">
-                                                        <!-- Coluna da imagem -->
-                                                        <div class="col-md-4 text-center mb-4 mb-md-0">
-                                                            <div class="position-relative mb-3">
-                                                                <img src="https://randomuser.me/api/portraits/women/42.jpg" class="rounded-circle img-thumbnail border-3 border-primary" style="width: 180px; height: 180px; object-fit: cover;" alt="imagem do profissional">
-                                                            </div>
-                                                            <h4 class="mb-1">{{u.nome}}</h4>
-                                                            <span class=" fs-4 fw-normal mb-1">{{u.profissao.nome}}</span>
-                                                            <div class="rating mb-3">
-                                                                <span class="text-warning fs-5">★★★★☆</span>
-                                                                <small class="text-muted">(4.2 - 15 avaliações)</small>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- Coluna das Informações -->
-                                                        <div class="col-md-8">
-                                                            <div class="card border-0 shadow-sm mb-4">
-                                                                <div class="card-header bg-light">
-                                                                    <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Informações Pessoais</h6>
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6 mb-3">
-                                                                            <p class="mb-1"><strong><i class="bi bi-telephone me-2"></i>Telefone:</strong></p>
-                                                                            <p class="text-muted">{{u.telefone}}</p>
-                                                                        </div>
-                                                                        <div class="col-md-6 mb-3">
-                                                                            <p class="mb-1"><strong><i class="bi bi-envelope me-2"></i>E-mail:</strong></p>
-                                                                            <p class="text-muted">{{u.email}}</p>
-                                                                        </div>
-                                                                        <div class="col-md-6 mb-3">
-                                                                            <p class="mb-1"><strong><i class="bi bi-geo-alt me-2"></i>Localização:</strong></p>
-                                                                            <p class="text-muted">{{u.endereco.nome}}-{{u.endereco.uf}}</p>
-                                                                        </div>
-                                                                        <div class="col-md-6 mb-3">
-                                                                            <p class="mb-1"><strong><i class="bi bi-briefcase me-2"></i>Área de atuação:</strong></p>
-                                                                            <p class="text-muted">{{u.profissao.nome}}</p>
-                                                                        </div>
-                                                                        <div class="col-md-6 mb-3">
-                                                                            <p class="mb-1"><strong><i class="bi bi-geo-alt me-2"></i>Link de contato:</strong></p>
-                                                                            <p class="text-muted">{{u.link_contato}}</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <div class="card border-0 shadow-sm mb-4">
-                                                                <div class="card-header bg-light">
-                                                                    <h6 class="mb-0"><i class="bi bi-file-text me-2"></i>Sobre o Profissional</h6>
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    <p class="mb-0">{{u.experiencia}}</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer border-top-0 bg-light rounded-bottom-4">
-                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
-                                                    <button type="button" class="btn btn-primary">Avaliar Profissional</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -506,9 +444,9 @@
             </main>
         </div>
     </div>
-
-        <!-- Modal de Exibição de perfil do freela-->
-    <div class="modal fade" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
+    {% for u in usuario %}
+    <!-- Modal de Exibição de perfil do freela-->
+    <div class="modal fade" id="perfilModal{{u.id}}" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg">
                 <div class="modal-header bg-primary text-white rounded-top-4">
@@ -522,12 +460,27 @@
                         <!-- Coluna da imagem -->
                         <div class="col-md-4 text-center mb-4 mb-md-0">
                             <div class="position-relative mb-3">
-                                <img src="https://randomuser.me/api/portraits/women/42.jpg" class="rounded-circle img-thumbnail border-3 border-primary" style="width: 180px; height: 180px; object-fit: cover;" alt="imagem do profissional">
+                                <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" class="rounded-circle img-thumbnail border-3 border-primary" style="width: 180px; height: 180px; object-fit: cover;" alt="imagem do profissional">
                             </div>
-                            <h4 class="mb-1">Juliana Alves</h4>
-                            <span class=" fs-4 fw-normal mb-1">Limpeza Profissional</span>
+                            <h4 class="mb-1">{{u.nome}}</h4>
+                            <span class=" fs-4 fw-normal mb-1">{{u.profissao.nome}}</span>
                             <div class="rating mb-3">
-                                <span class="text-warning fs-5">★★★★☆</span>
+                                <span class="text-warning fs-5">
+                                    {% if u.avaliacao >= 5 %}
+                                        ★★★★★
+                                    {% elif u.avaliacao == 4 %}
+                                        ★★★★☆
+                                    {% elif u.avaliacao == 3 %}
+                                        ★★★☆☆
+                                    {% elif u.avaliacao == 2 %}
+                                        ★★☆☆☆
+                                    {% elif u.avaliacao == 1 %}
+                                        ★☆☆☆☆
+                                    {% else %}
+                                        ☆☆☆☆☆
+                                    {% endif %}
+                                </span>
+                                
                                 <small class="text-muted">(4.2 - 15 avaliações)</small>
                             </div>
                         </div>
@@ -542,27 +495,23 @@
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <p class="mb-1"><strong><i class="bi bi-telephone me-2"></i>Telefone:</strong></p>
-                                            <p class="text-muted">(11) 98765-4321</p>
+                                            <p class="text-muted">{{u.telefone}}</p>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <p class="mb-1"><strong><i class="bi bi-envelope me-2"></i>E-mail:</strong></p>
-                                            <p class="text-muted">juliana.alves@email.com</p>
+                                            <p class="text-muted">{{u.email}}</p>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <p class="mb-1"><strong><i class="bi bi-geo-alt me-2"></i>Localização:</strong></p>
-                                            <p class="text-muted">São Paulo - SP</p>
+                                            <p class="text-muted">{{u.endereco.nome}}-{{u.endereco.uf}}</p>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <p class="mb-1"><strong><i class="bi bi-briefcase me-2"></i>Área de atuação:</strong></p>
-                                            <p class="text-muted">Limpeza Residencial e Comercial</p>
+                                            <p class="text-muted">{{u.profissao.nome}}</p>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <p class="mb-1"><strong><i class="bi bi-geo-alt me-2"></i>Instagram:</strong></p>
-                                            <p class="text-muted">*****</p>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <p class="mb-1"><strong><i class="bi bi-briefcase me-2"></i>Facebook:</strong></p>
-                                            <p class="text-muted">*****</p>
+                                            <p class="mb-1"><strong><i class="bi bi-geo-alt me-2"></i>Link de contato:</strong></p>
+                                            <p class="text-muted">{{u.link_contato}}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -573,7 +522,7 @@
                                     <h6 class="mb-0"><i class="bi bi-file-text me-2"></i>Sobre o Profissional</h6>
                                 </div>
                                 <div class="card-body">
-                                    <p class="mb-0">Profissional com mais de 3 anos de experienciaeriência em serviços de limpeza residencial e comercial. Especializada em organização de ambientes, limpeza pós-obra e cuidados com materiais delicados. Comprometida com a qualidade do serviço e satisfação do cliente.</p>
+                                    <p class="mb-0">{{u.experiencia}}</p>
                                 </div>
                             </div>
                         </div>
@@ -586,8 +535,10 @@
             </div>
         </div>
     </div>
+    {% endfor %}
 
-        <!-- Modal de Usuário -->
+
+    <!-- Modal de Usuário -->
     <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4">
