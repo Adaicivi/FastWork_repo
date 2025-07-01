@@ -345,7 +345,7 @@
                                 <h1 class="h2">Meu perfil de trabalho</h1>
                                 <div class="d-flex align-items-center">
                                     <span class="me-2">Deseja ativar seu perfil de trabalho?</span>
-                                    <form method="post" action="/perfil/ativar" id="ativarPerfilForm">
+                                    <form method="post" action="/perfil/ativar" id="ativarPerfilForm" class="mb-0 d-inline">
                                         <div class="btn-group" role="group" aria-label="Ativar perfil">
                                             <input type="radio" class="btn-check" name="ativarPerfil" id="ativarSim" value="sim" autocomplete="off"
                                             {% if request.query_params.get('ativarPerfil') == 'sim' %}checked{% endif %}>
@@ -354,7 +354,6 @@
                                             {% if request.query_params.get('ativarPerfil') != 'sim' %}checked{% endif %}>
                                             <label class="btn btn-outline-danger btn-sm" for="ativarNao">Não</label>
                                         </div>
-                                        <button type="submit" class="btn btn-primary btn-sm ms-2">Salvar</button>
                                     </form>
                                 </div>
                             </div>
@@ -670,7 +669,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Ao marcar "Sim", abre o modal e impede submit do form de ativação
+            // Ao marcar "Sim", abre o modal de planos e NÃO envia o form
             document.getElementById('ativarSim').addEventListener('change', function() {
                 if (this.checked) {
                     var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
@@ -678,9 +677,15 @@
                 }
             });
 
-            // Intercepta o submit do form de ativação
+            // Ao marcar "Não", envia o formulário automaticamente
+            document.getElementById('ativarNao').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('ativarPerfilForm').submit();
+                }
+            });
+
+            // Impede submit manual do form (não há botão salvar)
             document.getElementById('ativarPerfilForm').addEventListener('submit', function(e) {
-                // Se "Sim" está marcado, não envia o form (o usuário deve escolher um plano)
                 if (document.getElementById('ativarSim').checked) {
                     e.preventDefault();
                     var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
