@@ -5,7 +5,7 @@ from db.models.usuario import Usuario
 from db.models.endereco import Endereco
 from db.models.profissao import Profissao
 
-def criar_tabela_usuarios() -> bool:
+def criar_tabela_usuario() -> bool:
     try: 
         with obter_conexao() as conexao:            
             cursor = conexao.cursor()
