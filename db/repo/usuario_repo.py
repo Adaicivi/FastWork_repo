@@ -33,6 +33,7 @@ def atualizar_usuario(usuario: Usuario) -> bool:
     try:
         with obter_conexao() as conexao:
             cursor = conexao.cursor()
+<<<<<<< HEAD
             cursor.execute(ATUALIZAR_USUARIO, (
                 usuario.nome,
                 usuario.email,
@@ -48,6 +49,16 @@ def atualizar_usuario(usuario: Usuario) -> bool:
                 usuario.tipo,
                 usuario.id
             ))
+=======
+            cursor.execute(ATUALIZAR_USUARIO, 
+                (usuario.nome, usuario.email, usuario.senha_hash, usuario.cpf,
+                 usuario.telefone, usuario.data_nascimento, usuario.experiencia,
+                 usuario.imagem.id if hasattr(usuario.imagem, 'id') else usuario.imagem,  # Corrigido
+                 usuario.link_contato,
+                 usuario.endereco.id if usuario.endereco and hasattr(usuario.endereco, 'id') else None,  # Corrigido
+                 usuario.profissao.id if usuario.profissao and hasattr(usuario.profissao, 'id') else None,  # Corrigido
+                 usuario.tipo, usuario.id))
+>>>>>>> 452ab383a8345ecf8acbb4fda2b27cca8631d297
             return (cursor.rowcount > 0)
     except Exception as e:
         print(f"Erro ao atualizar usuário: {e}")
