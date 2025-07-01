@@ -1,6 +1,6 @@
 from typing import Optional
 from util.database import obter_conexao
-from db.sql.usuario_sql import ATUALIZAR_TIPO_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CONTAR_USUARIOS_TIPO_AB, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_PAGINA  
+from db.sql.usuario_sql import ATUALIZAR_SENHA_USUARIO, ATUALIZAR_TIPO_USUARIO, ATUALIZAR_USUARIO, BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO, CONTAR_USUARIOS_TIPO_AB, CRIAR_TABELA_USUARIO, DELETAR_USUARIO_POR_ID_SENHA, INSERIR_USUARIO, OBTER_USUARIO_POR_EMAIL, OBTER_USUARIO_POR_ID, OBTER_USUARIO_POR_PAGINA  
 from db.models.usuario import Usuario
 from db.models.endereco import Endereco
 from db.models.profissao import Profissao
@@ -45,6 +45,16 @@ def atualizar_usuario(usuario: Usuario) -> bool:
             return (cursor.rowcount > 0)
     except Exception as e:
         print(f"Erro ao atualizar usuário: {e}")
+        return False
+
+def atualizar_senha_usuario(usuario_id: int, nova_senha_hash: str) -> bool:
+    try:
+        with obter_conexao() as conexao:
+            cursor = conexao.cursor()
+            cursor.execute(ATUALIZAR_SENHA_USUARIO, (nova_senha_hash, usuario_id))
+            return (cursor.rowcount > 0)
+    except Exception as e:
+        print(f"Erro ao atualizar senha do usuário: {e}")
         return False
 
 def atualizar_tipo_usuario(usuario_id: int, tipo: str) -> bool:  

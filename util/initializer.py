@@ -16,4 +16,3 @@ def criar_tabelas():
 
 def configurar_diretorios():
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-    UPLOAD_DIR.joinpath("static").mkdir(parents=True, exist_ok=True)

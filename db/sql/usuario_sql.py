@@ -30,6 +30,12 @@ SET nome = ?, email = ?, senha_hash = ?, cpf = ?, telefone = ?, data_nascimento 
 WHERE id = ?;
 """
 
+ATUALIZAR_SENHA_USUARIO = """
+UPDATE usuario
+SET senha_hash = ?
+WHERE id = ?;
+"""
+
 ATUALIZAR_TIPO_USUARIO = """
 UPDATE usuario
 SET tipo = ?

@@ -224,7 +224,7 @@ async def atualizar_perfil(
     if endereco:
         usuario.endereco = endereco_repo.obter_endereco_por_id(int(endereco))
     if profissao:
-        usuario.profissao = profissao_repo.buscar_profissao_por_id(int(profissao))
+        usuario.profissao = profissao_repo.obter_profissao_por_id(int(profissao))
     usuario_repo.atualizar_usuario(usuario)
     usuario_json = {
         "id": usuario.id,
