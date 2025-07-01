@@ -377,7 +377,7 @@
                                             </button>
                                         </div>
                                         <div class="col-md-9">
-                                            <form class="form-spacing" method="post" action="/perfil">
+                                            <form class="form-spacing" method="post" action="/perfil" enctype="multipart/form-data">
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Nome Completo</label>
@@ -415,6 +415,17 @@
                                                         </select>
                                                     </div>
                                                 </div>
+                                                <div class="mb-3 text-center">
+                                                    <label class="form-label">Foto de Perfil</label>
+                                                    <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 150px; height: 150px;">
+                                                        {% if usuario.imagem %}
+                                                            <img id="previewImg" src="{{ usuario.imagem }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                        {% else %}
+                                                            <img id="previewImg" src="/uploads/default.jpg" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                        {% endif %}
+                                                    </div>
+                                                    <input type="file" class="form-control" name="imagem" id="imagemInput" accept="image/*" onchange="previewImagem(event)">
+                                                </div>
                                                 <div class="d-flex justify-content-end">
                                                     <button type="submit" class="btn btn-primary">
                                                         <i class="bi bi-save me-1"></i> Salvar Alterações
@@ -437,22 +448,27 @@
                                     <i class="bi bi-gem me-1"></i> Escolher Plano
                                 </button>
                             </div>
-                            <div class="alert alert-info">
+                            <div class="alert alert-info shadow-sm mb-4">
                                 Você está atualmente no plano <strong>Gratuito</strong>. Para acessar mais recursos, considere mudar para um plano pago.
                             </div>
-                            <div class="list-group mb-4">
-                                <a href="#" class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">Plano Gratuito</h5>
-                                        <small class="text-muted">Ativo</small>
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <div class="card border-info shadow-sm h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title mb-2"><i class="bi bi-gem me-2 text-info"></i>Plano Gratuito</h5>
+                                            <p class="card-text mb-1">Perfil básico, aparece nas buscas, limite de 5 imagens.</p>
+                                            <span class="badge bg-info text-dark">Ativo</span>
+                                        </div>
+                                        <div class="card-footer text-muted small">
+                                            Renovação: Mensal
+                                        </div>
                                     </div>
-                                    <p class="mb-1">Perfil básico, aparece nas buscas, limite de 5 imagens.</p>
-                                    <small>Renovação: Mensal</small>
-                                </a>
+                                </div>
+                                <!-- Você pode adicionar outros cards de planos ativos aqui -->
                             </div>
                             <div class="text-center">
                                 <p class="mb-4">Ou</p>
-                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalPlanos">
+                                <button class="btn btn-warning btn-lg px-4 shadow" data-bs-toggle="modal" data-bs-target="#modalPlanos">
                                     <i class="bi bi-gem me-1"></i> Assinar Plano Premium
                                 </button>
                             </div>
@@ -572,27 +588,27 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
           </div>
           <div class="modal-body">
-            <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-5 justify-content-center">
               <!-- Plano Gratuito -->
-              <div class="col">
-                <div class="card h-100 plano-card">
+              <div class="col d-flex">
+                <div class="card h-100 plano-card w-100 shadow-sm">
                   <div class="card-header bg-secondary text-white text-center py-3">
                     <h4 class="my-0 fw-normal">Gratuito</h4>
                   </div>
                   <div class="card-body">
-                    <h2 class="card-title pricing-card-title text-center">R$0<small class="text-muted fw-light">/mês</small></h2>
+                    <h2 class="card-title pricing-card-title text-center mb-3">R$0<small class="text-muted fw-light">/mês</small></h2>
                     <ul class="list-unstyled mt-3 mb-4">
                       <li><i class="bi bi-check-circle text-success me-2"></i> Perfil básico</li>
                       <li><i class="bi bi-check-circle text-success me-2"></i> Aparece nas buscas</li>
                       <li><i class="bi bi-x-circle text-danger me-2"></i> Destaque limitado</li>
                       <li><i class="bi bi-x-circle text-danger me-2"></i> Sem prioridade</li>
-                      <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagems</li>
+                      <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagens</li>
                     </ul>
                   </div>
                   <div class="card-footer bg-white text-center">
                     <form method="post" action="/perfil/plano">
                       <input type="hidden" name="plano" value="basico">
-                      <button type="submit" class="btn btn-outline-secondary">
+                      <button type="submit" class="btn btn-outline-secondary w-100">
                         Escolher Básico
                       </button>
                     </form>
@@ -600,31 +616,32 @@
                 </div>
               </div>
               <!-- Plano Premium -->
-              <div class="col">
-                <div class="card h-100 plano-card plano-recomendado">
+              <div class="col d-flex">
+                <div class="card h-100 plano-card plano-recomendado w-100 shadow-lg border-warning">
                   <div class="card-header bg-warning text-dark text-center py-3">
                     <h4 class="my-0 fw-normal">Premium</h4>
                   </div>
                   <div class="card-body">
-                    <h2 class="card-title pricing-card-title text-center">R$29<small class="text-muted fw-light">/mês</small></h2>
+                    <h2 class="card-title pricing-card-title text-center mb-3">R$29<small class="text-muted fw-light">/mês</small></h2>
                     <ul class="list-unstyled mt-3 mb-4">
                       <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Gratuito</li>
                       <li><i class="bi bi-check-circle text-success me-2"></i> Destaque nas buscas</li>
                       <li><i class="bi bi-check-circle text-success me-2"></i> Prioridade média</li>
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagems</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagens</li>
                       <li><i class="bi bi-check-circle text-success me-2"></i> Selo Premium</li>
                     </ul>
                   </div>
                   <div class="card-footer bg-white text-center">
                     <form method="post" action="/perfil/plano">
                       <input type="hidden" name="plano" value="premium">
-                      <button type="submit" class="btn btn-warning">
+                      <button type="submit" class="btn btn-warning w-100">
                         Assinar Plano
                       </button>
                     </form>
                   </div>
                 </div>
               </div>
+              <!-- Adicione outros planos se desejar -->
             </div>
           </div>
         </div>
@@ -668,6 +685,17 @@
             }
         }
 
+        function previewImagem(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Ao marcar "Sim", abre o modal de planos e NÃO envia o form
             document.getElementById('ativarSim').addEventListener('change', function() {
@@ -693,6 +721,7 @@
                 }
                 // Se "Não" está marcado, permite o submit normalmente
             });
+
         });
     </script>
 
