@@ -265,10 +265,11 @@ async def atualizar_perfil(
     telefone: str = Form(),
     experiencia: str = Form(None),
     link_contato: str = Form(None),
-    endereco: str = Form(None),
+    endereco: str = Form(None),  # Este campo pode ser removido se não for usado em outro lugar
     profissao: str = Form(None),
     tipo: str = Form("c"),
-    imagem: UploadFile = File(None)
+    imagem: UploadFile = File(None),
+    estado: str = Form(None)
 ):
     usuario_json = request.session.get("usuario")
     if not usuario_json:
@@ -283,8 +284,8 @@ async def atualizar_perfil(
     usuario.experiencia = experiencia
     usuario.link_contato = link_contato
     usuario.tipo = tipo
-    usuario.endereco = endereco  # Agora é string direta
-    usuario.profissao = profissao  # Agora é string direta
+    usuario.profissao = profissao
+    usuario.endereco = endereco  # <-- Aqui está o ajuste: salva o estado no campo endereco
 
     # Processa a imagem se enviada
     if imagem and imagem.filename:
