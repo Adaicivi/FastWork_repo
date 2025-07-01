@@ -466,7 +466,7 @@
         </div>
     </div>
     {% for u in usuario %}
-    <!-- Modal de Exibição de perfil do freela-->
+    <!-- Modal de Exibição de perfil do freela -->
     <div class="modal fade" id="perfilModal{{u.id}}" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg">
@@ -555,33 +555,7 @@
         </div>
     </div>
 
-    <!-- Modal de Avaliação -->
-    <div class="modal fade" id="avaliarModal{{u.id}}" tabindex="-1" aria-labelledby="avaliarModalLabel{{u.id}}" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <form method="post" action="/avaliar/{{u.id}}" class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title" id="avaliarModalLabel{{u.id}}">Avaliar Profissional</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3 text-center">
-              <div class="star-rating" style="direction: rtl; display: inline-flex;">
-                {% for i in range(5, 0, -1) %}
-                  <input type="radio" id="star{{i}}-{{u.id}}" name="nota" value="{{i}}" required style="display: none;">
-                  <label for="star{{i}}-{{u.id}}" style="font-size:2rem; color: #ffc107; cursor:pointer;">&#9733;</label>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-success">Enviar Avaliação</button>
-          </div>
-        </form>
-      </div>
-    </div>
-    {% endfor %}
-
-
+    
      <!-- Modal de Usuário -->
     <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -683,7 +657,6 @@
             </form>
         </div>
     </div>
-
     <!-- Modal de Upload de Imagem -->
     <div class="modal fade" id="uploadimagem" tabindex="-1" aria-labelledby="uploadimagemModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -713,10 +686,38 @@
         </div>
     </div>
 
+    <!-- Modal de Avaliação -->
+    <div class="modal fade" id="avaliarModal{{u.id}}" tabindex="-1" aria-labelledby="avaliarModalLabel{{u.id}}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <form method="post" action="/avaliar/{{u.id}}" class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="avaliarModalLabel{{u.id}}">Avaliar Profissional</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body text-center">
+            <label for="nota{{u.id}}" class="form-label mb-2">Nota:</label>
+            <select class="form-select w-50 mx-auto mb-3" id="nota{{u.id}}" name="nota" required>
+              <option value="" disabled selected>Selecione</option>
+              <option value="1">1 - Péssimo</option>
+              <option value="2">2 - Ruim</option>
+              <option value="3">3 - Regular</option>
+              <option value="4">4 - Bom</option>
+              <option value="5">5 - Excelente</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Enviar Avaliação</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+    
     <footer class="bg-dark text-white py-5 mt-5">
         <div class="container text-center">
-            <h2 class="fw
-            <p class="mt-3 mb-0">&copy; 2025 FASTWORK. Todos os direitos reservados.</p>
+            <h2 class="fw">FASTWORK</h2>
+            <p class=" mt-3 mb-0">&copy; 2025 FASTWORK. Todos os direitos reservados.</p>
         </div>
     </footer>
 
