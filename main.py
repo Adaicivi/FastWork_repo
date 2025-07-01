@@ -261,10 +261,15 @@ async def atualizar_perfil(
     usuario.experiencia = experiencia
     usuario.link_contato = link_contato
     usuario.tipo = tipo
-    if endereco:
+    if endereco and endereco.isdigit():
         usuario.endereco = endereco_repo.obter_endereco_por_id(int(endereco))
-    if profissao:
+    else:
+        usuario.endereco = None
+
+    if profissao and profissao.isdigit():
         usuario.profissao = profissao_repo.obter_profissao_por_id(int(profissao))
+    else:
+        usuario.profissao = None
 
     # Processa a imagem se enviada
     if imagem and imagem.filename:
@@ -275,7 +280,19 @@ async def atualizar_perfil(
         caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
         async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
             await arquivo.write(contents)
-        usuario.imagem = f"/uploads/{nome_arquivo_unico}"
+        # Crie o registro da imagem
+        imagem_obj = Imagem(
+            id=None,
+            usuario_id=usuario.id,
+            nome_arquivo=nome_arquivo_unico,
+            nome_arquivo_original=imagem.filename,
+            url=f"/uploads/{nome_arquivo_unico}",
+            criado_em=None
+        )
+        imagem_id = imagem_repo.inserir_imagem(imagem_obj)
+        if not imagem_id:
+            raise HTTPException(status_code=400, detail="Erro ao salvar imagem")
+        usuario.imagem = imagem_id  # Salve o ID, não a URL!
 
     usuario_repo.atualizar_usuario(usuario)
     usuario_json = {
