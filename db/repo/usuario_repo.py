@@ -38,9 +38,10 @@ def atualizar_usuario(usuario: Usuario) -> bool:
             cursor.execute(ATUALIZAR_USUARIO, 
                 (usuario.nome, usuario.email, usuario.senha_hash, usuario.cpf,
                  usuario.telefone, usuario.data_nascimento, usuario.experiencia,
-                 usuario.imagem, usuario.link_contato,
-                 usuario.endereco.id if usuario.endereco else None,
-                 usuario.profissao.id if usuario.profissao else None,
+                 usuario.imagem.id if hasattr(usuario.imagem, 'id') else usuario.imagem,  # Corrigido
+                 usuario.link_contato,
+                 usuario.endereco.id if usuario.endereco and hasattr(usuario.endereco, 'id') else None,  # Corrigido
+                 usuario.profissao.id if usuario.profissao and hasattr(usuario.profissao, 'id') else None,  # Corrigido
                  usuario.tipo, usuario.id))
             return (cursor.rowcount > 0)
     except Exception as e:
