@@ -243,9 +243,9 @@ async def perfil_usuario(request: Request):
 @app.post("/perfil")
 async def atualizar_perfil(
     request: Request,
-    nome: str = Form(None),  # Tornar opcional
-    email: str = Form(None),  # Tornar opcional
-    telefone: str = Form(None),  # Tornar opcional
+    nome: str = Form(None),
+    email: str = Form(None),
+    telefone: str = Form(None),
     experiencia: str = Form(None),
     link_contato: str = Form(None),
     endereco: str = Form(None),
@@ -256,12 +256,11 @@ async def atualizar_perfil(
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
-    
     usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    
-    # Atualiza apenas os campos que foram enviados (não None)
+
+    # Atualiza apenas os campos enviados
     if nome is not None:
         usuario.nome = nome
     if email is not None:
@@ -272,21 +271,31 @@ async def atualizar_perfil(
         usuario.experiencia = experiencia
     if link_contato is not None:
         usuario.link_contato = link_contato
-    usuario.tipo = tipo  # Mantém como estava
-    
-    # Processa endereço
-    if endereco is not None:
-        if endereco.isdigit():
-            usuario.endereco = endereco_repo.obter_endereco_por_id(int(endereco))
-        else:
-            usuario.endereco = None
+    usuario.tipo = tipo
 
-    # Processa profissão
-    if profissao is not None:
-        if profissao.isdigit():
-            usuario.profissao = profissao_repo.obter_profissao_por_id(int(profissao))
+    # Validação de endereço
+    if endereco is not None:
+        if endereco == "" or endereco.lower() == "none":
+            usuario.endereco = usuario.endereco  # mantém o valor anterior
+        elif endereco.isdigit():
+            endereco_obj = endereco_repo.obter_endereco_por_id(int(endereco))
+            if not endereco_obj:
+                raise HTTPException(status_code=400, detail="Endereço selecionado não existe.")
+            usuario.endereco = endereco_obj
         else:
-            usuario.profissao = None
+            usuario.endereco = usuario.endereco  # mantém o valor anterior
+
+    # Validação de profissão
+    if profissao is not None:
+        if profissao == "" or profissao.lower() == "none":
+            usuario.profissao = usuario.profissao  # mantém o valor anterior
+        elif profissao.isdigit():
+            profissao_obj = profissao_repo.obter_profissao_por_id(int(profissao))
+            if not profissao_obj:
+                raise HTTPException(status_code=400, detail="Profissão selecionada não existe.")
+            usuario.profissao = profissao_obj
+        else:
+            usuario.profissao = usuario.profissao  # mantém o valor anterior
 
     # Processa a imagem se enviada (mantido igual)
     if imagem and imagem.filename:
@@ -294,13 +303,10 @@ async def atualizar_perfil(
             contents = await imagem.read()
             if not _validar_upload_imagem(imagem, contents):
                 raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
-            
             nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
             caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
-            
             async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
                 await arquivo.write(contents)
-            
             imagem_obj = Imagem(
                 id=None,
                 usuario_id=usuario.id,
@@ -309,15 +315,12 @@ async def atualizar_perfil(
                 url=f"/uploads/{nome_arquivo_unico}",
                 criado_em=None
             )
-            
             imagem_id = imagem_repo.inserir_imagem(imagem_obj)
             if not imagem_id:
                 if caminho_arquivo.exists():
                     caminho_arquivo.unlink()
                 raise HTTPException(status_code=400, detail="Erro ao salvar imagem no banco")
-            
             usuario.imagem = imagem_id
-            
         except Exception as e:
             if 'caminho_arquivo' in locals() and caminho_arquivo.exists():
                 caminho_arquivo.unlink()
@@ -326,7 +329,6 @@ async def atualizar_perfil(
     # Atualiza o usuário no banco
     if not usuario_repo.atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar usuário")
-    
     # Atualiza sessão
     usuario_json = {
         "id": usuario.id,
@@ -335,7 +337,6 @@ async def atualizar_perfil(
         "tipo": usuario.tipo
     }
     request.session["usuario"] = usuario_json
-    
     return RedirectResponse(url="/perfil", status_code=303)
 
 
@@ -360,7 +361,7 @@ async def escolher_plano(request: Request, plano: str = Form(...)):
         raise HTTPException(status_code=400, detail="Plano inválido")
 
     request.session["usuario"] = usuario_json
-    return RedirectResponse(url="/perfil", status_code=303)
+    return RedirectResponse(url="/perfil?plano=ok", status_code=303)
 
 @app.post("/perfil/ativar")
 async def ativar_perfil_trabalho(request: Request, ativarPerfil: str = Form(...)):
@@ -453,29 +454,34 @@ async def atualizar_imagem_usuario(
     id: int,
     imagem: UploadFile = File(...)
 ):
-    # Verifica se é o próprio usuário ou admin
     usuario_json = request.session.get("usuario")
     if not usuario_json or (usuario_json["id"] != id and usuario_json.get("tipo") != "admin"):
         raise HTTPException(status_code=403, detail="Acesso negado")
-   
-    # Busca o usuário
     usuario = usuario_repo.obter_usuario_por_id(id)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-   
+
+    # Validação de endereço
+    if usuario.endereco is not None:
+        endereco_obj = endereco_repo.obter_endereco_por_id(usuario.endereco.id if hasattr(usuario.endereco, "id") else usuario.endereco)
+        if not endereco_obj:
+            raise HTTPException(status_code=400, detail="Endereço do usuário é inválido. Atualize o endereço antes de alterar a imagem.")
+        usuario.endereco = endereco_obj
+    # Validação de profissão
+    if usuario.profissao is not None:
+        profissao_obj = profissao_repo.obter_profissao_por_id(usuario.profissao.id if hasattr(usuario.profissao, "id") else usuario.profissao)
+        if not profissao_obj:
+            raise HTTPException(status_code=400, detail="Profissão do usuário é inválida. Atualize a profissão antes de alterar a imagem.")
+        usuario.profissao = profissao_obj
+
     # Valida e processa a imagem
     contents = await imagem.read()
     if not _validar_upload_imagem(imagem, contents):
         raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
-   
-    # Salva o arquivo
     nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
     caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
-   
     async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
         await arquivo.write(contents)
-   
-    # Cria registro da imagem no banco (opcional)
     imagem_obj = Imagem(
         id=None,
         usuario_id=id,
@@ -487,12 +493,9 @@ async def atualizar_imagem_usuario(
     imagem_id = imagem_repo.inserir_imagem(imagem_obj)
     if not imagem_id:
         raise HTTPException(status_code=400, detail="Erro ao salvar imagem")
-    # Salve a URL, não o ID!
-    usuario.imagem = f"/uploads/{nome_arquivo_unico}"
+    usuario.imagem = imagem_id
     if not usuario_repo.atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar imagem do usuário")
-   
-    # Redireciona para o perfil
     return RedirectResponse(url="/perfil", status_code=303)
 
 

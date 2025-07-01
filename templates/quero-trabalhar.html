@@ -635,6 +635,12 @@
             </div>
         </div>
     </div>
+    {% if request.query_params.get('plano') == 'ok' %}
+    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 2000; min-width: 300px;" role="alert">
+        Plano ativado com sucesso!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+    {% endif %}
 
     <!-- Footer -->
     <footer class="bg-dark text-white py-5 mt-5">
