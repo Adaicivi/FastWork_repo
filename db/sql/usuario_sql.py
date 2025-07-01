@@ -47,6 +47,8 @@ SELECT u.nome, u.email, u.imagem, i.url AS url_imagem, u.experiencia, u.cpf, u.t
 FROM usuario u
 WHERE u.profissao = ?;
 """
+
+
 OBTER_USUARIO_POR_EMAIL = """
 SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco, u.profissao, u.tipo
 FROM usuario u
