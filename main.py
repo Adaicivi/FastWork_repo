@@ -416,7 +416,7 @@ async def atualizar_imagem_usuario(
     async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
         await arquivo.write(contents)
    
-    # Cria registro da imagem no banco
+    # Cria registro da imagem no banco (opcional)
     imagem_obj = Imagem(
         id=None,
         usuario_id=id,
@@ -425,11 +425,11 @@ async def atualizar_imagem_usuario(
         url=f"/uploads/{nome_arquivo_unico}",
         criado_em=None
     )
-   
     imagem_id = imagem_repo.inserir_imagem(imagem_obj)
     if not imagem_id:
         raise HTTPException(status_code=400, detail="Erro ao salvar imagem")
-    usuario.imagem = imagem_id  # <-- use o id, não a URL!
+    # Salve a URL, não o ID!
+    usuario.imagem = f"/uploads/{nome_arquivo_unico}"
     if not usuario_repo.atualizar_usuario(usuario):
         raise HTTPException(status_code=400, detail="Erro ao atualizar imagem do usuário")
    
