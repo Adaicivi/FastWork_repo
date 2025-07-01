@@ -243,9 +243,9 @@ async def perfil_usuario(request: Request):
 @app.post("/perfil")
 async def atualizar_perfil(
     request: Request,
-    nome: str = Form(),
-    email: str = Form(),
-    telefone: str = Form(),
+    nome: str = Form(None),  # Tornar opcional
+    email: str = Form(None),  # Tornar opcional
+    telefone: str = Form(None),  # Tornar opcional
     experiencia: str = Form(None),
     link_contato: str = Form(None),
     endereco: str = Form(None),
@@ -261,42 +261,46 @@ async def atualizar_perfil(
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     
-    # Atualiza dados básicos
-    usuario.nome = nome
-    usuario.email = email
-    usuario.telefone = telefone
-    usuario.experiencia = experiencia
-    usuario.link_contato = link_contato
-    usuario.tipo = tipo
+    # Atualiza apenas os campos que foram enviados (não None)
+    if nome is not None:
+        usuario.nome = nome
+    if email is not None:
+        usuario.email = email
+    if telefone is not None:
+        usuario.telefone = telefone
+    if experiencia is not None:
+        usuario.experiencia = experiencia
+    if link_contato is not None:
+        usuario.link_contato = link_contato
+    usuario.tipo = tipo  # Mantém como estava
     
     # Processa endereço
-    if endereco and endereco.isdigit():
-        usuario.endereco = endereco_repo.obter_endereco_por_id(int(endereco))
-    else:
-        usuario.endereco = None
+    if endereco is not None:
+        if endereco.isdigit():
+            usuario.endereco = endereco_repo.obter_endereco_por_id(int(endereco))
+        else:
+            usuario.endereco = None
 
     # Processa profissão
-    if profissao and profissao.isdigit():
-        usuario.profissao = profissao_repo.obter_profissao_por_id(int(profissao))
-    else:
-        usuario.profissao = None
+    if profissao is not None:
+        if profissao.isdigit():
+            usuario.profissao = profissao_repo.obter_profissao_por_id(int(profissao))
+        else:
+            usuario.profissao = None
 
-    # Processa a imagem se enviada
+    # Processa a imagem se enviada (mantido igual)
     if imagem and imagem.filename:
         try:
             contents = await imagem.read()
             if not _validar_upload_imagem(imagem, contents):
                 raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
             
-            # Gera nome único para o arquivo
             nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
             caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
             
-            # Salva o arquivo físico
             async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
                 await arquivo.write(contents)
             
-            # Cria o registro da imagem na tabela
             imagem_obj = Imagem(
                 id=None,
                 usuario_id=usuario.id,
@@ -306,19 +310,15 @@ async def atualizar_perfil(
                 criado_em=None
             )
             
-            # Insere a imagem e obtém o ID
             imagem_id = imagem_repo.inserir_imagem(imagem_obj)
             if not imagem_id:
-                # Remove o arquivo se não conseguir salvar no banco
                 if caminho_arquivo.exists():
                     caminho_arquivo.unlink()
                 raise HTTPException(status_code=400, detail="Erro ao salvar imagem no banco")
             
-            # CORREÇÃO: Salva o ID da imagem, não a URL
             usuario.imagem = imagem_id
             
         except Exception as e:
-            # Remove arquivo se algo der errado
             if 'caminho_arquivo' in locals() and caminho_arquivo.exists():
                 caminho_arquivo.unlink()
             raise HTTPException(status_code=400, detail=f"Erro ao processar imagem: {str(e)}")
