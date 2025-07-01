@@ -21,7 +21,7 @@ WHERE id = ?;
 """
 
 BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL = """
-SELECT AVG(nota) AS media, u.nome AS nome_profissional
+SELECT AVG(nota) AS media
 FROM avaliacao a
 JOIN usuario u ON a.profissional_id = u.id
 WHERE a.profissional_id = ?;
