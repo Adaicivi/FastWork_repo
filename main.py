@@ -1,7 +1,7 @@
 # Imports organizados seguindo padrão do Código 1
 from fastapi.responses import RedirectResponse, JSONResponse
 import uvicorn
-from fastapi import FastAPI, Form, HTTPException, Request, File, UploadFile
+from fastapi import FastAPI, Form, HTTPException, Request, File, UploadFile, status
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -77,11 +77,18 @@ def read_root(request: Request):
 
 
 @app.get("/usuarios")
-def read_usuarios(request: Request, page: int = 1):
+def read_usuarios(request: Request, page: int = 1, profissao: Optional[str] = None):
     quantidade_por_pagina = 12
-    usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
-    total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
-    total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
+    if profissao and profissao != "todos":
+        usuarios = usuario_repo.obter_usuarios_por_profissao_nome(profissao)
+        total_usuarios = len(usuarios)
+        total_paginas = 1
+        usuarios = usuarios[(page-1)*quantidade_por_pagina : page*quantidade_por_pagina]
+    else:
+        usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
+        total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
+        total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
+
     medias_avaliacao = {}
     for u in usuarios:
         if u.tipo in ['a', 'b']:
@@ -95,7 +102,8 @@ def read_usuarios(request: Request, page: int = 1):
         "total_paginas": total_paginas,
         "total_usuarios": total_usuarios,
         "medias_avaliacao": medias_avaliacao,
-        "usuario_logado": usuario_logado
+        "usuario_logado": usuario_logado,
+        "filtro_profissao": profissao or "todos"
     })
 
 
@@ -541,4 +549,28 @@ def _validar_upload_imagem(file: UploadFile, contents: bytes) -> bool:
 
 if __name__ == "__main__":
     uvicorn.run(app=app, port=8000)
+
+@app.post("/avaliar/{id}")
+async def avaliar_profissional(
+    request: Request,
+    id: int,
+    nota: int = Form(...)
+):
+    usuario_json = request.session.get("usuario")
+    if not usuario_json:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado")
+    if usuario_json["id"] == id:
+        raise HTTPException(status_code=400, detail="Você não pode se autoavaliar.")
+
+    if avaliacao_repo.ja_avaliou(usuario_json["id"], id):
+        raise HTTPException(status_code=400, detail="Você já avaliou este profissional.")
+
+    sucesso = avaliacao_repo.inserir_avaliacao(
+        avaliador_id=usuario_json["id"],
+        avaliado_id=id,
+        nota=nota
+    )
+    if not sucesso:
+        raise HTTPException(status_code=400, detail="Erro ao registrar avaliação.")
+    return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
 

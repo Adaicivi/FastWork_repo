@@ -4,19 +4,20 @@ CREATE TABLE IF NOT EXISTS avaliacao (
     usuario_id INT NOT NULL,
     profissional_id INT NOT NULL,
     nota FLOAT NOT NULL,
+    comentario TEXT,
     FOREIGN KEY (usuario_id) REFERENCES usuario(id),
     FOREIGN KEY (profissional_id) REFERENCES usuario(id)
 );
 """
 
 INSERIR_AVALIACAO = """
-INSERT INTO avaliacao (usuario_id, profissional_id, nota)
-VALUES (?, ?, ?);
+INSERT INTO avaliacao (usuario_id, profissional_id, nota, comentario)
+VALUES (?, ?, ?, ?);
 """
 
 ATUALIZAR_AVALIACAO = """
 UPDATE avaliacao
-SET usuario_id = ?, profissional_id = ?, nota = ?
+SET usuario_id = ?, profissional_id = ?, nota = ?, comentario = ?
 WHERE id = ?;
 """
 
@@ -28,6 +29,6 @@ WHERE a.profissional_id = ?;
 """
 
 EXIBIR_AVALIACAO_ORDENADA = """
-SELECT id, usuario_id, profissional_id, nota FROM avaliacao
+SELECT id, usuario_id, profissional_id, nota, comentario FROM avaliacao
 ORDER BY nota DESC;
 """

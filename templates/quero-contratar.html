@@ -271,6 +271,25 @@
             color: #666;
             font-size: 14px;
         }
+
+        .star-rating {
+          direction: rtl;
+          display: inline-flex;
+        }
+        .star-rating input[type="radio"] {
+          display: none;
+        }
+        .star-rating label {
+          font-size: 2rem;
+          color: #ccc;
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+        .star-rating input[type="radio"]:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+          color: #ffc107;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -331,9 +350,7 @@
                                             <span class="me-3 fw-bold">Filtrar por:</span>
                                             <div class="d-flex flex-wrap gap-2">
                                                 <a href="?profissao=todos" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'todos' %}active{% endif %}">Todos</a>
-                                                <a href="?profissao=Limpeza" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'Limpeza' %}active{% endif %}">
-                                                    <i class="bi bi-broom me-1"></i> Limpeza
-                                                </a>
+                                                <a href="?profissao=Limpeza" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'Limpeza' %}active{% endif %}">Limpeza</a>
                                                 <a href="?profissao=Jardinagem" class="btn btn-sm btn-outline-primary {% if filtro_profissao == 'Jardinagem' %}active{% endif %}">
                                                     <i class="bi bi-flower1 me-1"></i> Jardinagem
                                                 </a>
@@ -415,6 +432,9 @@
                                                     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#perfilModal{{u.id}}">
                                                         <i class="bi bi-person"></i> Exibir perfil
                                                     </button>
+                                                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#avaliarModal{{u.id}}">
+                                                      Avaliar
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -467,26 +487,20 @@
                             <span class=" fs-4 fw-normal mb-1">{{u.profissao.nome}}</span>
                             {% set media = medias_avaliacao.get(u.id) %}
                             <div class="rating mb-3">
+                              {% if media %}
                                 <span class="text-warning fs-5">
-                                    {% if media is not none %}
-                                        {% if media >= 4.75 %}
-                                            ⭐⭐⭐⭐⭐
-                                        {% elif media >= 3.75 %}
-                                            ⭐⭐⭐⭐☆
-                                        {% elif media >= 2.75 %}
-                                            ⭐⭐⭐☆☆
-                                        {% elif media >= 1.75 %}
-                                            ⭐⭐☆☆☆
-                                        {% elif media >= 0.75 %}
-                                            ⭐☆☆☆☆
-                                        {% else %}
-                                            ☆☆☆☆☆
-                                        {% endif %}
-                                        <small class="text-muted">({{ "%.1f"|format(media) }})</small>
+                                  {% for i in range(1, 6) %}
+                                    {% if i <= media|round(0, 'floor') %}
+                                      <i class="bi bi-star-fill"></i>
                                     {% else %}
-                                        <span class="text-muted">Sem avaliações</span>
+                                      <i class="bi bi-star"></i>
                                     {% endif %}
+                                  {% endfor %}
+                                  <span class="ms-2">{{ media|round(1) }}/5</span>
                                 </span>
+                              {% else %}
+                                <span class="text-muted">Sem avaliações</span>
+                              {% endif %}
                             </div>
                         </div>
                         
@@ -535,10 +549,35 @@
                 </div>
                 <div class="modal-footer border-top-0 bg-light rounded-bottom-4">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary">Avaliar Profissional</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#avaliarModal{{u.id}}">Avaliar Profissional</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Modal de Avaliação -->
+    <div class="modal fade" id="avaliarModal{{u.id}}" tabindex="-1" aria-labelledby="avaliarModalLabel{{u.id}}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <form method="post" action="/avaliar/{{u.id}}" class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="avaliarModalLabel{{u.id}}">Avaliar Profissional</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3 text-center">
+              <div class="star-rating" style="direction: rtl; display: inline-flex;">
+                {% for i in range(5, 0, -1) %}
+                  <input type="radio" id="star{{i}}-{{u.id}}" name="nota" value="{{i}}" required style="display: none;">
+                  <label for="star{{i}}-{{u.id}}" style="font-size:2rem; color: #ffc107; cursor:pointer;">&#9733;</label>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Enviar Avaliação</button>
+          </div>
+        </form>
+      </div>
     </div>
     {% endfor %}
 
@@ -620,26 +659,26 @@
         <div class="modal-dialog">
             <form method="post" action="/senha_hash" class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalRedefinirSenhaLabel">Redefinir senha_hash</h5>
+                    <h5 class="modal-title" id="modalRedefinirSenhaLabel">Redefinir senha</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="senha_atual" class="form-label">senha_hash Atual</label>
+                        <label for="senha_atual" class="form-label">Senha atual</label>
                         <input type="password" class="form-control" id="senha_atual" name="senha_atual" required>
                     </div>
                     <div class="mb-3">
-                        <label for="nova_senha" class="form-label">Nova senha_hash</label>
+                        <label for="nova_senha" class="form-label">Nova senha</label>
                         <input type="password" class="form-control" id="nova_senha" name="nova_senha" required>
                     </div>
                     <div class="mb-3">
-                        <label for="conf_nova_senha" class="form-label">Confirmar Nova senha_hash</label>
+                        <label for="conf_nova_senha" class="form-label">Confirmar nova senha</label>
                         <input type="password" class="form-control" id="conf_nova_senha" name="conf_nova_senha" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar Nova senha_hash</button>
+                    <button type="submit" class="btn btn-primary">Salvar Nova Senha</button>
                 </div>
             </form>
         </div>
