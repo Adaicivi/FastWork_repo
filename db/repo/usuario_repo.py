@@ -213,3 +213,43 @@ def contar_usuarios_tipo_ab() -> int:
     except Exception as e:
         print(f"Erro ao contar usuários: {e}")
         return 0
+
+def obter_usuarios_por_profissao_nome(nome_profissao: str) -> list[Usuario]:
+    try:
+        with obter_conexao() as conexao:
+            cursor = conexao.cursor()
+            cursor.execute("""
+                SELECT u.*, p.nome as profissao, p.descricao as profissao_descricao, i.url as url_imagem, e.cidade as endereco_cidade, e.uf as endereco_uf
+                FROM usuario u
+                JOIN profissao p ON u.profissao_id = p.id
+                LEFT JOIN imagem i ON u.imagem = i.id
+                LEFT JOIN endereco e ON u.endereco_id = e.id
+                WHERE p.nome = ? AND u.tipo IN ('a', 'b')
+            """, (nome_profissao,))
+            resultados = cursor.fetchall()
+            return [Usuario(
+                id=resultado["id"],
+                nome=resultado["nome"],
+                email=resultado["email"],
+                senha_hash=resultado["senha_hash"],
+                data_nascimento=resultado["data_nascimento"],
+                cpf=resultado["cpf"],
+                telefone=resultado["telefone"],
+                endereco=Endereco(
+                    id=resultado["endereco_id"],
+                    cidade=resultado["endereco_cidade"],
+                    uf=resultado["endereco_uf"]
+                ) if resultado["endereco_id"] else None,
+                imagem=resultado["url_imagem"],
+                experiencia=resultado["experiencia"],
+                link_contato=resultado["link_contato"],
+                profissao=Profissao(
+                    id=resultado["profissao_id"],
+                    nome=resultado["profissao"],
+                    descricao=resultado["profissao_descricao"]
+                ) if resultado["profissao_id"] else None,
+                tipo=resultado["tipo"]
+            ) for resultado in resultados]
+    except Exception as e:
+        print(f"Erro ao obter usuários por profissão: {e}")
+        return []
