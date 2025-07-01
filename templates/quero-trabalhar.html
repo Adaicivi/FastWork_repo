@@ -363,21 +363,22 @@
                                     <h5 class="mb-0">Informações Profissionais</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-3 text-center">
-                                            <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 150px; height: 150px;">
-                                                {% if usuario.imagem %}
-                                                    <img src="{{ usuario.imagem }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                                                {% else %}
-                                                    <i class="bi bi-person fs-1 text-secondary"></i>
-                                                {% endif %}
+                                    <form class="form-spacing" method="post" action="/perfil" enctype="multipart/form-data">
+                                        <div class="row">
+                                            <div class="col-md-3 text-center">
+                                                <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 150px; height: 150px;">
+                                                    {% if usuario.imagem %}
+                                                        <img id="previewImg" src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                    {% else %}
+                                                        <img id="previewImg" src="/uploads/default.jpg" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                    {% endif %}
+                                                </div>
+                                                <input type="file" name="imagem" id="imagemInput" accept="image/*" style="display:none;" onchange="previewImagem(event)">
+                                                <button class="btn btn-sm btn-outline-primary w-100 hover-effect" type="button" onclick="document.getElementById('imagemInput').click()">
+                                                    <i class="bi bi-camera me-1"></i> Alterar imagem
+                                                </button>
                                             </div>
-                                            <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadimagem">
-                                                <i class="bi bi-camera me-1"></i> Alterar imagem
-                                            </button>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <form class="form-spacing" method="post" action="/perfil" enctype="multipart/form-data">
+                                            <div class="col-md-9">
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Nome Completo</label>
@@ -415,25 +416,14 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="mb-3 text-center">
-                                                    <label class="form-label">Foto de Perfil</label>
-                                                    <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 150px; height: 150px;">
-                                                        {% if usuario.imagem %}
-                                                            <img id="previewImg" src="{{ usuario.imagem }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                                                        {% else %}
-                                                            <img id="previewImg" src="/uploads/default.jpg" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                                                        {% endif %}
-                                                    </div>
-                                                    <input type="file" class="form-control" name="imagem" id="imagemInput" accept="image/*" onchange="previewImagem(event)">
-                                                </div>
                                                 <div class="d-flex justify-content-end">
                                                     <button type="submit" class="btn btn-primary">
                                                         <i class="bi bi-save me-1"></i> Salvar Alterações
                                                     </button>
                                                 </div>
-                                            </form>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </form>
                                 </div> 
                             </div>
                         </div>
@@ -685,16 +675,6 @@
             }
         }
 
-        function previewImagem(event) {
-            const input = event.target;
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('previewImg').src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
 
         document.addEventListener('DOMContentLoaded', function() {
             // Ao marcar "Sim", abre o modal de planos e NÃO envia o form
@@ -723,6 +703,27 @@
             });
 
         });
+        function previewImagem(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, selecione apenas arquivos de imagem.');
+                    input.value = '';
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Arquivo muito grande. Máximo: 5MB');
+                    input.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
 
     {% if request.query_params.get('plano') == 'ok' %}
