@@ -8,9 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        /* ==================== */
-        /* VARIÁVEIS E ESTILOS GERAIS */
-        /* ==================== */
         :root {
             --primary-dark: #2c4285;
             --primary-light: #e2eafc;
@@ -67,6 +64,14 @@
             background-color: rgba(255, 255, 255, 0.2);
         }
 
+        .navbar-brand img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
         /* ==================== */
         /* HERO SECTION */
         /* ==================== */
@@ -74,14 +79,14 @@
             padding: 6rem 0;
             background-color: var(--primary-light);
             margin-bottom: 3rem;
-        }
-
-        .hero-section {
             position: relative;
             z-index: 1;
-            padding: 6rem 0;
             color: white;
-            background: transparent;
+            height: 100vh;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
         }
 
         .hero-section::before {
@@ -91,15 +96,6 @@
             width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4);
             z-index: 0;
-        }
-
-        .hero-section {
-            position: relative;
-            height: 100vh;
-            min-height: 600px;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
         }
 
         #backgroundCarousel {
@@ -121,12 +117,7 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
-        }
-
-        .carousel-item img.object-fit-cover {
-            object-fit: cover;
-            height: 100%;
-            width: 100%;
+            border-radius: 10px;
         }
 
         .hero-section .container {
@@ -182,7 +173,7 @@
         .testimonials .card {
             border: none;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             background-color: white;
         }
 
@@ -236,19 +227,11 @@
         /* ==================== */
         /* BOTÕES */
         /* ==================== */
-        .btn-primary {
+        .btn-primary, .btn-outline-primary {
             transition: all 0.2s ease;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-outline-primary {
-            transition: all 0.2s ease;
-        }
-
-        .btn-outline-primary:hover {
+        .btn-primary:hover, .btn-outline-primary:hover {
             transform: translateY(-2px);
         }
 
@@ -257,14 +240,14 @@
         /* ==================== */
         .card {
             border: none;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
             transition: transform 0.2s, box-shadow 0.2s;
             background-color: white;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
         }
 
         /* ==================== */
@@ -292,17 +275,6 @@
             clip: rect(0, 0, 0, 0);
             white-space: nowrap;
             border: 0;
-        }
-
-        /* ==================== */
-        /* LOGO NAVBAR */
-        /* ==================== */
-        .navbar-brand img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            border-radius: 50%;
-            margin-right: 10px;
         }
 
         /* ==================== */
