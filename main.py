@@ -81,11 +81,15 @@ def read_usuarios(request: Request, page: int = 1, profissao: Optional[str] = No
     quantidade_por_pagina = 12
     if profissao and profissao != "todos":
         usuarios = usuario_repo.obter_usuarios_por_profissao_nome(profissao)
+        # Ordena: tipo 'a' primeiro, depois 'b'
+        usuarios = sorted(usuarios, key=lambda u: (u.tipo != 'a', u.tipo))
         total_usuarios = len(usuarios)
         total_paginas = 1
         usuarios = usuarios[(page-1)*quantidade_por_pagina : page*quantidade_por_pagina]
     else:
         usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
+        # Ordena: tipo 'a' primeiro, depois 'b'
+        usuarios = sorted(usuarios, key=lambda u: (u.tipo != 'a', u.tipo))
         total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
         total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
 
@@ -292,7 +296,7 @@ async def atualizar_perfil(
         imagem_id = imagem_repo.inserir_imagem(imagem_obj)
         if not imagem_id:
             raise HTTPException(status_code=400, detail="Erro ao salvar imagem")
-        usuario.imagem = imagem_id  # Salve o ID, não a URL!
+        usuario.imagem = f"/uploads/{nome_arquivo_unico}"  # Salve a URL!
 
     usuario_repo.atualizar_usuario(usuario)
     usuario_json = {
@@ -480,9 +484,6 @@ async def excluir_imagem_usuario(request: Request, id: int):
         caminho_arquivo = UPLOAD_DIR / imagem.nome_arquivo
         if caminho_arquivo.exists():
             caminho_arquivo.unlink()
-       
-        # Remove do banco
-        imagem_repo.excluir_imagem(imagem.id)
    
     # Remove a referência do usuário
     usuario.imagem = None
@@ -583,8 +584,8 @@ async def avaliar_profissional(
         raise HTTPException(status_code=400, detail="Você já avaliou este profissional.")
 
     sucesso = avaliacao_repo.inserir_avaliacao(
-        avaliador_id=usuario_json["id"],
-        avaliado_id=id,
+        usuario_id=usuario_json["id"],
+        profissional_id=id,
         nota=nota
     )
     if not sucesso:
