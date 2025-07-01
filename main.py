@@ -238,7 +238,8 @@ async def atualizar_perfil(
     link_contato: str = Form(None),
     endereco: str = Form(None),
     profissao: str = Form(None),
-    tipo: str = Form("c")
+    tipo: str = Form("c"),
+    imagem: UploadFile = File(None)  # <-- adicione isso
 ):
     usuario_json = request.session.get("usuario")
     if not usuario_json:
@@ -256,6 +257,18 @@ async def atualizar_perfil(
         usuario.endereco = endereco_repo.obter_endereco_por_id(int(endereco))
     if profissao:
         usuario.profissao = profissao_repo.obter_profissao_por_id(int(profissao))
+
+    # Processa a imagem se enviada
+    if imagem and imagem.filename:
+        contents = await imagem.read()
+        if not _validar_upload_imagem(imagem, contents):
+            raise HTTPException(status_code=400, detail="Arquivo inválido ou formato não suportado")
+        nome_arquivo_unico = f"{uuid.uuid4().hex}{Path(imagem.filename).suffix.lower()}"
+        caminho_arquivo = UPLOAD_DIR / nome_arquivo_unico
+        async with aiofiles.open(caminho_arquivo, 'wb') as arquivo:
+            await arquivo.write(contents)
+        usuario.imagem = f"/uploads/{nome_arquivo_unico}"
+
     usuario_repo.atualizar_usuario(usuario)
     usuario_json = {
         "id": usuario.id,
@@ -276,7 +289,6 @@ async def escolher_plano(request: Request, plano: str = Form(...)):
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-
     if plano == "basico":
         usuario.tipo = "b"
         usuario_repo.atualizar_tipo_usuario(usuario.id, "b")
@@ -288,8 +300,24 @@ async def escolher_plano(request: Request, plano: str = Form(...)):
     else:
         raise HTTPException(status_code=400, detail="Plano inválido")
 
-
     request.session["usuario"] = usuario_json
+    return RedirectResponse(url="/perfil", status_code=303)
+
+@app.post("/perfil/ativar")
+async def ativar_perfil_trabalho(request: Request, ativarPerfil: str = Form(...)):
+    usuario_json = request.session.get("usuario")
+    if not usuario_json:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado")
+    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    if ativarPerfil == "nao":
+        usuario.tipo = "c"
+        usuario_repo.atualizar_tipo_usuario(usuario.id, "c")
+        usuario_json["tipo"] = "c"
+        request.session["usuario"] = usuario_json
+    # Se for "sim", não faz nada aqui, pois o plano será escolhido no modal
     return RedirectResponse(url="/perfil", status_code=303)
 
 
