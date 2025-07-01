@@ -300,7 +300,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <img src="{{ usuario.imagem_url if usuario.imagem_url else '/uploads/default.jpg' }}" alt="User" class="rounded-circle me-1">
+                            <img src="{% if usuario_logado.imagem %}/usuarios/imagem/{{ usuario_logado.imagem }}{% else %}/uploads/default.jpg{% endif %}" alt="User" class="rounded-circle me-1">
                             {{ usuario.nome }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">

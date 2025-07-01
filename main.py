@@ -250,7 +250,8 @@ async def perfil_usuario(request: Request):
 
     return templates.TemplateResponse("quero-trabalhar.html", {
         "request": request,
-        "usuario": usuario
+        "usuario_logado": usuario,  # Corrigido aqui!
+        "usuario": usuario          # Se o template ainda usa 'usuario' em algum lugar
     })
 
 
@@ -409,22 +410,13 @@ async def atualizar_senha(
 
 
 @app.get("/usuarios/imagem/{id}")
-async def gerenciar_imagem_usuario(request: Request, id: int):
-    # Verifica se é o próprio usuário ou admin
-    usuario_json = request.session.get("usuario")
-    if not usuario_json or (usuario_json["id"] != id and usuario_json.get("tipo") != "admin"):
-        raise HTTPException(status_code=403, detail="Acesso negado")
-   
-    # Busca o usuário
-    usuario = usuario_repo.obter_usuario_por_id(id)
-    if not usuario:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
-   
-    # Retorna página de gerenciamento de imagem
-    return templates.TemplateResponse("gerenciar_imagem.html", {
-        "request": request,
-        "usuario": usuario
-    })
+async def gerenciar_imagem_usuario(id: int):
+    imagem = imagem_repo.obter_imagem_por_id(id)
+    if imagem and imagem.nome_arquivo:
+        caminho = UPLOAD_DIR / imagem.nome_arquivo
+        if caminho.exists():
+            return FileResponse(caminho, media_type="image/jpeg")  # ou detecte o tipo correto
+    return FileResponse(UPLOAD_DIR / "default.jpg", media_type="image/jpeg")
 
 
 @app.post("/usuarios/imagem/{id}")
