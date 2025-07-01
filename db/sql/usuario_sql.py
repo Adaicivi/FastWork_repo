@@ -37,9 +37,10 @@ WHERE id = ?;
 """
 
 BUSCAR_USUARIOS_ORDENADOS_POR_PROFISSAO = """
-SELECT u.nome, u.email, u.imagem, u.experiencia, u.cpf, u.telefone, u.data_nascimento, p.nome AS profissao, u.link_contato, u.endereco_id, u.tipo
+SELECT u.nome, u.email, u.imagem, i.url AS url_imagem, u.experiencia, u.cpf, u.telefone, u.data_nascimento, p.nome AS profissao, u.link_contato, u.endereco_id, u.tipo
 FROM usuario u
 JOIN profissao p ON u.profissao_id = p.id
+LEFT JOIN imagem i ON u.imagem = i.id
 WHERE u.profissao_id = ?;
 """
 
