@@ -86,7 +86,8 @@ DELETE FROM usuario
 WHERE id = ? AND senha_hash = ?;
 """
 
-CONTAR_USUARIOS = """
-SELECT COUNT(*) as total
-FROM usuario;
+CONTAR_USUARIOS_TIPO_AB = """
+SELECT COUNT(*) AS total
+FROM usuario
+WHERE tipo IN ('a', 'b');
 """
