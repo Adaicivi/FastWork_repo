@@ -68,7 +68,7 @@ def read_root(request: Request):
 @app.get("/usuarios")
 def read_usuarios(request: Request, page: int = 1):
     quantidade_por_pagina = 12
-    usuarios = usuario_repo.obter_usuario_por_pagina(page, quantidade_por_pagina)
+    usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
     total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
     total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
     return templates.TemplateResponse("quero-contratar.html", {
@@ -106,13 +106,13 @@ async def cadastrar_usuario(
     cpf: str = Form(),
     telefone: str = Form(),
     data_nascimento: str = Form(),
-    senha: str = Form(),
+    senha_hash: str = Form(),
     conf_senha: str = Form(),
     endereco: Optional[str] = Form(None)
 ):
     if not validar_cpf(cpf):
         raise HTTPException(status_code=400, detail="CPF inválido")
-    if senha != conf_senha:
+    if senha_hash != conf_senha:
         raise HTTPException(status_code=400, detail="As senhas não conferem")
     endereco_obj = None
     if endereco:
@@ -121,7 +121,7 @@ async def cadastrar_usuario(
         id=0,
         nome=nome,
         email=email,
-        senha_hash=hash_senha(senha),
+        senha_hash=hash_senha(senha_hash),
         cpf=cpf,
         telefone=telefone,
         data_nascimento=data_nascimento,
@@ -146,10 +146,10 @@ def read_login(request: Request):
 async def login(
     request: Request, 
     email: str = Form(), 
-    senha: str = Form()
+    senha_hash: str = Form()
 ):
-    # Verifica se o email e senha informados estão corretos
-    usuario = autenticar_usuario(email, senha)
+    # Verifica se o email e senha_hash informados estão corretos
+    usuario = autenticar_usuario(email, senha_hash)
     if not usuario:
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
     
@@ -235,17 +235,17 @@ async def atualizar_perfil(
     request.session["usuario"] = usuario_json
     return RedirectResponse(url="/perfil", status_code=303)
 
-@app.get("/senha")
+@app.get("/senha_hash")
 async def senha_usuario(request: Request):
     # Captura os dados do usuário da sessão (logado)
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
     
-    # Retorna a página de alteração de senha
-    return templates.TemplateResponse("senha.html", {"request": request})
+    # Retorna a página de alteração de senha_hash
+    return templates.TemplateResponse("senha_hash.html", {"request": request})
 
-@app.post("/senha")
+@app.post("/senha_hash")
 async def atualizar_senha(
     request: Request,
     senha_atual: str = Form(),
@@ -262,7 +262,7 @@ async def atualizar_senha(
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     
-    # Verifica a senha atual
+    # Verifica a senha_hash atual
     if not autenticar_usuario(usuario.email, senha_atual):
         raise HTTPException(status_code=400, detail="Senha atual incorreta")
     
@@ -270,9 +270,9 @@ async def atualizar_senha(
     if nova_senha != conf_nova_senha:
         raise HTTPException(status_code=400, detail="As senhas não conferem")
     
-    # Atualiza a senha do usuário
+    # Atualiza a senha_hash do usuário
     if not usuario_repo.atualizar_senha_usuario(usuario.id, hash_senha(nova_senha)):
-        raise HTTPException(status_code=400, detail="Erro ao atualizar senha")
+        raise HTTPException(status_code=400, detail="Erro ao atualizar senha_hash")
     
     # Redireciona para a página de perfil
     return RedirectResponse(url="/perfil", status_code=303)
