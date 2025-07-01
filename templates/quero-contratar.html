@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        /* Variáveis de cores */
         :root {
             --primary-color: #3a56a7;
             --primary-dark: #2c4285;
@@ -17,7 +16,6 @@
             --dark-color: #212529;
         }
 
-        /* Estilos gerais */
         body {
             background-color: #f8f9fa;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -26,7 +24,6 @@
             padding-top: 50px;
         }
 
-        /* Navbar principal */
         .navbar {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             height: 80px;
@@ -69,14 +66,16 @@
             object-fit: cover;
             border: 2px solid rgba(255, 255, 255, 0.3);
         }
-
-        /*Cards*/
-
         .card {
-            border: 2px solid rgba(0, 0, 0, 0.4);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+            transition: transform 0.2s, box-shadow 0.2s;
+            background-color: white;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
         }
 
         .card-header {
@@ -85,7 +84,6 @@
             color: white;
         }
 
-        /* Cards de perfil */
         .perfil-card {
             transition: all 0.3s ease;
             border: 2px solid rgba(0, 0, 0, 0.4);
@@ -114,7 +112,6 @@
             font-size: 17.6px; /* 1.1rem */
         }
 
-        /* Filtros */
         .filtro-grupo {
             background-color: white;
             border-radius: 8px;
@@ -150,12 +147,10 @@
             border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        /* Rodapé */
         footer a {
             transition: color 0.2s;
         }
 
-        /* Responsividade */
         @media (max-width: 768px) {
             .navbar-collapse {
                 padding-top: 10px;
@@ -168,9 +163,24 @@
             .filtro-opcoes {
                 padding-left: 0;
             }
+            
+            #candidatos-content .d-flex.flex-wrap {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            #candidatos-content .d-flex.gap-2 {
+                margin-top: 0.5rem;
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            
+            #candidatos-content .btn-sm {
+                white-space: nowrap;
+            }
         }
 
-        /* Ajustes para o conteúdo principal */
         .container {
             padding-top: 20px;
             padding-bottom: 20px;
@@ -184,7 +194,6 @@
             margin-bottom: 30px;
         }
 
-        /* Novo estilo para os filtros superiores */
         #candidatos-content .card-body.py-2 {
             padding: 0.75rem 1rem !important;
         }
@@ -206,7 +215,6 @@
             background-color: var(--primary-light);
         }
 
-        /* Estilo para o dropdown de ordenação */
         #candidatos-content .dropdown-toggle::after {
             margin-left: 0.5em;
             vertical-align: 0.15em;
@@ -217,7 +225,6 @@
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
         }
 
-        /* Estilos para o upload de imagem */
         .upload-area {
             border: 2px dashed #ddd;
             border-radius: 8px;
@@ -264,26 +271,7 @@
             color: #666;
             font-size: 14px;
         }
-
-        /* Ajustes de responsividade */
-        @media (max-width: 768px) {
-            #candidatos-content .d-flex.flex-wrap {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            #candidatos-content .d-flex.gap-2 {
-                margin-top: 0.5rem;
-                width: 100%;
-                overflow-x: auto;
-                padding-bottom: 0.5rem;
-            }
-            
-            #candidatos-content .btn-sm {
-                white-space: nowrap;
-            }
-        }
-    </style>>
+    </style>
 </head>
 <body class="bg-light">
     <!-- Navbar Principal -->
@@ -386,7 +374,7 @@
                                     {% for u in usuario %}
                                     {% if u.tipo in ['a', 'b'] %}
                                     <div class="col">
-                                        <div class="perfil-card h-100">
+                                        <div class="perfil-card h-100 card">
                                             <div class="card-body">
                                                 <div class="d-flex align-items-center mb-3">
                                                     <img src="{{ u.imagem if u.imagem else '/uploads/default.jpg' }}" class="rounded-circle me-3" alt="{{ u.nome }}">
