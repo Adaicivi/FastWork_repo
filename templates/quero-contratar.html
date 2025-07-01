@@ -393,10 +393,10 @@
                                                     <div>
                                                         <h5 class="card-title mb-0">{{u.nome}}</h5>
                                                         <small class="text-muted">
-                                                            {{u.endereco.cidade}}-{{u.endereco.uf}}
+                                                            {{ u.endereco if u.endereco else 'Não informado' }}
                                                         </small>
                                                         <span class="badge bg-primary mt-1">
-                                                            {{u.profissao.nome}}
+                                                            {{ u.profissao if u.profissao else 'Não informado' }}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -484,7 +484,7 @@
                                 <img src="{{ u.imagem if u.imagem else '/uploads/default.jpg' }}" class="rounded-circle img-thumbnail border-3 border-primary" style="width: 180px; height: 180px; object-fit: cover;" alt="imagem do profissional">
                             </div>
                             <h4 class="mb-1">{{u.nome}}</h4>
-                            <span class=" fs-4 fw-normal mb-1">{{u.profissao.nome}}</span>
+                            <span class="fs-4 fw-normal mb-1">{{u.profissao if u.profissao else 'Não informado'}}</span>
                             {% set media = medias_avaliacao.get(u.id) %}
                             <div class="rating mb-3">
                               {% if media %}
@@ -522,11 +522,11 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <p class="mb-1"><strong><i class="bi bi-geo-alt me-2"></i>Localização:</strong></p>
-                                            <p class="text-muted">{{u.endereco.nome}}-{{u.endereco.uf}}</p>
+                                            <p class="text-muted">{{ u.endereco if u.endereco else 'Não informado' }}</p>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <p class="mb-1"><strong><i class="bi bi-briefcase me-2"></i>Área de atuação:</strong></p>
-                                            <p class="text-muted">{{u.profissao.nome}}</p>
+                                            <p class="text-muted">{{ u.profissao if u.profissao else 'Não informado' }}</p>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <p class="mb-1"><strong><i class="bi bi-geo-alt me-2"></i>Link de contato:</strong></p>

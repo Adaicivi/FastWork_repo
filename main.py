@@ -142,8 +142,8 @@ async def cadastrar_usuario(
     telefone: str = Form(),
     data_nascimento: str = Form(),
     senha_hash: str = Form(),
-    conf_senha: str = Form(),
-    endereco: Optional[str] = Form(None)
+    conf_senha: str = Form()
+    # Removido: endereco: Optional[str] = Form(None)
 ):
     if not validar_cpf(cpf):
         raise HTTPException(status_code=400, detail="CPF inválido")
@@ -161,8 +161,8 @@ async def cadastrar_usuario(
         experiencia=None,
         imagem=None,
         link_contato=None,
-        endereco=endereco,  # Agora é string direta
-        profissao=None,     # Agora é string direta
+        endereco=None,  # Sempre None no cadastro inicial
+        profissao=None,
         tipo="c"
     )
     usuario_id = usuario_repo.inserir_usuario(usuario)
