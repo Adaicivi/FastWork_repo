@@ -300,13 +300,13 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="User" class="rounded-circle me-1">
+                            <img src="{{ usuario.imagem if usuario.imagem else '/static/default.jpg' }}" alt="User" class="rounded-circle me-1">
                             {{ usuario.nome }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#usuarioModal"><i class="bi bi-person me-2"></i> Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/tela-inicio"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+                            <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -348,10 +348,10 @@
                                     <form method="post" action="/perfil/ativar" id="ativarPerfilForm" class="mb-0 d-inline">
                                         <div class="btn-group" role="group" aria-label="Ativar perfil">
                                             <input type="radio" class="btn-check" name="ativarPerfil" id="ativarSim" value="sim" autocomplete="off"
-                                            {% if request.query_params.get('ativarPerfil') == 'sim' %}checked{% endif %}>
+                                            {% if usuario.tipo in ['a', 'b'] %}checked{% endif %}>
                                             <label class="btn btn-outline-success btn-sm" for="ativarSim">Sim</label>
                                             <input type="radio" class="btn-check" name="ativarPerfil" id="ativarNao" value="nao" autocomplete="off"
-                                            {% if request.query_params.get('ativarPerfil') != 'sim' %}checked{% endif %}>
+                                            {% if usuario.tipo == 'c' %}checked{% endif %}>
                                             <label class="btn btn-outline-danger btn-sm" for="ativarNao">Não</label>
                                         </div>
                                     </form>
@@ -368,9 +368,9 @@
                                             <div class="col-md-3 text-center">
                                                 <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 150px; height: 150px;">
                                                     {% if usuario.imagem %}
-                                                        <img id="previewImg" src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                        <img id="previewImg" src="{{ usuario.imagem }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                                     {% else %}
-                                                        <img id="previewImg" src="/uploads/default.jpg" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                        <img id="previewImg" src="/static/default.jpg" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                                     {% endif %}
                                                 </div>
                                                 <input type="file" name="imagem" id="imagemInput" accept="image/*" style="display:none;" onchange="previewImagem(event)">
@@ -382,7 +382,7 @@
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Nome Completo</label>
-                                                        <input type="text" class="form-control" name="nome" value="{{ usuario.nome }}">
+                                                        <input type="text" class="form-control" name="nome" value="{{ usuario.nome }}" required>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">CPF</label>
@@ -392,29 +392,49 @@
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Telefone</label>
-                                                        <input type="text" class="form-control" name="telefone" value="{{ usuario.telefone }}">
+                                                        <input type="text" class="form-control" name="telefone" value="{{ usuario.telefone }}" required>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">E-mail</label>
-                                                        <input type="email" class="form-control" name="email" value="{{ usuario.email }}">
+                                                        <input type="email" class="form-control" name="email" value="{{ usuario.email }}" required>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Data de Nascimento</label>
-                                                        <input type="date" class="form-control" name="data_nascimento" value="{{ usuario.data_nascimento }}">
+                                                        <input type="date" class="form-control" name="data_nascimento" value="{{ usuario.data_nascimento }}" required>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">Área de Atuação</label>
                                                         <select class="form-select" name="profissao">
-                                                            {% if usuario.profissao %}
-                                                                <option selected value="{{ usuario.profissao.id }}">{{ usuario.profissao.nome }}</option>
-                                                            {% else %}
-                                                                <option selected value="">Selecione</option>
-                                                            {% endif %}
+                                                            <option value="">Selecione</option>
+                                                            <option value="Desenvolvedor" {% if usuario.profissao == 'Desenvolvedor' %}selected{% endif %}>Desenvolvedor</option>
+                                                            <option value="Designer" {% if usuario.profissao == 'Designer' %}selected{% endif %}>Designer</option>
+                                                            <option value="Marceneiro" {% if usuario.profissao == 'Marceneiro' %}selected{% endif %}>Marceneiro</option>
+                                                            <option value="Encanador" {% if usuario.profissao == 'Encanador' %}selected{% endif %}>Encanador</option>
+                                                            <option value="Eletricista" {% if usuario.profissao == 'Eletricista' %}selected{% endif %}>Eletricista</option>
                                                         </select>
                                                     </div>
                                                 </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-12">
+                                                        <label class="form-label">Endereço</label>
+                                                        <input type="text" class="form-control" name="endereco" value="{{ usuario.endereco }}">
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-12">
+                                                        <label class="form-label">Experiência</label>
+                                                        <textarea class="form-control" name="experiencia" rows="3">{{ usuario.experiencia }}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-12">
+                                                        <label class="form-label">Link para Contato (WhatsApp, LinkedIn, etc.)</label>
+                                                        <input type="text" class="form-control" name="link_contato" value="{{ usuario.link_contato }}">
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" name="tipo" value="{{ usuario.tipo }}">
                                                 <div class="d-flex justify-content-end">
                                                     <button type="submit" class="btn btn-primary">
                                                         <i class="bi bi-save me-1"></i> Salvar Alterações
@@ -438,7 +458,13 @@
                                 </button>
                             </div>
                             <div class="alert alert-info shadow-sm mb-4">
-                                Você está atualmente no plano <strong>Gratuito</strong>. Para acessar mais recursos, considere mudar para um plano pago.
+                                {% if usuario.tipo == 'a' %}
+                                    Você está atualmente no plano <strong>Premium</strong>.
+                                {% elif usuario.tipo == 'b' %}
+                                    Você está atualmente no plano <strong>Básico</strong>.
+                                {% else %}
+                                    Você está atualmente no plano <strong>Gratuito</strong>. Para acessar mais recursos, considere mudar para um plano pago.
+                                {% endif %}
                             </div>
                             <div class="row g-4 mb-4">
                                 <div class="col-md-6">
@@ -446,7 +472,7 @@
                                         <div class="card-body">
                                             <h5 class="card-title mb-2"><i class="bi bi-gem me-2 text-info"></i>Plano Gratuito</h5>
                                             <p class="card-text mb-1">Perfil básico, aparece nas buscas, limite de 5 imagens.</p>
-                                            <span class="badge bg-info text-dark">Ativo</span>
+                                            <span class="badge bg-info text-dark">{% if usuario.tipo == 'c' %}Ativo{% else %}Disponível{% endif %}</span>
                                         </div>
                                         <div class="card-footer text-muted small">
                                             Renovação: Mensal
@@ -482,7 +508,7 @@
                         <div class="col-md-4 text-center mb-4 mb-md-0">
                             <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 180px; height: 180px; margin: 0 auto; overflow: hidden;">
                                 {% if usuario.imagem %}
-                                    <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    <img src="{{ usuario.imagem }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 {% else %}
                                     <i class="bi bi-person fs-1 text-secondary"></i>
                                 {% endif %}
@@ -497,7 +523,7 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Nome completo</label>
-                                        <input type="text" class="form-control" value="{{ usuario.nome }}">
+                                        <input type="text" class="form-control" value="{{ usuario.nome }}" readonly>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">CPF</label>
@@ -507,27 +533,31 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">E-mail</label>
-                                        <input type="email" class="form-control" value="{{ usuario.email }}">
+                                        <input type="email" class="form-control" value="{{ usuario.email }}" readonly>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Telefone</label>
-                                        <input type="tel" class="form-control" value="{{ usuario.telefone }}">
+                                        <input type="tel" class="form-control" value="{{ usuario.telefone }}" readonly>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Data de nascimento</label>
-                                        <input type="date" class="form-control" value="{{ usuario.data_nascimento }}">
+                                        <input type="date" class="form-control" value="{{ usuario.data_nascimento }}" readonly>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Senha</label>
-                                        <input type="password" class="form-control" value="">
+                                        <label class="form-label">Plano Atual</label>
+                                        <input type="text" class="form-control" value="
+                                            {% if usuario.tipo == 'a' %}Premium
+                                            {% elif usuario.tipo == 'b' %}Básico
+                                            {% else %}Gratuito
+                                            {% endif %}" readonly>
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-save me-1"></i> Salvar alterações
-                                    </button>
+                                    <a href="/senha_hash" class="btn btn-primary">
+                                        <i class="bi bi-key me-1"></i> Alterar Senha
+                                    </a>
                                 </div>
                             </form>
                         </div>
@@ -635,12 +665,6 @@
             </div>
         </div>
     </div>
-    {% if request.query_params.get('plano') == 'ok' %}
-    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 2000; min-width: 300px;" role="alert">
-        Plano ativado com sucesso!
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-    </div>
-    {% endif %}
 
     <!-- Footer -->
     <footer class="bg-dark text-white py-5 mt-5">
@@ -679,34 +703,6 @@
             }
         }
 
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ao marcar "Sim", abre o modal de planos e NÃO envia o form
-            document.getElementById('ativarSim').addEventListener('change', function() {
-                if (this.checked) {
-                    var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
-                    modalPlanos.show();
-                }
-            });
-
-            // Ao marcar "Não", envia o formulário automaticamente
-            document.getElementById('ativarNao').addEventListener('change', function() {
-                if (this.checked) {
-                    document.getElementById('ativarPerfilForm').submit();
-                }
-            });
-
-            // Impede submit manual do form (não há botão salvar)
-            document.getElementById('ativarPerfilForm').addEventListener('submit', function(e) {
-                if (document.getElementById('ativarSim').checked) {
-                    e.preventDefault();
-                    var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
-                    modalPlanos.show();
-                }
-                // Se "Não" está marcado, permite o submit normalmente
-            });
-
-        });
         function previewImagem(event) {
             const input = event.target;
             if (input.files && input.files[0]) {
@@ -730,7 +726,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-        // Ao marcar "Sim", abre o modal de planos e NÃO envia o form
+            // Ao marcar "Sim", abre o modal de planos e NÃO envia o form
             document.getElementById('ativarSim').addEventListener('change', function() {
                 if (this.checked) {
                     var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
@@ -763,12 +759,5 @@
             }
         });
     </script>
-
-    {% if request.query_params.get('plano') == 'ok' %}
-    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 2000; min-width: 300px;" role="alert">
-        Plano ativado com sucesso!
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-    </div>
-    {% endif %}
 </body>
 </html>

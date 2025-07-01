@@ -182,14 +182,18 @@
                         <h2 class="text-center">Criar Conta</h2>
                     </div>
                     <div class="card-body">
-                        <form id="registerForm" method="post" action="/cadastrar">
-                            <div class="mb-3 mt-2">
-                                <label for="name" class="form-label">Nome Completo</label>
-                                <input type="text" class="form-control" id="nome" name="nome" required>
-                            </div>
-                            <div class="mb-3 mt-2">
-                                <label for="cpf" class="form-label">CPF</label>
-                                <input type="text" class="form-control" id="cpf" name="cpf" required>
+                        <form id="registerForm" method="post" action="/cadastrar" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-7 mt-3 mt-md-0">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Nome Completo</label>
+                                        <input type="text" class="form-control" id="nome" name="nome" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cpf" class="form-label">CPF</label>
+                                        <input type="text" class="form-control" id="cpf" name="cpf" required>
+                                    </div>
+                                </div>
                             </div>
                             <div class="mb-3 mt-2">
                                 <label for="data_nascimento" class="form-label">Data de Nascimento</label>
