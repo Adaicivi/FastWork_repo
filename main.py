@@ -379,28 +379,21 @@ async def excluir_imagem_usuario(request: Request, id: int):
 # ROTAS ADMINISTRATIVAS (seguindo padrão do Código 1)
 # ============================================================================
 
-@app.get("/usuarios/promover/{id}")
-async def promover_usuario(request: Request, id: int):
+@app.get("/usuarios/alterar_tipo/{id}/{novo_tipo}")
+async def alterar_tipo_usuario(request: Request, id: int, novo_tipo: str):
     # Busca o usuário pelo ID
     usuario = usuario_repo.obter_usuario_por_id(id)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     
-    # Promove o usuário para administrador
-    usuario_repo.atualizar_tipo_usuario(id, "admin")
+    # Tipos permitidos
+    tipos_permitidos = {"a", "b", "c"}
+    if novo_tipo not in tipos_permitidos:
+        raise HTTPException(status_code=400, detail="Tipo de usuário inválido")
     
-    # Redireciona para a lista de usuários
-    return RedirectResponse(url="/usuarios", status_code=303)
-
-@app.get("/usuarios/rebaixar/{id}")
-async def rebaixar_usuario(request: Request, id: int):
-    # Busca o usuário pelo ID
-    usuario = usuario_repo.obter_usuario_por_id(id)
-    if not usuario:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    
-    # Rebaixa o usuário para comum
-    usuario_repo.atualizar_tipo_usuario(id, "c")
+    # Só altera se for diferente
+    if usuario.tipo != novo_tipo:
+        usuario_repo.atualizar_tipo_usuario(id, novo_tipo)
     
     # Redireciona para a lista de usuários
     return RedirectResponse(url="/usuarios", status_code=303)
