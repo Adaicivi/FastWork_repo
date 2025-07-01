@@ -300,13 +300,13 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <img src="{{ usuario.imagem if usuario.imagem else '/static/default.jpg' }}" alt="User" class="rounded-circle me-1">
+                            <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="User" class="rounded-circle me-1">
                             {{ usuario.nome }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#usuarioModal"><i class="bi bi-person me-2"></i> Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+                            <li><a class="dropdown-item text-danger" href="/tela-inicio"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -348,10 +348,10 @@
                                     <form method="post" action="/perfil/ativar" id="ativarPerfilForm" class="mb-0 d-inline">
                                         <div class="btn-group" role="group" aria-label="Ativar perfil">
                                             <input type="radio" class="btn-check" name="ativarPerfil" id="ativarSim" value="sim" autocomplete="off"
-                                            {% if usuario.tipo in ['a', 'b'] %}checked{% endif %}>
+                                            {% if request.query_params.get('ativarPerfil') == 'sim' %}checked{% endif %}>
                                             <label class="btn btn-outline-success btn-sm" for="ativarSim">Sim</label>
                                             <input type="radio" class="btn-check" name="ativarPerfil" id="ativarNao" value="nao" autocomplete="off"
-                                            {% if usuario.tipo == 'c' %}checked{% endif %}>
+                                            {% if request.query_params.get('ativarPerfil') != 'sim' %}checked{% endif %}>
                                             <label class="btn btn-outline-danger btn-sm" for="ativarNao">Não</label>
                                         </div>
                                     </form>
@@ -368,9 +368,9 @@
                                             <div class="col-md-3 text-center">
                                                 <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 150px; height: 150px;">
                                                     {% if usuario.imagem %}
-                                                        <img id="previewImg" src="{{ usuario.imagem }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                        <img id="previewImg" src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                                     {% else %}
-                                                        <img id="previewImg" src="/static/default.jpg" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                        <img id="previewImg" src="/uploads/default.jpg" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                                     {% endif %}
                                                 </div>
                                                 <input type="file" name="imagem" id="imagemInput" accept="image/*" style="display:none;" onchange="previewImagem(event)">
@@ -382,7 +382,7 @@
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Nome Completo</label>
-                                                        <input type="text" class="form-control" name="nome" value="{{ usuario.nome }}" required>
+                                                        <input type="text" class="form-control" name="nome" value="{{ usuario.nome }}">
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">CPF</label>
@@ -392,49 +392,30 @@
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Telefone</label>
-                                                        <input type="text" class="form-control" name="telefone" value="{{ usuario.telefone }}" required>
+                                                        <input type="text" class="form-control" name="telefone" value="{{ usuario.telefone }}">
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">E-mail</label>
-                                                        <input type="email" class="form-control" name="email" value="{{ usuario.email }}" required>
+                                                        <input type="email" class="form-control" name="email" value="{{ usuario.email }}">
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Data de Nascimento</label>
-                                                        <input type="date" class="form-control" name="data_nascimento" value="{{ usuario.data_nascimento }}" required>
+                                                        <input type="date" class="form-control" name="data_nascimento" value="{{ usuario.data_nascimento }}">
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">Área de Atuação</label>
                                                         <select class="form-select" name="profissao">
-                                                            <option value="">Selecione</option>
-                                                            <option value="Desenvolvedor" {% if usuario.profissao == 'Desenvolvedor' %}selected{% endif %}>Desenvolvedor</option>
-                                                            <option value="Designer" {% if usuario.profissao == 'Designer' %}selected{% endif %}>Designer</option>
-                                                            <option value="Marceneiro" {% if usuario.profissao == 'Marceneiro' %}selected{% endif %}>Marceneiro</option>
-                                                            <option value="Encanador" {% if usuario.profissao == 'Encanador' %}selected{% endif %}>Encanador</option>
-                                                            <option value="Eletricista" {% if usuario.profissao == 'Eletricista' %}selected{% endif %}>Eletricista</option>
+                                                            {% if usuario.profissao %}
+                                                                <option selected value="{{ usuario.profissao.id }}">{{ usuario.profissao.nome }}</option>
+                                                            {% else %}
+                                                                <option selected value="">Selecione</option>
+                                                            {% endif %}
+                                                            <!-- Adicione outras opções aqui -->
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12">
-                                                        <label class="form-label">Endereço</label>
-                                                        <input type="text" class="form-control" name="endereco" value="{{ usuario.endereco }}">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12">
-                                                        <label class="form-label">Experiência</label>
-                                                        <textarea class="form-control" name="experiencia" rows="3">{{ usuario.experiencia }}</textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3">
-                                                    <div class="col-md-12">
-                                                        <label class="form-label">Link para Contato (WhatsApp, LinkedIn, etc.)</label>
-                                                        <input type="text" class="form-control" name="link_contato" value="{{ usuario.link_contato }}">
-                                                    </div>
-                                                </div>
-                                                <input type="hidden" name="tipo" value="{{ usuario.tipo }}">
                                                 <div class="d-flex justify-content-end">
                                                     <button type="submit" class="btn btn-primary">
                                                         <i class="bi bi-save me-1"></i> Salvar Alterações
@@ -458,13 +439,7 @@
                                 </button>
                             </div>
                             <div class="alert alert-info shadow-sm mb-4">
-                                {% if usuario.tipo == 'a' %}
-                                    Você está atualmente no plano <strong>Premium</strong>.
-                                {% elif usuario.tipo == 'b' %}
-                                    Você está atualmente no plano <strong>Básico</strong>.
-                                {% else %}
-                                    Você está atualmente no plano <strong>Gratuito</strong>. Para acessar mais recursos, considere mudar para um plano pago.
-                                {% endif %}
+                                Você está atualmente no plano <strong>Gratuito</strong>. Para acessar mais recursos, considere mudar para um plano pago.
                             </div>
                             <div class="row g-4 mb-4">
                                 <div class="col-md-6">
@@ -472,7 +447,7 @@
                                         <div class="card-body">
                                             <h5 class="card-title mb-2"><i class="bi bi-gem me-2 text-info"></i>Plano Gratuito</h5>
                                             <p class="card-text mb-1">Perfil básico, aparece nas buscas, limite de 5 imagens.</p>
-                                            <span class="badge bg-info text-dark">{% if usuario.tipo == 'c' %}Ativo{% else %}Disponível{% endif %}</span>
+                                            <span class="badge bg-info text-dark">Ativo</span>
                                         </div>
                                         <div class="card-footer text-muted small">
                                             Renovação: Mensal
@@ -508,7 +483,7 @@
                         <div class="col-md-4 text-center mb-4 mb-md-0">
                             <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 180px; height: 180px; margin: 0 auto; overflow: hidden;">
                                 {% if usuario.imagem %}
-                                    <img src="{{ usuario.imagem }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                                 {% else %}
                                     <i class="bi bi-person fs-1 text-secondary"></i>
                                 {% endif %}
@@ -523,7 +498,7 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Nome completo</label>
-                                        <input type="text" class="form-control" value="{{ usuario.nome }}" readonly>
+                                        <input type="text" class="form-control" value="{{ usuario.nome }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">CPF</label>
@@ -533,31 +508,90 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">E-mail</label>
-                                        <input type="email" class="form-control" value="{{ usuario.email }}" readonly>
+                                        <input type="email" class="form-control" value="{{ usuario.email }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Telefone</label>
-                                        <input type="tel" class="form-control" value="{{ usuario.telefone }}" readonly>
+                                        <input type="tel" class="form-control" value="{{ usuario.telefone }}">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Data de nascimento</label>
-                                        <input type="date" class="form-control" value="{{ usuario.data_nascimento }}" readonly>
+                                        <input type="date" class="form-control" value="{{ usuario.data_nascimento }}">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Área de Atuação</label>
+                                        <select class="form-select" name="profissao" >
+                                            <option value="">Selecione</option>
+                                            <option value="Limpeza" {% if usuario.profissao == 'Limpeza' %}selected{% endif %}>Limpeza</option>
+                                            <option value="Jardinagem" {% if usuario.profissao == 'Jardinagem' %}selected{% endif %}>Jardinagem</option>
+                                            <option value="Eletricista" {% if usuario.profissao == 'Eletricista' %}selected{% endif %}>Eletricista</option>
+                                            <option value="Encanador" {% if usuario.profissao == 'Encanador' %}selected{% endif %}>Encanador</option>
+                                            <option value="Construção" {% if usuario.profissao == 'Construção' %}selected{% endif %}>Construção</option>
+                                            <option value="Marceneiro" {% if usuario.profissao == 'Marceneiro' %}selected{% endif %}>Marceneiro</option>
+                                            <option value="Pintor" {% if usuario.profissao == 'Pintor' %}selected{% endif %}>Pintor</option>
+                                        </select>
+                                    </div>
+                                    </div>
+                                            </select>
+                                        </div>
+                                    <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" name="estado" >
+                                            <option value="">Selecione</option>
+                                            <option value="AC" {% if usuario.estado == 'AC' %}selected{% endif %}>Acre</option>
+                                            <option value="AL" {% if usuario.estado == 'AL' %}selected{% endif %}>Alagoas</option>
+                                            <option value="AP" {% if usuario.estado == 'AP' %}selected{% endif %}>Amapá</option>
+                                            <option value="AM" {% if usuario.estado == 'AM' %}selected{% endif %}>Amazonas</option>
+                                            <option value="BA" {% if usuario.estado == 'BA' %}selected{% endif %}>Bahia</option>
+                                            <option value="CE" {% if usuario.estado == 'CE' %}selected{% endif %}>Ceará</option>
+                                            <option value="DF" {% if usuario.estado == 'DF' %}selected{% endif %}>Distrito Federal</option>
+                                            <option value="ES" {% if usuario.estado == 'ES' %}selected{% endif %}>Espírito Santo</option>
+                                            <option value="GO" {% if usuario.estado == 'GO' %}selected{% endif %}>Goiás</option>
+                                            <option value="MA" {% if usuario.estado == 'MA' %}selected{% endif %}>Maranhão</option>
+                                            <option value="MT" {% if usuario.estado == 'MT' %}selected{% endif %}>Mato Grosso</option>
+                                            <option value="MS" {% if usuario.estado == 'MS' %}selected{% endif %}>Mato Grosso do Sul</option>
+                                            <option value="MG" {% if usuario.estado == 'MG' %}selected{% endif %}>Minas Gerais</option>
+                                            <option value="PA" {% if usuario.estado == 'PA' %}selected{% endif %}>Pará</option>
+                                            <option value="PB" {% if usuario.estado == 'PB' %}selected{% endif %}>Paraíba</option>
+                                            <option value="PR" {% if usuario.estado == 'PR' %}selected{% endif %}>Paraná</option>
+                                            <option value="PE" {% if usuario.estado == 'PE' %}selected{% endif %}>Pernambuco</option>
+                                            <option value="PI" {% if usuario.estado == 'PI' %}selected{% endif %}>Piauí</option>
+                                            <option value="RJ" {% if usuario.estado == 'RJ' %}selected{% endif %}>Rio de Janeiro</option>
+                                            <option value="RN" {% if usuario.estado == 'RN' %}selected{% endif %}>Rio Grande do Norte</option>
+                                            <option value="RS" {% if usuario.estado == 'RS' %}selected{% endif %}>Rio Grande do Sul</option>
+                                            <option value="RO" {% if usuario.estado == 'RO' %}selected{% endif %}>Rondônia</option>
+                                            <option value="RR" {% if usuario.estado == 'RR' %}selected{% endif %}>Roraima</option>
+                                            <option value="SC" {% if usuario.estado == 'SC' %}selected{% endif %}>Santa Catarina</option>
+                                            <option value="SP" {% if usuario.estado == 'SP' %}selected{% endif %}>São Paulo</option>
+                                            <option value="SE" {% if usuario.estado == 'SE' %}selected{% endif %}>Sergipe</option>
+                                            <option value="TO" {% if usuario.estado == 'TO' %}selected{% endif %}>Tocantins</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <label class="form-label">Experiência</label>
+                                            <textarea class="form-control" name="experiencia" rows="3">{{ usuario.experiencia }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <label class="form-label">Link para Contato (WhatsApp, LinkedIn, etc.)</label>
+                                            <input type="text" class="form-control" name="link_contato" value="{{ usuario.link_contato }}">
+                                        </div>
+                                    </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Plano Atual</label>
-                                        <input type="text" class="form-control" value="
-                                            {% if usuario.tipo == 'a' %}Premium
-                                            {% elif usuario.tipo == 'b' %}Básico
-                                            {% else %}Gratuito
-                                            {% endif %}" readonly>
+                                        <label class="form-label">Senha</label>
+                                        <input type="password" class="form-control" value="">
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <a href="/senha_hash" class="btn btn-primary">
-                                        <i class="bi bi-key me-1"></i> Alterar Senha
-                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save me-1"></i> Salvar alterações
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -600,70 +634,71 @@
 
     <!-- Modal de Planos -->
     <div class="modal fade" id="modalPlanos" tabindex="-1" aria-labelledby="modalPlanosLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content rounded-4">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalPlanosLabel"><i class="bi bi-gem me-2"></i>Escolha seu Plano</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="modalPlanosLabel"><i class="bi bi-gem me-2"></i>Escolha seu Plano</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-5 justify-content-center">
+              <!-- Plano Gratuito -->
+              <div class="col d-flex">
+                <div class="card h-100 plano-card w-100 shadow-sm">
+                  <div class="card-header bg-secondary text-white text-center py-3">
+                    <h4 class="my-0 fw-normal">Gratuito</h4>
+                  </div>
+                  <div class="card-body">
+                    <h2 class="card-title pricing-card-title text-center mb-3">R$0<small class="text-muted fw-light">/mês</small></h2>
+                    <ul class="list-unstyled mt-3 mb-4">
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Perfil básico</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Aparece nas buscas</li>
+                      <li><i class="bi bi-x-circle text-danger me-2"></i> Destaque limitado</li>
+                      <li><i class="bi bi-x-circle text-danger me-2"></i> Sem prioridade</li>
+                      <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagens</li>
+                    </ul>
+                  </div>
+                  <div class="card-footer bg-white text-center">
+                    <form method="post" action="/perfil/plano">
+                      <input type="hidden" name="plano" value="basico">
+                      <button type="submit" class="btn btn-outline-secondary w-100">
+                        Escolher Básico
+                      </button>
+                    </form>
+                  </div>
                 </div>
-                <div class="modal-body">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-5 justify-content-center">
-                        <!-- Plano Gratuito -->
-                        <div class="col d-flex">
-                            <div class="card h-100 plano-card w-100 shadow-sm">
-                                <div class="card-header bg-secondary text-white text-center py-3">
-                                    <h4 class="my-0 fw-normal">Gratuito</h4>
-                                </div>
-                                <div class="card-body">
-                                    <h2 class="card-title pricing-card-title text-center mb-3">R$0<small class="text-muted fw-light">/mês</small></h2>
-                                    <ul class="list-unstyled mt-3 mb-4">
-                                        <li><i class="bi bi-check-circle text-success me-2"></i> Perfil básico</li>
-                                        <li><i class="bi bi-check-circle text-success me-2"></i> Aparece nas buscas</li>
-                                        <li><i class="bi bi-x-circle text-danger me-2"></i> Destaque limitado</li>
-                                        <li><i class="bi bi-x-circle text-danger me-2"></i> Sem prioridade</li>
-                                        <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagens</li>
-                                    </ul>
-                                </div>
-                                <div class="card-footer bg-white text-center">
-                                    <form method="post" action="/perfil/plano">
-                                        <input type="hidden" name="plano" value="basico">
-                                        <button type="submit" class="btn btn-outline-secondary w-100">
-                                            Escolher Básico
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Plano Premium -->
-                        <div class="col d-flex">
-                            <div class="card h-100 plano-card plano-recomendado w-100 shadow-lg border-warning">
-                                <div class="card-header bg-warning text-dark text-center py-3">
-                                    <h4 class="my-0 fw-normal">Premium</h4>
-                                </div>
-                                <div class="card-body">
-                                    <h2 class="card-title pricing-card-title text-center mb-3">R$29<small class="text-muted fw-light">/mês</small></h2>
-                                    <ul class="list-unstyled mt-3 mb-4">
-                                        <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Gratuito</li>
-                                        <li><i class="bi bi-check-circle text-success me-2"></i> Destaque nas buscas</li>
-                                        <li><i class="bi bi-check-circle text-success me-2"></i> Prioridade média</li>
-                                        <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagens</li>
-                                        <li><i class="bi bi-check-circle text-success me-2"></i> Selo Premium</li>
-                                    </ul>
-                                </div>
-                                <div class="card-footer bg-white text-center">
-                                    <form method="post" action="/perfil/plano">
-                                        <input type="hidden" name="plano" value="premium">
-                                        <button type="submit" class="btn btn-warning w-100">
-                                            Assinar Plano
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+              </div>
+              <!-- Plano Premium -->
+              <div class="col d-flex">
+                <div class="card h-100 plano-card plano-recomendado w-100 shadow-lg border-warning">
+                  <div class="card-header bg-warning text-dark text-center py-3">
+                    <h4 class="my-0 fw-normal">Premium</h4>
+                  </div>
+                  <div class="card-body">
+                    <h2 class="card-title pricing-card-title text-center mb-3">R$29<small class="text-muted fw-light">/mês</small></h2>
+                    <ul class="list-unstyled mt-3 mb-4">
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Gratuito</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Destaque nas buscas</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Prioridade média</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagens</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Selo Premium</li>
+                    </ul>
+                  </div>
+                  <div class="card-footer bg-white text-center">
+                    <form method="post" action="/perfil/plano">
+                      <input type="hidden" name="plano" value="premium">
+                      <button type="submit" class="btn btn-warning w-100">
+                        Assinar Plano
+                      </button>
+                    </form>
+                  </div>
                 </div>
+              </div>
+              <!-- Adicione outros planos se desejar -->
             </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Footer -->
@@ -703,27 +738,6 @@
             }
         }
 
-        function previewImagem(event) {
-            const input = event.target;
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                if (!file.type.startsWith('image/')) {
-                    alert('Por favor, selecione apenas arquivos de imagem.');
-                    input.value = '';
-                    return;
-                }
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('Arquivo muito grande. Máximo: 5MB');
-                    input.value = '';
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('previewImg').src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
 
         document.addEventListener('DOMContentLoaded', function() {
             // Ao marcar "Sim", abre o modal de planos e NÃO envia o form
@@ -751,13 +765,35 @@
                 // Se "Não" está marcado, permite o submit normalmente
             });
 
-            // Verifica se há um plano selecionado na URL (após redirecionamento)
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('plano')) {
-                // Mantém o "Sim" selecionado após escolha do plano
-                document.getElementById('ativarSim').checked = true;
-            }
         });
+        function previewImagem(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor, selecione apenas arquivos de imagem.');
+                    input.value = '';
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Arquivo muito grande. Máximo: 5MB');
+                    input.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
+
+    {% if request.query_params.get('plano') == 'ok' %}
+    <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 2000; min-width: 300px;" role="alert">
+        Plano ativado com sucesso!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+    {% endif %}
 </body>
 </html>
