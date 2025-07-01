@@ -81,24 +81,26 @@ def read_usuarios(request: Request, page: int = 1, profissao: Optional[str] = No
 
     # Filtra por profissão se for válida
     if profissao and profissao != "todos" and profissao in PROFISSOES_VALIDAS:
-        usuarios = usuario_repo.obter_usuarios_por_profissao(profissao)
+        usuarios = usuario_repo.obter_usuarios_por_profissao_nome(profissao)
+        total_usuarios = len(usuarios)
+        total_paginas = 1
     else:
         usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
-
-    total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
-    total_paginas = (total_usuarios // quantidade_por_pagina) + (1 if total_usuarios % quantidade_por_pagina else 0)
+        total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
+        total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
 
     medias_avaliacao = {}
     for u in usuarios:
-        # Aqui você pode calcular a média de avaliação se necessário
-        pass
+        # Busca a média real de avaliações do profissional
+        media = avaliacao_repo.buscar_media_avaliacao_profissional(u.id)
+        medias_avaliacao[u.id] = media
 
     # RESOLVER IMAGEM_URL PARA CADA USUÁRIO
     for u in usuarios:
         if u.imagem:
-            imagem = imagem_repo.obter_imagem_por_id(u.imagem)
-            if imagem and imagem.url:
-                u.imagem_url = imagem.url
+            imagem_obj = imagem_repo.obter_imagem_por_id(u.imagem)
+            if imagem_obj and imagem_obj.url:
+                u.imagem_url = imagem_obj.url
             else:
                 u.imagem_url = "/uploads/default.jpg"
         else:
@@ -584,14 +586,3 @@ async def avaliar_profissional(
     if not sucesso:
         raise HTTPException(status_code=400, detail="Erro ao registrar avaliação.")
     return RedirectResponse(url="/usuarios", status_code=status.HTTP_303_SEE_OTHER)
-
-@app.get("/usuarios/imagem/{imagem_id}")
-async def exibir_imagem_usuario(imagem_id: int):
-    imagem = imagem_repo.obter_imagem_por_id(imagem_id)
-    if not imagem or not imagem.nome_arquivo:
-        # Retorna imagem padrão se não existir
-        return FileResponse("uploads/default.jpg", media_type="image/jpeg")
-    caminho = UPLOAD_DIR / imagem.nome_arquivo
-    if not caminho.exists():
-        return FileResponse("uploads/default.jpg", media_type="image/jpeg")
-    return FileResponse(caminho, media_type="image/jpeg")

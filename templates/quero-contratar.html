@@ -306,33 +306,33 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/usuarios">
+                        <a class="nav-link active" href="/usuarios">
                             <i class="bi bi-briefcase me-1"></i> Quero Contratar
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/perfil">
+                        <a class="nav-link" href="/perfil">
                             <i class="bi bi-person-lines-fill me-1"></i> Quero Trabalhar
                         </a>
                     </li>
                 </ul>
+                <!-- Navbar -->
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <img src="{{ usuario.imagem_url if usuario.imagem_url else '/uploads/default.jpg' }}" alt="User" class="rounded-circle me-1">
-                            {{ usuario.nome }}
+                            <img src="{% if usuario_logado.imagem %}/usuarios/imagem/{{ usuario_logado.imagem }}{% else %}/uploads/default.jpg{% endif %}" alt="User" class="rounded-circle me-1">
+                            {{ usuario_logado.nome }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#usuarioModal"><i class="bi bi-person me-2"></i> Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/tela-inicio"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
+                            <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-left me-2"></i> Sair</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-
     
     <!-- Conteúdo Principal -->
     <div class="container my-4">
