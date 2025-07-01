@@ -570,71 +570,70 @@
 
     <!-- Modal de Planos -->
     <div class="modal fade" id="modalPlanos" tabindex="-1" aria-labelledby="modalPlanosLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content rounded-4">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title" id="modalPlanosLabel"><i class="bi bi-gem me-2"></i>Escolha seu Plano</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
-          </div>
-          <div class="modal-body">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-5 justify-content-center">
-              <!-- Plano Gratuito -->
-              <div class="col d-flex">
-                <div class="card h-100 plano-card w-100 shadow-sm">
-                  <div class="card-header bg-secondary text-white text-center py-3">
-                    <h4 class="my-0 fw-normal">Gratuito</h4>
-                  </div>
-                  <div class="card-body">
-                    <h2 class="card-title pricing-card-title text-center mb-3">R$0<small class="text-muted fw-light">/mês</small></h2>
-                    <ul class="list-unstyled mt-3 mb-4">
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Perfil básico</li>
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Aparece nas buscas</li>
-                      <li><i class="bi bi-x-circle text-danger me-2"></i> Destaque limitado</li>
-                      <li><i class="bi bi-x-circle text-danger me-2"></i> Sem prioridade</li>
-                      <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagens</li>
-                    </ul>
-                  </div>
-                  <div class="card-footer bg-white text-center">
-                    <form method="post" action="/perfil/plano">
-                      <input type="hidden" name="plano" value="basico">
-                      <button type="submit" class="btn btn-outline-secondary w-100">
-                        Escolher Básico
-                      </button>
-                    </form>
-                  </div>
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content rounded-4">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalPlanosLabel"><i class="bi bi-gem me-2"></i>Escolha seu Plano</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
-              </div>
-              <!-- Plano Premium -->
-              <div class="col d-flex">
-                <div class="card h-100 plano-card plano-recomendado w-100 shadow-lg border-warning">
-                  <div class="card-header bg-warning text-dark text-center py-3">
-                    <h4 class="my-0 fw-normal">Premium</h4>
-                  </div>
-                  <div class="card-body">
-                    <h2 class="card-title pricing-card-title text-center mb-3">R$29<small class="text-muted fw-light">/mês</small></h2>
-                    <ul class="list-unstyled mt-3 mb-4">
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Gratuito</li>
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Destaque nas buscas</li>
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Prioridade média</li>
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagens</li>
-                      <li><i class="bi bi-check-circle text-success me-2"></i> Selo Premium</li>
-                    </ul>
-                  </div>
-                  <div class="card-footer bg-white text-center">
-                    <form method="post" action="/perfil/plano">
-                      <input type="hidden" name="plano" value="premium">
-                      <button type="submit" class="btn btn-warning w-100">
-                        Assinar Plano
-                      </button>
-                    </form>
-                  </div>
+                <div class="modal-body">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-5 justify-content-center">
+                        <!-- Plano Gratuito -->
+                        <div class="col d-flex">
+                            <div class="card h-100 plano-card w-100 shadow-sm">
+                                <div class="card-header bg-secondary text-white text-center py-3">
+                                    <h4 class="my-0 fw-normal">Gratuito</h4>
+                                </div>
+                                <div class="card-body">
+                                    <h2 class="card-title pricing-card-title text-center mb-3">R$0<small class="text-muted fw-light">/mês</small></h2>
+                                    <ul class="list-unstyled mt-3 mb-4">
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Perfil básico</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Aparece nas buscas</li>
+                                        <li><i class="bi bi-x-circle text-danger me-2"></i> Destaque limitado</li>
+                                        <li><i class="bi bi-x-circle text-danger me-2"></i> Sem prioridade</li>
+                                        <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagens</li>
+                                    </ul>
+                                </div>
+                                <div class="card-footer bg-white text-center">
+                                    <form method="post" action="/perfil/plano">
+                                        <input type="hidden" name="plano" value="basico">
+                                        <button type="submit" class="btn btn-outline-secondary w-100">
+                                            Escolher Básico
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Plano Premium -->
+                        <div class="col d-flex">
+                            <div class="card h-100 plano-card plano-recomendado w-100 shadow-lg border-warning">
+                                <div class="card-header bg-warning text-dark text-center py-3">
+                                    <h4 class="my-0 fw-normal">Premium</h4>
+                                </div>
+                                <div class="card-body">
+                                    <h2 class="card-title pricing-card-title text-center mb-3">R$29<small class="text-muted fw-light">/mês</small></h2>
+                                    <ul class="list-unstyled mt-3 mb-4">
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Gratuito</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Destaque nas buscas</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Prioridade média</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagens</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Selo Premium</li>
+                                    </ul>
+                                </div>
+                                <div class="card-footer bg-white text-center">
+                                    <form method="post" action="/perfil/plano">
+                                        <input type="hidden" name="plano" value="premium">
+                                        <button type="submit" class="btn btn-warning w-100">
+                                            Assinar Plano
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <!-- Adicione outros planos se desejar -->
             </div>
-          </div>
         </div>
-      </div>
     </div>
 
     <!-- Footer -->
@@ -723,6 +722,40 @@
                 reader.readAsDataURL(file);
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+        // Ao marcar "Sim", abre o modal de planos e NÃO envia o form
+            document.getElementById('ativarSim').addEventListener('change', function() {
+                if (this.checked) {
+                    var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
+                    modalPlanos.show();
+                }
+            });
+
+            // Ao marcar "Não", envia o formulário automaticamente
+            document.getElementById('ativarNao').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('ativarPerfilForm').submit();
+                }
+            });
+
+            // Impede submit manual do form (não há botão salvar)
+            document.getElementById('ativarPerfilForm').addEventListener('submit', function(e) {
+                if (document.getElementById('ativarSim').checked) {
+                    e.preventDefault();
+                    var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
+                    modalPlanos.show();
+                }
+                // Se "Não" está marcado, permite o submit normalmente
+            });
+
+            // Verifica se há um plano selecionado na URL (após redirecionamento)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('plano')) {
+                // Mantém o "Sim" selecionado após escolha do plano
+                document.getElementById('ativarSim').checked = true;
+            }
+        });
     </script>
 
     {% if request.query_params.get('plano') == 'ok' %}
