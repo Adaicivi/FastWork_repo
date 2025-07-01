@@ -192,3 +192,14 @@ def obter_usuarios_por_pagina(numero_pagina: int, quantidade: int) -> list[Usuar
     except Exception as e:
         print(f"Erro ao obter usuários por página: {e}")
         return []
+    
+def contar_usuarios_tipo_ab() -> int:
+    try:
+        with obter_conexao() as conexao:
+            cursor = conexao.cursor()
+            cursor.execute(CONTAR_USUARIOS)
+            resultado = cursor.fetchone()
+            return resultado["total"] if resultado else 0
+    except Exception as e:
+        print(f"Erro ao contar usuários: {e}")
+        return 0
