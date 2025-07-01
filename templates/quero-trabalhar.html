@@ -13,7 +13,6 @@
             --dark-color: #212529;
             --secondary-color: #6c757d;
         }
-        
         body {
             background-color: #f8f9fa;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -21,19 +20,16 @@
             min-height: 100vh;
             padding-top: 50px;
         }
-
         .navbar {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             height: 80px;
         }
-
         .navbar-brand {
             font-weight: bold;
             display: flex;
             align-items: center;
             font-size: 1.25rem;
         }
-
         .nav-tabs {
             border-bottom: none;
         }
@@ -52,14 +48,12 @@
             background-color: transparent;
             font-weight: 600;
         }
-
         .navbar .dropdown-toggle img {
             width: 40px;
             height: 40px;
             object-fit: cover;
             border: 2px solid rgba(255, 255, 255, 0.3);
         }
-
         .plano-card {
             transition: all 0.3s ease;
             border-radius: 10px;
@@ -92,13 +86,11 @@
             font-size: 2.5rem;
             margin: 15px 0;
         }
-
         .list-unstyled li {
             padding: 5px 0;
             display: flex;
             align-items: center;
         }
-
         .card {
             border: 1px solid rgba(0, 0, 0, 0.4);
             border-radius: 20px;
@@ -117,7 +109,6 @@
         .card-body {
             padding: 1.25rem;
         }
-
         .form-control, .form-select {
             border: 1px solid rgba(0, 0, 0, 0.1);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -129,7 +120,6 @@
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
-
         .btn {
             border-radius: 6px;
             padding: 0.5rem 1rem;
@@ -181,7 +171,6 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
         .img-thumbnail {
             border: 2px solid rgba(0, 0, 0, 0.1);
             padding: 0.25rem;
@@ -194,7 +183,6 @@
             justify-content: center;
             overflow: hidden;
         }
-
         footer {
             background-color: var(--dark-color);
         }
@@ -204,7 +192,6 @@
         footer a:hover {
             color: white !important;
         }
-
         @media (max-width: 768px) {
             .d-flex.flex-wrap {
                 flex-direction: column !important;
@@ -220,7 +207,6 @@
                 white-space: nowrap !important;
             }
         }
-
         .container {
             padding-top: 1.25rem;
             padding-bottom: 1.25rem;
@@ -249,7 +235,6 @@
             transition: all 0.3s ease;
             margin-bottom: 1.25rem;
         }
-
         .upload-area {
             border: 2px dashed #ddd;
             border-radius: 8px;
@@ -315,8 +300,8 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="User" class="rounded-circle me-1">
-                            João Silva
+                            <img src="{{ usuario.imagem if usuario.imagem else '/uploads/default.jpg' }}" alt="User" class="rounded-circle me-1">
+                            {{ usuario.nome }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#usuarioModal"><i class="bi bi-person me-2"></i> Perfil</a></li>
@@ -360,12 +345,15 @@
                                 <h1 class="h2">Meu perfil de trabalho</h1>
                                 <div class="d-flex align-items-center">
                                     <span class="me-2">Deseja ativar seu perfil de trabalho?</span>
-                                    <div class="btn-group" role="group" aria-label="Ativar perfil">
-                                        <input type="radio" class="btn-check" name="ativarPerfil" id="ativarSim" autocomplete="off">
-                                        <label class="btn btn-outline-success btn-sm" for="ativarSim">Sim</label>
-                                        <input type="radio" class="btn-check" name="ativarPerfil" id="ativarNao" autocomplete="off" checked>
-                                        <label class="btn btn-outline-danger btn-sm" for="ativarNao">Não</label>
-                                    </div>
+                                    <form method="post" action="/perfil/ativar" id="ativarPerfilForm">
+                                        <div class="btn-group" role="group" aria-label="Ativar perfil">
+                                            <input type="radio" class="btn-check" name="ativarPerfil" id="ativarSim" value="sim" autocomplete="off">
+                                            <label class="btn btn-outline-success btn-sm" for="ativarSim">Sim</label>
+                                            <input type="radio" class="btn-check" name="ativarPerfil" id="ativarNao" value="nao" autocomplete="off" checked>
+                                            <label class="btn btn-outline-danger btn-sm" for="ativarNao">Não</label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm ms-2">Salvar</button>
+                                    </form>
                                 </div>
                             </div>
 
@@ -377,48 +365,52 @@
                                     <div class="row">
                                         <div class="col-md-3 text-center">
                                             <div class="rounded-circle mb-3 img-thumbnail d-flex align-items-center justify-content-center bg-light" style="width: 150px; height: 150px;">
-                                                <i class="bi bi-person fs-1 text-secondary"></i>
+                                                {% if usuario.imagem %}
+                                                    <img src="{{ usuario.imagem }}" alt="imagem do usuário" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                                {% else %}
+                                                    <i class="bi bi-person fs-1 text-secondary"></i>
+                                                {% endif %}
                                             </div>
                                             <button class="btn btn-sm btn-outline-primary w-100 hover-effect" data-bs-toggle="modal" data-bs-target="#uploadimagem">
                                                 <i class="bi bi-camera me-1"></i> Alterar imagem
                                             </button>
                                         </div>
                                         <div class="col-md-9">
-                                            <form class="form-spacing">
+                                            <form class="form-spacing" method="post" action="/perfil">
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Nome Completo</label>
-                                                        <input type="text" class="form-control" value="João Silva">
+                                                        <input type="text" class="form-control" name="nome" value="{{ usuario.nome }}">
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">CPF</label>
-                                                        <input type="text" class="form-control" value="123.456.789-00">
+                                                        <input type="text" class="form-control" name="cpf" value="{{ usuario.cpf }}" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Telefone</label>
-                                                        <input type="text" class="form-control" value="(11) 98765-4321">
+                                                        <input type="text" class="form-control" name="telefone" value="{{ usuario.telefone }}">
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">E-mail</label>
-                                                        <input type="email" class="form-control" value="joao.silva@email.com">
+                                                        <input type="email" class="form-control" name="email" value="{{ usuario.email }}">
                                                     </div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <label class="form-label">Data de Nascimento</label>
-                                                        <input type="date" class="form-control" value="1985-05-15">
+                                                        <input type="date" class="form-control" name="data_nascimento" value="{{ usuario.data_nascimento }}">
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="form-label">Área de Atuação</label>
-                                                        <select class="form-select">
-                                                            <option>Limpeza Residencial</option>
-                                                            <option>Limpeza Comercial</option>
-                                                            <option>Jardinagem</option>
-                                                            <option>Reparos Domésticos</option>
-                                                            <option>Montagem de Móveis</option>
-                                                            <option>Outros</option>
+                                                        <select class="form-select" name="profissao">
+                                                            {% if usuario.profissao %}
+                                                                <option selected value="{{ usuario.profissao.id }}">{{ usuario.profissao.nome }}</option>
+                                                            {% else %}
+                                                                <option selected value="">Selecione</option>
+                                                            {% endif %}
+                                                            <!-- Adicione outras opções aqui -->
                                                         </select>
                                                     </div>
                                                 </div>
@@ -437,86 +429,31 @@
 
                     <!-- Tab Planos de Exibição -->
                     <div class="tab-pane fade" id="planos-tab-pane" role="tabpanel" aria-labelledby="planos-tab">
-                        <div id="planos-content" class="content-section">
-                            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                                <h1 class="h2">Planos de Exibição</h1>
-                                <div class="text-muted">
-                                    <i class="bi bi-info-circle me-1"></i> Escolha um plano para melhorar sua visibilidade
-                                </div>
+                        <div class="content-section">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2 class="h4">Meus Planos de Exibição</h2>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPlanos">
+                                    <i class="bi bi-gem me-1"></i> Escolher Plano
+                                </button>
                             </div>
-
-                            <div class="row row-cols-1 row-cols-md-3 g-4">
-                                <!-- Plano Gratuito -->
-                                <div class="col">
-                                    <div class="card h-100 plano-card">
-                                        <div class="card-header bg-secondary text-white text-center py-3">
-                                            <h4 class="my-0 fw-normal">Gratuito</h4>
-                                        </div>
-                                        <div class="card-body">
-                                            <h2 class="card-title pricing-card-title text-center">R$0<small class="text-muted fw-light">/mês</small></h2>
-                                            <ul class="list-unstyled mt-3 mb-4">
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Perfil básico</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Aparece nas buscas</li>
-                                                <li><i class="bi bi-x-circle text-danger me-2"></i> Destaque limitado</li>
-                                                <li><i class="bi bi-x-circle text-danger me-2"></i> Sem prioridade</li>
-                                                <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagems</li>
-                                            </ul>
-                                        </div>
-                                        <div class="card-footer bg-white text-center">
-                                            <button type="button" class="btn btn-outline-secondary" disabled>
-                                                Plano Atual
-                                            </button>
-                                        </div>
+                            <div class="alert alert-info">
+                                Você está atualmente no plano <strong>Gratuito</strong>. Para acessar mais recursos, considere mudar para um plano pago.
+                            </div>
+                            <div class="list-group mb-4">
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">Plano Gratuito</h5>
+                                        <small class="text-muted">Ativo</small>
                                     </div>
-                                </div>
-
-                                <!-- Plano Premium -->
-                                <div class="col">
-                                    <div class="card h-100 plano-card plano-recomendado">
-                                        <div class="card-header bg-warning text-dark text-center py-3">
-                                            <h4 class="my-0 fw-normal">Premium</h4>
-                                        </div>
-                                        <div class="card-body">
-                                            <h2 class="card-title pricing-card-title text-center">R$29<small class="text-muted fw-light">/mês</small></h2>
-                                            <ul class="list-unstyled mt-3 mb-4">
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Gratuito</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Destaque nas buscas</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Prioridade média</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagems</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Selo Premium</li>
-                                            </ul>
-                                        </div>
-                                        <div class="card-footer bg-white text-center">
-                                            <button type="button" class="btn btn-warning">
-                                                Assinar Plano
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Plano Super Premium -->
-                                <div class="col">
-                                    <div class="card h-100 plano-card">
-                                        <div class="card-header bg-primary text-white text-center py-3">
-                                            <h4 class="my-0 fw-normal">Super Premium</h4>
-                                        </div>
-                                        <div class="card-body">
-                                            <h2 class="card-title pricing-card-title text-center">R$59<small class="text-muted fw-light">/mês</small></h2>
-                                            <ul class="list-unstyled mt-3 mb-4">
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Premium</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Máxima prioridade</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Topo das buscas</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> imagems ilimitadas</li>
-                                                <li><i class="bi bi-check-circle text-success me-2"></i> Selo Super Premium</li>
-                                            </ul>
-                                        </div>
-                                        <div class="card-footer bg-white text-center">
-                                            <button type="button" class="btn btn-primary">
-                                                Assinar Plano
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                    <p class="mb-1">Perfil básico, aparece nas buscas, limite de 5 imagens.</p>
+                                    <small>Renovação: Mensal</small>
+                                </a>
+                            </div>
+                            <div class="text-center">
+                                <p class="mb-4">Ou</p>
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalPlanos">
+                                    <i class="bi bi-gem me-1"></i> Assinar Plano Premium
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -548,38 +485,37 @@
                                 <i class="bi bi-camera me-1"></i> Alterar imagem
                             </button>
                         </div>
-                        
                         <!-- Coluna dos Formulários -->
                         <div class="col-md-8">
                             <form>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Nome completo</label>
-                                        <input type="text" class="form-control" value="João Silva">
+                                        <input type="text" class="form-control" value="{{ usuario.nome }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">CPF</label>
-                                        <input type="text" class="form-control" value="123.456.789-00" readonly>
+                                        <input type="text" class="form-control" value="{{ usuario.cpf }}" readonly>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">E-mail</label>
-                                        <input type="email" class="form-control" value="joao.silva@email.com">
+                                        <input type="email" class="form-control" value="{{ usuario.email }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Telefone</label>
-                                        <input type="tel" class="form-control" value="(11) 98765-4321">
+                                        <input type="tel" class="form-control" value="{{ usuario.telefone }}">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Data de nascimento</label>
-                                        <input type="date" class="form-control" value="1990-01-01">
+                                        <input type="date" class="form-control" value="{{ usuario.data_nascimento }}">
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">senha_hash</label>
-                                        <input type="password" class="form-control" value="12345678">
+                                        <label class="form-label">Senha</label>
+                                        <input type="password" class="form-control" value="">
                                     </div>
                                 </div>
                                 <div class="text-end">
@@ -626,6 +562,74 @@
         </div>
     </div>
 
+    <!-- Modal de Planos -->
+    <div class="modal fade" id="modalPlanos" tabindex="-1" aria-labelledby="modalPlanosLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="modalPlanosLabel"><i class="bi bi-gem me-2"></i>Escolha seu Plano</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+              <!-- Plano Gratuito -->
+              <div class="col">
+                <div class="card h-100 plano-card">
+                  <div class="card-header bg-secondary text-white text-center py-3">
+                    <h4 class="my-0 fw-normal">Gratuito</h4>
+                  </div>
+                  <div class="card-body">
+                    <h2 class="card-title pricing-card-title text-center">R$0<small class="text-muted fw-light">/mês</small></h2>
+                    <ul class="list-unstyled mt-3 mb-4">
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Perfil básico</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Aparece nas buscas</li>
+                      <li><i class="bi bi-x-circle text-danger me-2"></i> Destaque limitado</li>
+                      <li><i class="bi bi-x-circle text-danger me-2"></i> Sem prioridade</li>
+                      <li><i class="bi bi-x-circle text-danger me-2"></i> Limite de 5 imagems</li>
+                    </ul>
+                  </div>
+                  <div class="card-footer bg-white text-center">
+                    <form method="post" action="/perfil/plano">
+                      <input type="hidden" name="plano" value="basico">
+                      <button type="submit" class="btn btn-outline-secondary">
+                        Escolher Básico
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- Plano Premium -->
+              <div class="col">
+                <div class="card h-100 plano-card plano-recomendado">
+                  <div class="card-header bg-warning text-dark text-center py-3">
+                    <h4 class="my-0 fw-normal">Premium</h4>
+                  </div>
+                  <div class="card-body">
+                    <h2 class="card-title pricing-card-title text-center">R$29<small class="text-muted fw-light">/mês</small></h2>
+                    <ul class="list-unstyled mt-3 mb-4">
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Todos os benefícios do Gratuito</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Destaque nas buscas</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Prioridade média</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Até 10 imagems</li>
+                      <li><i class="bi bi-check-circle text-success me-2"></i> Selo Premium</li>
+                    </ul>
+                  </div>
+                  <div class="card-footer bg-white text-center">
+                    <form method="post" action="/perfil/plano">
+                      <input type="hidden" name="plano" value="premium">
+                      <button type="submit" class="btn btn-warning">
+                        Assinar Plano
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-dark text-white py-5 mt-5">
         <div class="container text-center">
@@ -649,61 +653,29 @@
                     input.value = '';
                     return;
                 }
-
                 // Verificar tamanho (5MB)
                 if (file.size > 5 * 1024 * 1024) {
                     alert('Arquivo muito grande. Máximo: 5MB');
                     input.value = '';
                     return;
                 }
-
                 // Mostrar informações do arquivo
                 document.getElementById('fileName').textContent = file.name;
                 document.getElementById('fileSize').textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
                 document.getElementById('fileInfo').style.display = 'block';
-                
-                // Habilitar botão de envio
                 document.getElementById('submitBtn').disabled = false;
             }
         }
 
-        // Função para lidar com o upload
-        function handleUpload() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            
-            if (file) {
-                // Criar preview da imagem
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const profileImageContainer = document.querySelector('.img-thumbnail');
-                    profileImageContainer.innerHTML = '';
-                    
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.alt = 'imagem de perfil';
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.objectFit = 'cover';
-                    img.style.borderRadius = '50%';
-                    
-                    profileImageContainer.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-
-                // Aqui você adicionaria sua lógica de upload para o servidor
-                alert('Upload simulado! Integre com seu backend.');
-                
-                // Fechar modal após sucesso
-                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadimagem'));
-                modal.hide();
-                
-                // Resetar o formulário
-                document.getElementById('uploadForm').reset();
-                document.getElementById('fileInfo').style.display = 'none';
-                document.getElementById('submitBtn').disabled = true;
-            }
-        }
+        // Ao marcar "Sim" para ativar perfil, abre o modal de planos
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('ativarSim').addEventListener('change', function() {
+                if (this.checked) {
+                    var modalPlanos = new bootstrap.Modal(document.getElementById('modalPlanos'));
+                    modalPlanos.show();
+                }
+            });
+        });
     </script>
 </body>
 </html>

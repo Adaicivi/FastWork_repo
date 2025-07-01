@@ -235,6 +235,29 @@ async def atualizar_perfil(
     request.session["usuario"] = usuario_json
     return RedirectResponse(url="/perfil", status_code=303)
 
+@app.post("/perfil/plano")
+async def escolher_plano(request: Request, plano: str = Form(...)):
+    usuario_json = request.session.get("usuario")
+    if not usuario_json:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado")
+    usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    if plano == "basico":
+        usuario.tipo = "b"
+        usuario_repo.atualizar_tipo_usuario(usuario.id, "b")
+        usuario_json["tipo"] = "b"
+    elif plano == "premium":
+        usuario.tipo = "a"
+        usuario_repo.atualizar_tipo_usuario(usuario.id, "a")
+        usuario_json["tipo"] = "a"
+    else:
+        raise HTTPException(status_code=400, detail="Plano inválido")
+
+    request.session["usuario"] = usuario_json
+    return RedirectResponse(url="/perfil", status_code=303)
+
 @app.get("/senha_hash")
 async def senha_usuario(request: Request):
     # Captura os dados do usuário da sessão (logado)
@@ -276,6 +299,7 @@ async def atualizar_senha(
     
     # Redireciona para a página de perfil
     return RedirectResponse(url="/perfil", status_code=303)
+
 
 # ============================================================================
 # ROTAS DE UPLOAD DE IMAGEM (nova funcionalidade organizada)
@@ -375,28 +399,6 @@ async def excluir_imagem_usuario(request: Request, id: int):
     
     return JSONResponse(content={"success": True, "message": "Imagem removida"})
 
-# ============================================================================
-# ROTAS ADMINISTRATIVAS (seguindo padrão do Código 1)
-# ============================================================================
-
-@app.get("/usuarios/alterar_tipo/{id}/{novo_tipo}")
-async def alterar_tipo_usuario(request: Request, id: int, novo_tipo: str):
-    # Busca o usuário pelo ID
-    usuario = usuario_repo.obter_usuario_por_id(id)
-    if not usuario:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    
-    # Tipos permitidos
-    tipos_permitidos = {"a", "b", "c"}
-    if novo_tipo not in tipos_permitidos:
-        raise HTTPException(status_code=400, detail="Tipo de usuário inválido")
-    
-    # Só altera se for diferente
-    if usuario.tipo != novo_tipo:
-        usuario_repo.atualizar_tipo_usuario(id, novo_tipo)
-    
-    # Redireciona para a lista de usuários
-    return RedirectResponse(url="/usuarios", status_code=303)
 
 # ============================================================================
 # ROTAS DE API (funcionalidades extras organizadas)
