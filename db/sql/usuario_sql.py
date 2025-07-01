@@ -47,28 +47,27 @@ SELECT u.nome, u.email, u.imagem, i.url AS url_imagem, u.experiencia, u.cpf, u.t
 FROM usuario u
 WHERE u.profissao = ?;
 """
-
 OBTER_USUARIO_POR_EMAIL = """
-SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco, e.cidade AS endereco_cidade, e.uf AS endereco_uf, u.profissao, u.profissao, , u.tipo
+SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco, u.profissao, u.tipo
 FROM usuario u
 LEFT JOIN imagem i ON u.imagem = i.id
 WHERE u.email = ?;
 """
 
 OBTER_USUARIO_POR_ID = """
-SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco, e.cidade AS endereco_cidade, e.uf AS endereco_uf, u.profissao, u.profissao, , u.tipo
+SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco, u.profissao, u.tipo
 FROM usuario u
 LEFT JOIN imagem i ON u.imagem = i.id
 WHERE u.id = ?;
 """
 
 OBTER_USUARIO_POR_PAGINA = """
-SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco, e.cidade AS endereco_cidade, e.uf AS endereco_uf, u.profissao, u.profissao, , u.tipo, AVG(a.nota) AS media_avaliacao
+SELECT u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url AS url_imagem, u.link_contato, u.endereco, u.profissao, u.tipo, AVG(a.nota) AS media_avaliacao
 FROM usuario u
-JOIN avaliacao a ON a.usuario_id = u.id
+LEFT JOIN avaliacao a ON a.profissional_id = u.id
 LEFT JOIN imagem i ON u.imagem = i.id
 WHERE u.tipo IN ('a', 'b')
-GROUP BY u.id 
+GROUP BY u.id, u.nome, u.email, u.senha_hash, u.cpf, u.telefone, u.data_nascimento, u.experiencia, u.imagem, i.url, u.link_contato, u.endereco, u.profissao, u.tipo
 ORDER BY 
     CASE u.tipo 
         WHEN 'a' THEN 0 
@@ -89,3 +88,4 @@ SELECT COUNT(*) AS total
 FROM usuario
 WHERE tipo IN ('a', 'b');
 """
+
