@@ -20,7 +20,7 @@ from db.models.imagem import Imagem
 from db.repo import (
     usuario_repo,
     imagem_repo,
-    avaliacao_repo
+    avaliacao_repo,
 )
 from db.sql.avaliacao_sql import BUSCAR_MEDIA_AVALIACAO_PROFISSIONAL
 
@@ -74,24 +74,20 @@ def read_root(request: Request):
     return response
 
 
-PROFISSOES_VALIDAS = ["Limpeza", "Jardinagem", "Eletricidade", "Encanamento", "Construção"]
-
 @app.get("/usuarios")
 def read_usuarios(request: Request, page: int = 1, profissao: Optional[str] = None):
     quantidade_por_pagina = 12
-    if profissao and profissao != "todos" and profissao in PROFISSOES_VALIDAS:
-        usuarios = [u for u in usuario_repo.obter_usuarios_por_profissao(profissao) if u.profissao == profissao]
-        # Ordena: tipo 'a' primeiro, depois 'b'
-        usuarios = sorted(usuarios, key=lambda u: (u.tipo != 'a', u.tipo))
-        total_usuarios = len(usuarios)
-        total_paginas = 1
-        usuarios = usuarios[(page-1)*quantidade_por_pagina : page*quantidade_por_pagina]
-    else:
-        usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
-        # Ordena: tipo 'a' primeiro, depois 'b'
-        usuarios = sorted(usuarios, key=lambda u: (u.tipo != 'a', u.tipo))
-        total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
-        total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
+    usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
+    usuarios = sorted(usuarios, key=lambda u: (u.tipo != 'a', u.tipo))
+    total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
+    total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
+
+    # Agrupa usuários por profissão
+    PROFISSOES_VALIDAS = ["Limpeza", "Jardinagem", "Eletricidade", "Encanamento", "Construção"]
+    usuarios_por_profissao = {prof: [] for prof in PROFISSOES_VALIDAS}
+    for u in usuarios:
+        if u.profissao in PROFISSOES_VALIDAS:
+            usuarios_por_profissao[u.profissao].append(u)
 
     medias_avaliacao = {}
     for u in usuarios:
@@ -101,7 +97,7 @@ def read_usuarios(request: Request, page: int = 1, profissao: Optional[str] = No
     usuario_logado = _obter_usuario_sessao(request)
     return templates.TemplateResponse("quero-contratar.html", {
         "request": request,
-        "usuario": usuarios,
+        "usuarios_por_profissao": usuarios_por_profissao,
         "pagina_atual": page,
         "total_paginas": total_paginas,
         "total_usuarios": total_usuarios,

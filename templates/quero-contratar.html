@@ -372,7 +372,6 @@
                         
                         <!-- Conteúdo Principal -->
                         <div class="row">
-                            <!-- Coluna de Perfis -->
                             <div class="col-12">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <h4 class="mb-0">Profissionais Disponíveis</h4>
@@ -380,81 +379,83 @@
                                         <span class="badge bg-primary me-2">{{ total_usuarios }} resultados</span>
                                     </div>
                                 </div>
-                                
-                                <div class="row row-cols-1 row-cols-md-3 g-4">
-                                    <!-- Perfil 1 (mantido igual) -->
-                                    {% for u in usuario %}
-                                    {% if u.tipo in ['a', 'b'] and u.profissao in ['Limpeza', 'Jardinagem', 'Eletricidade', 'Encanamento', 'Construção'] %}
-                                    <div class="col">
-                                        <div class="perfil-card h-100 card">
-                                            <div class="card-body">
-                                                <div class="d-flex align-items-center mb-3">
-                                                    <img src="{{ u.imagem if u.imagem else '/uploads/default.jpg' }}" class="rounded-circle me-3" alt="{{ u.nome }}">
-                                                    <div>
-                                                        <h5 class="card-title mb-0">{{u.nome}}</h5>
-                                                        <small class="text-muted">
-                                                            {{u.endereco.cidade}}-{{u.endereco.uf}}
-                                                        </small>
-                                                        <span class="badge bg-primary mt-1">
-                                                            {{u.profissao.nome}}
-                                                        </span>
+
+                                {% for profissao, usuarios in usuarios_por_profissao.items() %}
+                                    {% if usuarios %}
+                                        <h5 class="mt-4 mb-3 text-primary">{{ profissao }}</h5>
+                                        <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+                                            {% for u in usuarios %}
+                                                <div class="col">
+                                                    <div class="perfil-card h-100 card">
+                                                        <div class="card-body">
+                                                            <div class="d-flex align-items-center mb-3">
+                                                                <img src="{{ u.imagem if u.imagem else '/uploads/default.jpg' }}" class="rounded-circle me-3" alt="{{ u.nome }}">
+                                                                <div>
+                                                                    <h5 class="card-title mb-0">{{u.nome}}</h5>
+                                                                    <small class="text-muted">
+                                                                        {{ u.endereco if u.endereco else "Não informado" }}
+                                                                    </small>
+                                                                    <span class="badge bg-primary mt-1">
+                                                                        {{ u.profissao if u.profissao else "Não informado" }}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            {% set media = medias_avaliacao.get(u.id) %}
+                                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                                <div>
+                                                                    <span class="text-warning fs-5">
+                                                                        {% if media is not none %}
+                                                                            {% if media >= 4.75 %}
+                                                                                ⭐⭐⭐⭐⭐
+                                                                            {% elif media >= 3.75 %}
+                                                                                ⭐⭐⭐⭐☆
+                                                                            {% elif media >= 2.75 %}
+                                                                                ⭐⭐⭐☆☆
+                                                                            {% elif media >= 1.75 %}
+                                                                                ⭐⭐☆☆☆
+                                                                            {% elif media >= 0.75 %}
+                                                                                ⭐☆☆☆☆
+                                                                            {% else %}
+                                                                                ☆☆☆☆☆
+                                                                            {% endif %}
+                                                                            <small class="text-muted">({{ "%.1f"|format(media) }})</small>
+                                                                        {% else %}
+                                                                            <span class="text-muted">Sem avaliações</span>
+                                                                        {% endif %}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer bg-white border-top">
+                                                            <div class="d-flex justify-content-end mt-3">
+                                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#perfilModal{{u.id}}">
+                                                                    <i class="bi bi-person"></i> Exibir perfil
+                                                                </button>
+                                                                <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#avaliarModal{{u.id}}">
+                                                                    Avaliar
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                {% set media = medias_avaliacao.get(u.id) %}
-                                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                                    <div>
-                                                        <span class="text-warning fs-5">
-                                                            {% if media is not none %}
-                                                                {% if media >= 4.75 %}
-                                                                    ⭐⭐⭐⭐⭐
-                                                                {% elif media >= 3.75 %}
-                                                                    ⭐⭐⭐⭐☆
-                                                                {% elif media >= 2.75 %}
-                                                                    ⭐⭐⭐☆☆
-                                                                {% elif media >= 1.75 %}
-                                                                    ⭐⭐☆☆☆
-                                                                {% elif media >= 0.75 %}
-                                                                    ⭐☆☆☆☆
-                                                                {% else %}
-                                                                    ☆☆☆☆☆
-                                                                {% endif %}
-                                                                <small class="text-muted">({{ "%.1f"|format(media) }})</small>
-                                                            {% else %}
-                                                                <span class="text-muted">Sem avaliações</span>
-                                                            {% endif %}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-footer bg-white border-top">
-                                                <div class="d-flex justify-content-end mt-3">
-                                                    <!-- Botão -->
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#perfilModal{{u.id}}">
-                                                        <i class="bi bi-person"></i> Exibir perfil
-                                                    </button>
-                                                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#avaliarModal{{u.id}}">
-                                                      Avaliar
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            {% endfor %}
                                         </div>
-                                    </div>
                                     {% endif %}
-                                    {% endfor %}
-                                </div>
-                                <!-- Paginação (atualizado com lógica de páginas) -->
+                                {% endfor %}
+
+                                <!-- Paginação -->
                                 <nav class="mt-4">
                                     <ul class="pagination justify-content-center">
                                         <li class="page-item {% if pagina_atual == 1 %}disabled{% endif %}">
-                                            <a class="page-link" href="?page={{ pagina_atual - 1 }}" tabindex="-1">Anterior</a>
+                                            <a class="page-link" href="?page={{ pagina_atual - 1 }}{% if filtro_profissao != 'todos' %}&profissao={{ filtro_profissao }}{% endif %}" tabindex="-1">Anterior</a>
                                         </li>
                                         {% for p in range(1, total_paginas + 1) %}
                                             <li class="page-item {% if p == pagina_atual %}active{% endif %}">
-                                                <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+                                                <a class="page-link" href="?page={{ p }}{% if filtro_profissao != 'todos' %}&profissao={{ filtro_profissao }}{% endif %}">{{ p }}</a>
                                             </li>
                                         {% endfor %}
                                         <li class="page-item {% if pagina_atual == total_paginas %}disabled{% endif %}">
-                                            <a class="page-link" href="?page={{ pagina_atual + 1 }}">Próxima</a>
+                                            <a class="page-link" href="?page={{ pagina_atual + 1 }}{% if filtro_profissao != 'todos' %}&profissao={{ filtro_profissao }}{% endif %}">Próxima</a>
                                         </li>
                                     </ul>
                                 </nav>
