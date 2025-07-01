@@ -67,35 +67,27 @@ def read_root(request: Request):
 
 @app.get("/usuarios")
 def read_usuarios(request: Request, page: int = 1):
-    # Obtém os primeiros 12 usuários do banco de dados
     quantidade_por_pagina = 12
-    usuarios = usuario_repo.obter_usuarios_por_pagina(page, quantidade_por_pagina)
+    usuarios = usuario_repo.obter_usuario_por_pagina(page, quantidade_por_pagina)
     total_usuarios = usuario_repo.contar_usuarios_tipo_ab()
     total_paginas = (total_usuarios + quantidade_por_pagina - 1) // quantidade_por_pagina
-    
-    # Cria uma página com os usuários capturados
-    response = templates.TemplateResponse("quero-contratar.html", {
-        "request": request, 
+    return templates.TemplateResponse("quero-contratar.html", {
+        "request": request,
         "usuario": usuarios,
         "pagina_atual": page,
         "total_paginas": total_paginas,
         "total_usuarios": total_usuarios
     })
-    return response
 
 @app.get("/usuarios/{id}")
 def read_usuario(request: Request, id: int):
-    # Obtém um usuário específico do banco de dados pelo ID
     usuario = usuario_repo.obter_usuario_por_id(id)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    
-    # Cria uma página com o usuário capturado
-    response = templates.TemplateResponse("quero-contratar.html", {
-        "request": request, 
+    return templates.TemplateResponse("quero-contratar.html", {
+        "request": request,
         "usuario": [usuario]
     })
-    return response
 
 # ============================================================================
 # ROTAS DE AUTENTICAÇÃO (seguindo padrão do Código 1)
@@ -118,38 +110,31 @@ async def cadastrar_usuario(
     conf_senha: str = Form(),
     endereco: Optional[str] = Form(None)
 ):
-    # Validações básicas seguindo padrão do Código 1
     if not validar_cpf(cpf):
         raise HTTPException(status_code=400, detail="CPF inválido")
-    
     if senha != conf_senha:
         raise HTTPException(status_code=400, detail="As senhas não conferem")
-    
-    # Busca endereco se informado
     endereco_obj = None
     if endereco:
         endereco_obj = endereco_repo.obter_endereco_por_id(int(endereco))
-    
-    # Cria um objeto Usuario com os dados informados
     usuario = Usuario(
         id=0,
         nome=nome,
         email=email,
+        senha_hash=hash_senha(senha),
         cpf=cpf,
         telefone=telefone,
         data_nascimento=data_nascimento,
-        senha_hash=hash_senha(senha),
-        tipo="c",  # cliente por padrão
+        experiencia=None,
+        imagem=None,
+        link_contato=None,
         endereco=endereco_obj,
-        imagem=None  # sem imagem no cadastro inicial
+        profissao=None,
+        tipo="c"
     )
-    
-    # Tenta inserir o usuário no repositório
-    usuario = usuario_repo.inserir_usuario(usuario)
-    if not usuario:
+    usuario_id = usuario_repo.inserir_usuario(usuario)
+    if not usuario_id:
         raise HTTPException(status_code=400, detail="Erro ao cadastrar usuário")
-    
-    # Se conseguiu inserir o usuário, redireciona para a página de login
     return RedirectResponse(url="/login", status_code=303)
 
 @app.get("/login")
@@ -181,7 +166,7 @@ async def login(
     request.session["usuario_id"] = usuario.id
     
     # Redireciona para a página inicial
-    return RedirectResponse(url="/quero-contratar", status_code=303)
+    return RedirectResponse(url="/usuarios", status_code=303)
 
 @app.get("/logout")
 async def logout(request: Request):
@@ -219,40 +204,28 @@ async def atualizar_perfil(
     email: str = Form(),
     telefone: str = Form(),
     experiencia: str = Form(None),
-    link_contato: str = Form(None), 
+    link_contato: str = Form(None),
     endereco: str = Form(None),
     profissao: str = Form(None),
     tipo: str = Form("c")
 ):
-    # Captura os dados do usuário da sessão (logado)
     usuario_json = request.session.get("usuario")
     if not usuario_json:
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
-    
-    # Busca os dados do usuário no repositório
     usuario = usuario_repo.obter_usuario_por_id(usuario_json["id"])
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    
-    # Atualiza os dados do usuário
     usuario.nome = nome
     usuario.email = email
     usuario.telefone = telefone
     usuario.experiencia = experiencia
     usuario.link_contato = link_contato
     usuario.tipo = tipo
-    
-    # Atualiza relacionamentos se informados
     if endereco:
         usuario.endereco = endereco_repo.obter_endereco_por_id(int(endereco))
     if profissao:
-        usuario.profissao = profissao_repo.obter_profissao_por_id(int(profissao))
-    
-    # Atualiza o usuário no repositório
-    if not usuario_repo.atualizar_usuario(usuario):
-        raise HTTPException(status_code=400, detail="Erro ao atualizar perfil")
-    
-    # Atualiza os dados do usuário na sessão
+        usuario.profissao = profissao_repo.buscar_profissao_por_id(int(profissao))
+    usuario_repo.atualizar_usuario(usuario)
     usuario_json = {
         "id": usuario.id,
         "nome": usuario.nome,
@@ -260,8 +233,6 @@ async def atualizar_perfil(
         "tipo": usuario.tipo
     }
     request.session["usuario"] = usuario_json
-    
-    # Redireciona para a página de perfil
     return RedirectResponse(url="/perfil", status_code=303)
 
 @app.get("/senha")
